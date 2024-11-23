@@ -25,3 +25,16 @@ body {
     text-wrap: balance;
   }
 }
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.hover-pulse:hover {
+  animation: pulse 2s infinite;
+}
