@@ -31,7 +31,7 @@ export default function BusinessCard({ card }: Props) {
             <div className="relative w-32 h-32 rounded-full border-8 border-white shadow-xl overflow-hidden">
               <Image
                 src={card.logoUrl || "/pictures/logo.jpg"}
-                alt={`${card.company} Logo`}
+                alt={`${card.company || 'Company'} Logo`}
                 fill
                 className="object-cover"
                 priority
@@ -41,11 +41,13 @@ export default function BusinessCard({ card }: Props) {
 
           {/* Card Content */}
           <div className="mt-20 text-center">
-            <h1 className="text-2xl font-extrabold text-gray-800 tracking-tight">
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-900 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
-                {card.company}
-              </span>
-            </h1>
+            {card.company && (
+              <h1 className="text-2xl font-extrabold text-gray-800 tracking-tight">
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-900 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
+                  {card.company}
+                </span>
+              </h1>
+            )}
             
             <div className="my-4 border-t border-gray-200"></div>
             
@@ -54,68 +56,76 @@ export default function BusinessCard({ card }: Props) {
                 {card.name}
               </span>
             </h2>
-            <p className="text-2xl text-gray-600 mt-2 italic font-semibold">
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-700 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
-                {card.title}
-              </span>
-            </p>
             
-            <div className="my-4 border-t border-gray-200"></div>
+            {card.title && (
+              <p className="text-2xl text-gray-600 mt-2 italic font-semibold">
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-700 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
+                  {card.title}
+                </span>
+              </p>
+            )}
             
-            <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
-              {card.description}
-            </p>
+            {card.description && (
+              <>
+                <div className="my-4 border-t border-gray-200"></div>
+                <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
+                  {card.description}
+                </p>
+              </>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Contact Actions Section */}
-      <div className="container mx-auto px-4 max-w-3xl space-y-4 mt-6">
-        {/* Add to Contact Button */}
-        <Link 
-          href="/contact.vcf" 
-          className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
-        >
-          <FaUserPlus className="text-xl" />
-          <span className="font-semibold">Add to Contacts</span>
-        </Link>
+      {/* Social Links - Only show if at least one social link exists */}
+      {(card.linkedin || card.linktree || card.website) && (
+        <div className="container mx-auto px-4 max-w-3xl space-y-4 mt-6">
+          {/* Add to Contact Button */}
+          <Link 
+            href="/contact.vcf" 
+            className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
+          >
+            <FaUserPlus className="text-xl" />
+            <span className="font-semibold">Add to Contacts</span>
+          </Link>
 
-        {/* Social Links Grid */}
-        <div className="grid grid-cols-3 gap-3">
-          {card.linkedin && (
-            <Link 
-              href={card.linkedin}
-              target="_blank"
-              className="flex flex-col items-center gap-1 py-3 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-            >
-              <FaLinkedin className="text-2xl text-[#0077b5]" />
-              <span className="text-sm font-medium text-gray-600">LinkedIn</span>
-            </Link>
-          )}
+          {/* Social Links Grid */}
+          <div className="grid grid-cols-3 gap-3">
+            {card.linkedin && (
+              <Link 
+                href={card.linkedin}
+                target="_blank"
+                className="flex flex-col items-center gap-1 py-3 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+              >
+                <FaLinkedin className="text-2xl text-[#0077b5]" />
+                <span className="text-sm font-medium text-gray-600">LinkedIn</span>
+              </Link>
+            )}
 
-          {card.linktree && (
-            <Link 
-              href={card.linktree}
-              target="_blank"
-              className="flex flex-col items-center gap-1 py-3 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-            >
-              <FaLink className="text-2xl text-green-600" />
-              <span className="text-sm font-medium text-gray-600">LinkTree</span>
-            </Link>
-          )}
+            {card.linktree && (
+              <Link 
+                href={card.linktree}
+                target="_blank"
+                className="flex flex-col items-center gap-1 py-3 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+              >
+                <FaLink className="text-2xl text-green-600" />
+                <span className="text-sm font-medium text-gray-600">LinkTree</span>
+              </Link>
+            )}
 
-          {card.website && (
-            <Link 
-              href={card.website}
-              target="_blank"
-              className="flex flex-col items-center gap-1 py-3 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-            >
-              <FaGlobe className="text-2xl text-blue-600" />
-              <span className="text-sm font-medium text-gray-600">Website</span>
-            </Link>
-          )}
+            {card.website && (
+              <Link 
+                href={card.website}
+                target="_blank"
+                className="flex flex-col items-center gap-1 py-3 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+              >
+                <FaGlobe className="text-2xl text-blue-600" />
+                <span className="text-sm font-medium text-gray-600">Website</span>
+              </Link>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </main>
   );
 } 
