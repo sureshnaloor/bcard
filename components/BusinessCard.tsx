@@ -3,12 +3,23 @@ import Link from "next/link";
 import { FaUserPlus, FaLinkedin, FaLink, FaGlobe } from "react-icons/fa";
 import { BusinessCard as BusinessCardType } from "../types/user";
 import React from "react";
+import DownloadButton from './DownloadButton';
 
 interface Props {
   card: BusinessCardType;
 }
 
+// Add a helper function to ensure URLs are properly formatted
+const ensureAbsoluteUrl = (url: string) => {
+  if (!url) return '';
+  return url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`;
+};
+
 export default function BusinessCard({ card }: Props) {
+  // Add these console logs at the top of the component
+  console.log('Full card data:', card);
+  console.log('vCard URL:', card.vcardUrl);
+
   return (
     <main className="relative min-h-screen pb-20">
       {/* Background Image */}
@@ -78,22 +89,16 @@ export default function BusinessCard({ card }: Props) {
       </div>
 
       {/* Social Links - Only show if at least one social link exists */}
-      {(card.linkedin || card.linktree || card.website) && (
+      {(card.linkedin || card.linktree || card.website || card.vcardUrl) && (
         <div className="container mx-auto px-4 max-w-3xl space-y-4 mt-6">
-          {/* Add to Contact Button */}
-          <Link 
-            href="/contact.vcf" 
-            className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
-          >
-            <FaUserPlus className="text-xl" />
-            <span className="font-semibold">Add to Contacts</span>
-          </Link>
+          {/* vCard Download Button */}
+          <DownloadButton vcardUrl={ensureAbsoluteUrl(card.vcardUrl)} />
 
           {/* Social Links Grid */}
           <div className="grid grid-cols-3 gap-3">
             {card.linkedin && (
               <Link 
-                href={card.linkedin}
+                href={ensureAbsoluteUrl(card.linkedin)}
                 target="_blank"
                 className="flex flex-col items-center gap-1 py-3 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
               >
@@ -104,7 +109,7 @@ export default function BusinessCard({ card }: Props) {
 
             {card.linktree && (
               <Link 
-                href={card.linktree}
+                href={ensureAbsoluteUrl(card.linktree)}
                 target="_blank"
                 className="flex flex-col items-center gap-1 py-3 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
               >
@@ -115,7 +120,7 @@ export default function BusinessCard({ card }: Props) {
 
             {card.website && (
               <Link 
-                href={card.website}
+                href={ensureAbsoluteUrl(card.website)}
                 target="_blank"
                 className="flex flex-col items-center gap-1 py-3 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
               >

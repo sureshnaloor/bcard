@@ -29,7 +29,8 @@ export default async function CardPage({ params }: { params: { id: string } }) {
       linktree: card.linktree,
       website: card.website,
       logoUrl: card.logoUrl,
-      bgImageUrl: card.bgImageUrl
+      bgImageUrl: card.bgImageUrl,
+      vcardUrl: card.vcardUrl,
     };
 
     return <BusinessCard card={businessCard} />;

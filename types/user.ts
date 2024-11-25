@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 
 export interface BusinessCard {
+  vcardUrl?: string;
   _id?: string | ObjectId;
   userId?: string;
   name: string;

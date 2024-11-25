@@ -7,7 +7,14 @@ export async function POST(request: Request) {
     const db = client.db("businessCards");
     const data = await request.json();
 
-    const result = await db.collection("cards").insertOne(data);
+    // Validate and structure the data
+    const cardData = {
+      ...data,
+      vcardUrl: data.vcardUrl || '',  // Make sure it matches exactly
+      createdAt: new Date()
+    };
+
+    const result = await db.collection("cards").insertOne(cardData);
     
     return NextResponse.json({ 
       message: "Card created successfully", 
@@ -18,6 +25,16 @@ export async function POST(request: Request) {
       { error: "Failed to create card" },
       { status: 500 }
     );
+  }
+}
+
+// Helper function to validate URL format
+function isValidUrl(url: string): boolean {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
   }
 }
 

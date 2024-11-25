@@ -16,7 +16,8 @@ export default function CreateCard() {
     linktree: '',
     website: '',
     logoUrl: '',
-    bgImageUrl: ''
+    bgImageUrl: '',
+    vcardUrl: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -159,6 +160,17 @@ export default function CreateCard() {
               required
             />
           </div>
+
+          <div>
+          <label className="block text-sm font-medium text-gray-100">vCard URL</label>
+          <input
+            type="url"
+            value={formData.vcardUrl}
+            onChange={(e) => setFormData({...formData, vcardUrl: e.target.value})}
+            className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            placeholder="https://example.com/vcard.vcf"
+          />
+        </div>
           
           <button
             type="submit"
