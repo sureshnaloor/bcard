@@ -9,8 +9,8 @@ interface Props {
   card: BusinessCardType;
 }
 
-// Add a helper function to ensure URLs are properly formatted
-const ensureAbsoluteUrl = (url: string) => {
+// Update the helper function to handle undefined values
+const ensureAbsoluteUrl = (url: string | undefined): string => {
   if (!url) return '';
   return url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`;
 };
