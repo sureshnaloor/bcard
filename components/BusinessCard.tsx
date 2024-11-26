@@ -3,7 +3,6 @@ import Link from "next/link";
 import { FaUserPlus, FaLinkedin, FaLink, FaGlobe } from "react-icons/fa";
 import { BusinessCard as BusinessCardType } from "../types/user";
 import React from "react";
-import DownloadButton from './DownloadButton';
 
 interface Props {
   card: BusinessCardType;
@@ -91,8 +90,17 @@ export default function BusinessCard({ card }: Props) {
       {/* Social Links - Only show if at least one social link exists */}
       {(card.linkedin || card.linktree || card.website || card.vcardUrl) && (
         <div className="container mx-auto px-4 max-w-3xl space-y-4 mt-6">
-          {/* vCard Download Button */}
-          <DownloadButton vcardUrl={ensureAbsoluteUrl(card.vcardUrl)} />
+          {/* vCard Download Link */}
+          {card.vcardUrl && (
+            <a 
+              href={ensureAbsoluteUrl(card.vcardUrl)}
+              download
+              className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
+            >
+              <FaUserPlus className="text-xl" />
+              <span className="font-semibold">Add to Contacts</span>
+            </a>
+          )}
 
           {/* Social Links Grid */}
           <div className="grid grid-cols-3 gap-3">
