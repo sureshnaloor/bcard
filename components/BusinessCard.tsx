@@ -93,14 +93,13 @@ export default function BusinessCard({ card }: Props) {
         <div className="container mx-auto px-4 max-w-3xl space-y-4 mt-6">
           {/* vCard Download Link */}
           {card.vcardUrl && (
-            <a 
-              href={ensureAbsoluteUrl(card.vcardUrl)}
-              download
+            <Link 
+              href={card.vcardUrl}
               className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
             >
               <FaUserPlus className="text-xl" />
               <span className="font-semibold">Add to Contacts</span>
-            </a>
+            </Link>
           )}
 
           {/* Social Links Grid */}

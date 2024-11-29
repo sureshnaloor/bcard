@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
+import FileUploadField from '@/components/FileUploadField';
 
 export default function CreateCard() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    userId: '',
+    userId: '', 
     name: '',
     title: '',
     company: '',
@@ -19,6 +20,21 @@ export default function CreateCard() {
     bgImageUrl: '',
     vcardUrl: '',
   });
+
+  const existingLogos = [
+    '/logos/babulogo.png',
+    '/logos/jallogo.jpg',
+  ];
+  
+  const existingBackgrounds = [
+    '/backgrounds/businesscard.png',
+    '/backgrounds/businesscardbg.jpg',
+    '/backgrounds/id-card.png',
+  ];
+  
+  const existingVCards = [
+    '/vcards/sureshnaloor.vcf',
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,47 +152,32 @@ export default function CreateCard() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">Logo URL</label>
-              <input
-                type="text"
-                value={formData.logoUrl}
-                onChange={(e) => setFormData({...formData, logoUrl: e.target.value})}
-                className="mt-1 block w-full rounded-md border-teal-200 dark:border-gray-600 
-                  bg-teal-100 dark:bg-gray-700 
-                  text-gray-900 dark:text-white 
-                  shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                required
-              />
-            </div>
+            <FileUploadField
+              label="Logo"
+              value={formData.logoUrl}
+              onChange={(url: string) => setFormData({...formData, logoUrl: url})}
+              accept="image/*"
+              existingFiles={existingLogos}
+              previewType="image"
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">Background Image URL</label>
-              <input
-                type="text"
-                value={formData.bgImageUrl}
-                onChange={(e) => setFormData({...formData, bgImageUrl: e.target.value})}
-                className="mt-1 block w-full rounded-md border-teal-200 dark:border-gray-600 
-                  bg-teal-100 dark:bg-gray-700 
-                  text-gray-900 dark:text-white 
-                  shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                required
-              />
-            </div>
+            <FileUploadField
+              label="Background Image"
+              value={formData.bgImageUrl}
+              onChange={(url: string) => setFormData({...formData, bgImageUrl: url})}
+              accept="image/*"
+              existingFiles={existingBackgrounds}
+              previewType="image"
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">vCard URL</label>
-              <input
-                type="text"
-                value={formData.vcardUrl}
-                onChange={(e) => setFormData({...formData, vcardUrl: e.target.value})}
-                className="mt-1 block w-full rounded-md border-teal-200 dark:border-gray-600 
-                  bg-teal-100 dark:bg-gray-700 
-                  text-gray-900 dark:text-white 
-                  shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                required
-              />
-            </div>
+            <FileUploadField
+              label="vCard File"
+              value={formData.vcardUrl}
+              onChange={(url: string) => setFormData({...formData, vcardUrl: url})}
+              accept=".vcf"
+              existingFiles={existingVCards}
+              previewType="file"
+            />
           </div>
 
           <button
