@@ -22,26 +22,13 @@ export default function CreateCard() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    try {
-      const response = await fetch('/api/cards', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        alert('Card created successfully!');
-        router.push(`/card/${data.id}`);
-      } else {
-        throw new Error('Failed to create card');
-      }
-    } catch (error) {
-      alert('Error creating card');
-      console.error(error);
+    const response = await fetch('/api/cards', {
+      method: 'POST',
+      body: JSON.stringify(formData)
+    });
+    const data = await response.json();
+    if (data.shortId) {
+      router.push(`/card/${data.shortId}`);
     }
   };
 

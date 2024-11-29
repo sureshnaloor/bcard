@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FaUserPlus, FaLinkedin, FaLink, FaGlobe } from "react-icons/fa";
 import { BusinessCard as BusinessCardType } from "../types/user";
 import React from "react";
+import { shortenId } from '@/utils/idConverter';
 
 interface Props {
   card: BusinessCardType;

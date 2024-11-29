@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import { shortenId } from '@/utils/idConverter';
 
 export async function POST(request: Request) {
   try {
@@ -7,18 +8,20 @@ export async function POST(request: Request) {
     const db = client.db("businessCards");
     const data = await request.json();
 
-    // Validate and structure the data
     const cardData = {
       ...data,
-      vcardUrl: data.vcardUrl || '',  // Make sure it matches exactly
+      vcardUrl: data.vcardUrl || '',
       createdAt: new Date()
     };
 
     const result = await db.collection("cards").insertOne(cardData);
+    const shortId = shortenId(result.insertedId.toString());
     
     return NextResponse.json({ 
       message: "Card created successfully", 
-      id: result.insertedId 
+      id: result.insertedId,
+      shortId: shortId,
+      url: `/card/${shortId}`
     });
   } catch (error) {
     return NextResponse.json(
