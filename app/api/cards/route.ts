@@ -8,21 +8,31 @@ export async function POST(request: Request) {
     const db = client.db("businessCards");
     const data = await request.json();
 
-    const cardData = {
+    // First create the record to get the _id
+    const initialResult = await db.collection("cards").insertOne({
       ...data,
       createdAt: new Date()
-    };
+    });
 
-    // Log to verify vCard content is present
-    console.log('vCard Filename:', cardData.vCardFileName);
-    console.log('vCard Content length:', cardData.vCardContent?.length);
+    // Generate shortened ID from the MongoDB _id
+    const shortId = shortenId(initialResult.insertedId.toString());
 
-    const result = await db.collection("cards").insertOne(cardData);
-    const shortId = shortenId(result.insertedId.toString());
+    // Update the record with the userId
+    await db.collection("cards").updateOne(
+      { _id: initialResult.insertedId },
+      { 
+        $set: { 
+          userId: shortId 
+        } 
+      }
+    );
+
+    // Log to verify data
+    console.log('Generated shortId:', shortId);
     
     return NextResponse.json({ 
       message: "Card created successfully", 
-      id: result.insertedId,
+      id: initialResult.insertedId,
       shortId: shortId,
       url: `/card/${shortId}`
     });
