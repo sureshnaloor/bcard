@@ -16,9 +16,9 @@ const ensureAbsoluteUrl = (url: string | undefined): string => {
 };
 
 export default function BusinessCard({ card }: Props) {
-  // Add these console logs at the top of the component
+  // Debug logs
+  // Debug logs for development only
   console.log('Full card data:', card);
-  console.log('vCard URL:', card.vcardUrl);
 
   return (
     <main className="relative min-h-screen pb-20">
@@ -87,13 +87,12 @@ export default function BusinessCard({ card }: Props) {
           </div>
         </div>
       </div>
-
       {/* Social Links - Only show if at least one social link exists */}
-      {(card.linkedin || card.linktree || card.website || card.vcardUrl) && (
+      {(card.linkedin || card.linktree || card.website) && (
         <div className="container mx-auto px-4 max-w-3xl space-y-4 mt-6">
           {/* vCard Download Link */}
           {card._id && (
-            <Link 
+            <Link
               href={`/api/cards/${card._id}/vcard`}
               className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
             >
