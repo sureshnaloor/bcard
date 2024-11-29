@@ -6,10 +6,12 @@ import Image from 'next/image';
 interface FileUploadFieldProps {
   label: string;
   value: string;
-  onChange: (url: string) => void;
+  onChange: (url: string, content?: string) => void;
   accept: string;
   existingFiles?: string[];
-  previewType?: 'image' | 'file';
+  previewType: 'image' | 'file';
+  uploadOnly?: boolean;
+  hideUpload?: boolean;
 }
 
 export default function FileUploadField({
@@ -18,32 +20,23 @@ export default function FileUploadField({
   onChange,
   accept,
   existingFiles = [],
-  previewType = 'image'
+  previewType,
+  uploadOnly = false,
+  hideUpload = false
 }: FileUploadFieldProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
   const [selectedPreview, setSelectedPreview] = useState<string | null>(null);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-      onChange(data.url);
-    } catch (error) {
-      console.error('Upload failed:', error);
-    } finally {
-      setIsUploading(false);
+    if (accept === '.vcf') {
+      const content = await file.text();
+      onChange(file.name, content);
+    } else {
+      onChange(file.name);
     }
   };
 
@@ -54,110 +47,50 @@ export default function FileUploadField({
   };
 
   return (
-    <div className="relative space-y-2">
+    <div className="space-y-2">
       <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">
         {label}
       </label>
-      
-      <div className="flex flex-wrap gap-2 mb-2">
-        <button
-          type="button"
-          onClick={() => setShowGallery(!showGallery)}
-          className={`px-3 py-1 text-sm rounded-md transition-colors ${
-            showGallery 
-              ? 'bg-teal-600 text-white' 
-              : 'bg-teal-100 dark:bg-teal-800 text-teal-800 dark:text-teal-100'
-          }`}
+
+      {!uploadOnly && existingFiles.length > 0 && (
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="mt-1 block w-full rounded-md border-teal-200 dark:border-gray-600 
+            bg-teal-100 dark:bg-gray-700 
+            text-gray-900 dark:text-white 
+            shadow-sm focus:border-teal-500 focus:ring-teal-500"
         >
-          {showGallery ? 'Close Gallery' : 'Choose Existing'}
-        </button>
-        
-        <div className="relative">
-          <input
-            type="file"
-            onChange={handleFileUpload}
-            accept={accept}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          <option value="">Select existing</option>
+          {existingFiles.map((file) => (
+            <option key={file} value={file}>
+              {file.split('/').pop()}
+            </option>
+          ))}
+        </select>
+      )}
+
+      {!hideUpload && (accept === '.vcf' || !uploadOnly) && (
+        <input
+          type="file"
+          accept={accept}
+          onChange={handleFileChange}
+          className="block w-full text-sm text-gray-900 dark:text-gray-100
+            file:mr-4 file:py-2 file:px-4
+            file:rounded-full file:border-0
+            file:text-sm file:font-semibold
+            file:bg-teal-50 dark:file:bg-gray-700 file:text-teal-700 dark:file:text-white
+            hover:file:bg-teal-100 dark:hover:file:bg-gray-600"
+        />
+      )}
+
+      {previewType === 'image' && value && (
+        <div className="mt-2">
+          <img
+            src={value}
+            alt={`Selected ${label}`}
+            className="h-20 w-20 object-cover rounded-lg"
           />
-          <button
-            type="button"
-            className="px-3 py-1 text-sm bg-teal-600 text-white rounded-md hover:bg-teal-700"
-          >
-            Upload New
-          </button>
-        </div>
-      </div>
-
-      {isUploading && (
-        <div className="text-sm text-teal-600 animate-pulse">
-          Uploading...
-        </div>
-      )}
-
-      {/* Current Selection Preview */}
-      {value && (
-        <div className="mt-2 p-2 border border-teal-200 dark:border-teal-800 rounded-md">
-          <p className="text-sm font-medium mb-2">Current Selection:</p>
-          {previewType === 'image' ? (
-            <div className="relative h-32 w-32">
-              <Image
-                src={value}
-                alt="Selected preview"
-                fill
-                className="object-contain rounded-md"
-              />
-            </div>
-          ) : (
-            <div className="text-sm text-teal-600">
-              Selected: {value.split('/').pop()}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Gallery Modal */}
-      {showGallery && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium">Select {label}</h3>
-              <button
-                onClick={() => setShowGallery(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                ✕
-              </button>
-            </div>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              {existingFiles.map((fileUrl, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleSelectExisting(fileUrl)}
-                  className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
-                    value === fileUrl 
-                      ? 'border-teal-500 shadow-lg' 
-                      : 'border-transparent hover:border-teal-300'
-                  }`}
-                >
-                  {previewType === 'image' ? (
-                    <div className="relative h-32 w-full">
-                      <Image
-                        src={fileUrl}
-                        alt={`Gallery item ${index + 1}`}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="p-4 text-sm text-center">
-                      {fileUrl.split('/').pop()}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       )}
     </div>

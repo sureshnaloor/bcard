@@ -18,7 +18,8 @@ export default function CreateCard() {
     website: '',
     logoUrl: '',
     bgImageUrl: '',
-    vcardUrl: '',
+    vCardFileName: '',
+    vCardContent: '',
   });
 
   const existingLogos = [
@@ -155,28 +156,34 @@ export default function CreateCard() {
             <FileUploadField
               label="Logo"
               value={formData.logoUrl}
-              onChange={(url: string) => setFormData({...formData, logoUrl: url})}
+              onChange={(url) => setFormData({...formData, logoUrl: url})}
               accept="image/*"
               existingFiles={existingLogos}
               previewType="image"
+              uploadOnly={false}
             />
 
             <FileUploadField
               label="Background Image"
               value={formData.bgImageUrl}
-              onChange={(url: string) => setFormData({...formData, bgImageUrl: url})}
+              onChange={(url) => setFormData({...formData, bgImageUrl: url})}
               accept="image/*"
               existingFiles={existingBackgrounds}
               previewType="image"
+              uploadOnly={false}
             />
 
             <FileUploadField
               label="vCard File"
-              value={formData.vcardUrl}
-              onChange={(url: string) => setFormData({...formData, vcardUrl: url})}
+              value={formData.vCardFileName}
+              onChange={(fileName, content) => setFormData({
+                ...formData, 
+                vCardFileName: fileName,
+                vCardContent: content || ''
+              })}
               accept=".vcf"
-              existingFiles={existingVCards}
               previewType="file"
+              uploadOnly={true}
             />
           </div>
 

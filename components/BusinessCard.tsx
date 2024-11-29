@@ -92,9 +92,9 @@ export default function BusinessCard({ card }: Props) {
       {(card.linkedin || card.linktree || card.website || card.vcardUrl) && (
         <div className="container mx-auto px-4 max-w-3xl space-y-4 mt-6">
           {/* vCard Download Link */}
-          {card.vcardUrl && (
+          {card._id && (
             <Link 
-              href={card.vcardUrl}
+              href={`/api/cards/${card._id}/vcard`}
               className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
             >
               <FaUserPlus className="text-xl" />

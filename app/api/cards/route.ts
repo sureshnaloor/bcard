@@ -10,9 +10,12 @@ export async function POST(request: Request) {
 
     const cardData = {
       ...data,
-      vcardUrl: data.vcardUrl || '',
       createdAt: new Date()
     };
+
+    // Log to verify vCard content is present
+    console.log('vCard Filename:', cardData.vCardFileName);
+    console.log('vCard Content length:', cardData.vCardContent?.length);
 
     const result = await db.collection("cards").insertOne(cardData);
     const shortId = shortenId(result.insertedId.toString());
@@ -24,6 +27,7 @@ export async function POST(request: Request) {
       url: `/card/${shortId}`
     });
   } catch (error) {
+    console.error('Error details:', error);
     return NextResponse.json(
       { error: "Failed to create card" },
       { status: 500 }
