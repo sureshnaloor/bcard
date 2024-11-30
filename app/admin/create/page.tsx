@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import FileUploadField from '@/components/FileUploadField';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 export default function CreateCard() {
   const router = useRouter();
@@ -51,6 +52,9 @@ export default function CreateCard() {
 
   return (
     <div className="container mx-auto px-4 py-8 bg-teal-50 dark:bg-gray-900 min-h-screen">
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeSwitcher />
+      </div>
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-gray-100">Create Business Card</h1>
         

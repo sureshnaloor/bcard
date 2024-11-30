@@ -1,11 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FaUserPlus, FaLinkedin, FaLink, FaGlobe } from "react-icons/fa";
+import ThemeSwitcher from '@/components/ThemeSwitcher'
 
 export default function Home() {
   return (
     <main className="relative min-h-screen pb-20">
       {/* Background Image */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeSwitcher />
+      </div>
       <div className="absolute inset-0 -z-10">
         <Image
           src="/pictures/businesscardbg.jpg"  // Make sure this image is in your public folder
