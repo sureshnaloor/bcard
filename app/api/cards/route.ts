@@ -7,17 +7,44 @@ export async function POST(request: Request) {
     const client = await clientPromise;
     const db = client.db("businessCards");
     const data = await request.json();
+    
+    // Destructure the incoming data
+    const {
+      name,
+      title,
+      company,
+      description,
+      linkedin,
+      linktree,
+      website,
+      logoUrl,
+      bgImageUrl,
+      vCardFileName,
+      vCardContent,
+      customFields // New field for dynamic custom fields
+    } = data;
 
-    // First create the record to get the _id
+    // Create the document with all fields including custom fields
     const initialResult = await db.collection("cards").insertOne({
-      ...data,
+      name,
+      title,
+      company,
+      description,
+      linkedin,
+      linktree,
+      website,
+      logoUrl,
+      bgImageUrl,
+      vCardFileName,
+      vCardContent,
+      customFields: customFields || [], // Store custom fields as an array
       createdAt: new Date()
     });
 
     // Generate shortened ID from the MongoDB _id
     const shortId = shortenId(initialResult.insertedId.toString());
 
-    // Update the record with the userId
+    // Update the record with the shortId
     await db.collection("cards").updateOne(
       { _id: initialResult.insertedId },
       { 
@@ -27,7 +54,6 @@ export async function POST(request: Request) {
       }
     );
 
-    // Log to verify data
     console.log('Generated shortId:', shortId);
     
     return NextResponse.json({ 

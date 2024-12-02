@@ -10,25 +10,31 @@ export async function GET(
     const client = await clientPromise;
     const db = client.db("businessCards");
     
-    // First, let's log the exact query we're making
     console.log('Querying for ID:', params.id);
 
-    // Get the document and log its raw form
     const card = await db.collection("cards").findOne(
-      { _id: new ObjectId(params.id) }
+      { _id: new ObjectId(params.id) },
+      {
+        projection: {
+          name: 1,
+          title: 1,
+          company: 1,
+          description: 1,
+          linkedin: 1,
+          linktree: 1,
+          website: 1,
+          logoUrl: 1,
+          bgImageUrl: 1,
+          vCardFileName: 1,
+          vCardContent: 1,
+          customFields: 1,
+          userId: 1,
+          createdAt: 1
+        }
+      }
     );
 
     console.log('Raw MongoDB Document:', JSON.stringify(card, null, 2));
-
-    // Let's also directly check if this document exists in the collection
-    const documentCount = await db.collection("cards").countDocuments(
-      { _id: new ObjectId(params.id) }
-    );
-    console.log('Document exists:', documentCount > 0);
-
-    // List all fields in the collection
-    const sampleDocument = await db.collection("cards").findOne({});
-    console.log('Available fields in collection:', Object.keys(sampleDocument || {}));
 
     if (!card) {
       return NextResponse.json({ error: "Card not found" }, { status: 404 });
