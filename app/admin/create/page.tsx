@@ -88,8 +88,11 @@ export default function CreateCard() {
     }
   };
 
-  const handleColorSelect = (e: React.MouseEvent, type: 'logo' | 'bg', color: string | string[]) => {
-    e.preventDefault(); // Prevent form submission
+  const handleColorSelect = (color: string | string[], type: 'logo' | 'bg', e?: React.MouseEvent) => {
+    // Prevent form submission
+    e?.preventDefault();
+    e?.stopPropagation();
+    
     if (type === 'logo') {
       setLogoColor(color as string);
       setFormData(prev => ({ ...prev, logoUrl: '', logoColor: color as string }));
@@ -411,7 +414,7 @@ export default function CreateCard() {
 
               <div className="mt-4">
                 <ColorPaletteSelector
-                  onSelect={(color) => handleColorSelect(event as React.MouseEvent, 'logo', color)}
+                  onSelect={(colors: string | string[]) => handleColorSelect(colors, 'logo')}
                   type="solid"
                   label="Or choose a color for logo"
                 />
@@ -432,7 +435,7 @@ export default function CreateCard() {
 
               <div className="mt-4">
                 <ColorPaletteSelector
-                  onSelect={(colors) => handleColorSelect(event as React.MouseEvent, 'bg', colors)}
+                  onSelect={(colors: string | string[]) => handleColorSelect(colors, 'bg')}
                   type="gradient"
                   label="Or choose a background style"
                 />

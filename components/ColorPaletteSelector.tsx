@@ -1,12 +1,18 @@
 'use client';
 
-interface ColorPaletteProps {
-  onSelect: (colors: string | string[]) => void;
+interface ColorPaletteSelectorProps {
+  onSelect: (color: string | string[], e?: React.MouseEvent) => void;
   type: 'solid' | 'gradient';
-  label: string;
+  label?: string;
+  buttonType?: 'button' | 'submit' | 'reset';
 }
 
-export default function ColorPaletteSelector({ onSelect, type, label }: ColorPaletteProps) {
+export default function ColorPaletteSelector({ 
+  onSelect, 
+  type, 
+  label,
+  buttonType = 'button'
+}: ColorPaletteSelectorProps) {
   const solidColors = [
     '#2563eb', '#16a34a', '#dc2626', '#9333ea', 
     '#ea580c', '#0891b2', '#4f46e5', '#0f172a'
@@ -26,7 +32,8 @@ export default function ColorPaletteSelector({ onSelect, type, label }: ColorPal
   const renderSolidColorButton = (color: string) => (
     <button
       key={color}
-      onClick={() => onSelect(color)}
+      type={buttonType}
+      onClick={(e) => onSelect(color, e)}
       className="w-6 h-6 rounded-full border border-white shadow-sm hover:scale-110 
         transition-transform duration-200 hover:shadow-md"
       style={{ backgroundColor: color }}
@@ -37,7 +44,8 @@ export default function ColorPaletteSelector({ onSelect, type, label }: ColorPal
   const renderGradientButton = (gradientClasses: string[]) => (
     <button
       key={gradientClasses[0]}
-      onClick={() => onSelect(gradientClasses)}
+      type={buttonType}
+      onClick={(e) => onSelect(gradientClasses, e)}
       className={`w-6 h-6 rounded-full border border-white shadow-sm hover:scale-110 
         transition-transform duration-200 hover:shadow-md bg-gradient-to-r ${gradientClasses[0]}`}
       aria-label={`Select gradient ${gradientClasses[0]}`}
