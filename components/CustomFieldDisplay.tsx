@@ -41,7 +41,7 @@ const LocationMap = ({
         <Script
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
           strategy="lazyOnload"
-          onLoad={() => {
+          onReady={() => {
             const mapElement = document.getElementById(`map-${label}`);
             if (!mapElement || !window.google) return;
 
