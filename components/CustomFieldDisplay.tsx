@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { IoLocationOutline, IoCalendarOutline, IoPlayCircleOutline } from 'react-icons/io5';
 import { format, differenceInDays, setYear } from 'date-fns';
+import Script from 'next/script';
 
 export interface CustomField {
   label: string;
@@ -14,6 +15,109 @@ export interface CustomFieldDisplayProps {
   field: CustomField;
   key?: number;
 }
+
+// Create a new LocationMap component
+const LocationMap = ({ 
+  lat, 
+  lng, 
+  label, 
+  currentLocation, 
+  onClose 
+}: { 
+  lat: number; 
+  lng: number; 
+  label: string; 
+  currentLocation: { lat: number; lng: number } | null;
+  onClose: () => void;
+}) => {
+    function calculateDistance(lat: number, lng: number, lat1: number, lng1: number): import("react").ReactNode {
+        throw new Error('Function not implemented.');
+    }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl">
+        <h3 className="text-lg font-semibold mb-4">{label}</h3>
+        <Script
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
+          strategy="lazyOnload"
+          onLoad={() => {
+            const mapElement = document.getElementById(`map-${label}`);
+            if (!mapElement || !window.google) return;
+
+            const map = new google.maps.Map(mapElement, {
+              zoom: 12,
+              center: { lat, lng },
+              mapTypeControl: true,
+              streetViewControl: false,
+            });
+
+            // Marker for the field location
+            new google.maps.Marker({
+              position: { lat, lng },
+              map,
+              title: label,
+              icon: {
+                url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+              }
+            });
+
+            // Add marker for current location if available
+            if (currentLocation) {
+              new google.maps.Marker({
+                position: currentLocation,
+                map,
+                title: 'Your Location',
+                icon: {
+                  url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+                }
+              });
+
+              // Fit bounds to show both markers
+              const bounds = new google.maps.LatLngBounds();
+              bounds.extend({ lat, lng });
+              bounds.extend(currentLocation);
+              map.fitBounds(bounds);
+            }
+          }}
+        />
+        <div 
+          id={`map-${label}`} 
+          className="w-full h-96 rounded-lg mb-4"
+        />
+        {currentLocation && (
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            Distance from your location: {calculateDistance(
+              currentLocation.lat,
+              currentLocation.lng,
+              lat,
+              lng
+            )} km
+          </p>
+        )}
+        <div className="flex justify-between">
+          <button
+            onClick={() => {
+              window.open(
+                `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
+                '_blank'
+              );
+            }}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Start Navigation
+          </button>
+          <button
+            onClick={onClose}
+            className="text-gray-600 hover:text-gray-800"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function CustomFieldDisplay({ field }: CustomFieldDisplayProps) {
   const [showModal, setShowModal] = useState(false);
@@ -72,62 +176,18 @@ export default function CustomFieldDisplay({ field }: CustomFieldDisplayProps) {
   const renderLocation = () => {
     const [lat, lng] = field.value.split(',').map(Number);
 
-    useEffect(() => {
-      if (showModal && window.google) {
-        const mapElement = document.getElementById(`map-${field.label}`);
-        if (!mapElement) return;
-
-        const map = new google.maps.Map(mapElement, {
-          zoom: 12,
-          center: { lat, lng },
-          mapTypeControl: true,
-          streetViewControl: false,
-        });
-
-        // Marker for the field location
-        new google.maps.Marker({
-          position: { lat, lng },
-          map,
-          title: field.label,
-          icon: {
-            url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-          }
-        });
-
-        // Add marker for current location if available
-        if (currentLocation) {
-          new google.maps.Marker({
-            position: currentLocation,
-            map,
-            title: 'Your Location',
-            icon: {
-              url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-            }
-          });
-
-          // Fit bounds to show both markers
-          const bounds = new google.maps.LatLngBounds();
-          bounds.extend({ lat, lng });
-          bounds.extend(currentLocation);
-          map.fitBounds(bounds);
-        }
-      }
-    }, [showModal, currentLocation]);
-
-    useEffect(() => {
-      if (showModal && navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const currentLat = position.coords.latitude;
-          const currentLng = position.coords.longitude;
-          setCurrentLocation({ lat: currentLat, lng: currentLng });
-          const dist = calculateDistance(currentLat, currentLng, lat, lng);
-          setDistance(`${dist} km`);
-        });
-      }
-    }, [showModal]);
-
     return (
       <>
+        {showModal && (
+          <LocationMap
+            lat={lat}
+            lng={lng}
+            label={field.label}
+            currentLocation={currentLocation}
+            onClose={() => setShowModal(false)}
+          />
+        )}
+        
         <button
           onClick={() => setShowModal(true)}
           className="flex items-center space-x-2 text-purple-600 hover:text-purple-700"
@@ -135,42 +195,6 @@ export default function CustomFieldDisplay({ field }: CustomFieldDisplayProps) {
           <IoLocationOutline className="text-xl" />
           <span>View Location</span>
         </button>
-
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl">
-              <h3 className="text-lg font-semibold mb-4">{field.label}</h3>
-              <div 
-                id={`map-${field.label}`} 
-                className="w-full h-96 rounded-lg mb-4"
-              />
-              {distance && (
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  Distance from your location: {distance}
-                </p>
-              )}
-              <div className="flex justify-between">
-                <button
-                  onClick={() => {
-                    window.open(
-                      `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
-                      '_blank'
-                    );
-                  }}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                  Start Navigation
-                </button>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-gray-600 hover:text-gray-800"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </>
     );
   };
