@@ -1,5 +1,11 @@
 import { ObjectId } from "mongodb";
 
+interface CustomField {
+  label: string;
+  value: string;
+  type: 'text' | 'date' | 'location' | 'document' | 'media';
+}
+
 export interface BusinessCard {
   _id: string;
   userId: string;
@@ -14,11 +20,7 @@ export interface BusinessCard {
   bgImageUrl?: string;
   vCardContent?: string;
   vCardFileName?: string;
-  customFields?: Array<{
-    label: string;
-    value: string;
-    type: 'text' | 'date' | 'location' | 'document' | 'media';
-  }>;
+  customFields?: CustomField[];
   logoColor?: string;
   bgColor?: string | string[];
 } 

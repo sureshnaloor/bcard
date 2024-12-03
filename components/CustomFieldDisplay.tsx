@@ -12,6 +12,7 @@ interface CustomField {
 
 interface CustomFieldDisplayProps {
   field: CustomField;
+  key?: number;
 }
 
 export default function CustomFieldDisplay({ field }: CustomFieldDisplayProps) {
