@@ -4,7 +4,7 @@ import { FaUserPlus, FaLinkedin, FaLink, FaGlobe } from "react-icons/fa";
 import { BusinessCard as BusinessCardType } from "../types/user";
 import React from "react";
 import { shortenId } from '@/utils/idConverter';
-import CustomFieldDisplay from './CustomFieldDisplay';
+import CustomFieldDisplay, { CustomField } from './CustomFieldDisplay';
 
 interface Props {
   card: BusinessCardType;
@@ -75,8 +75,7 @@ export default function BusinessCard({ card }: Props) {
                   style={{ backgroundColor: card.logoColor }}
                 >
                   <span className="text-2xl font-serif font-bold text-white drop-shadow-lg
-                    bg-clip-text animate-fade-in
-                    font-['Playfair_Display']"
+                    bg-clip-text animate-fade-in"
                   >
                     {initials}
                   </span>
@@ -177,8 +176,11 @@ export default function BusinessCard({ card }: Props) {
       {card?.customFields && card.customFields.length > 0 && (
         <div className="container mx-auto px-4 max-w-3xl mt-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {card.customFields.map((field: any, index: number) => (
-              <CustomFieldDisplay key={index} field={field} />
+            {card.customFields.map((field: CustomField, index: number) => (
+              <CustomFieldDisplay 
+                key={index}
+                field={field} 
+              />
             ))}
           </div>
         </div>

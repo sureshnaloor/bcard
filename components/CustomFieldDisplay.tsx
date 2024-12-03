@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react';
 import { IoLocationOutline, IoCalendarOutline, IoPlayCircleOutline } from 'react-icons/io5';
 import { format, differenceInDays, setYear } from 'date-fns';
 
-interface CustomField {
+export interface CustomField {
   label: string;
   value: string;
   type: 'text' | 'date' | 'location' | 'document' | 'media';
 }
 
-interface CustomFieldDisplayProps {
+export interface CustomFieldDisplayProps {
   field: CustomField;
   key?: number;
 }
