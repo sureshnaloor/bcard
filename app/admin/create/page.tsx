@@ -6,6 +6,7 @@ import React from 'react';
 import FileUploadField from '@/components/FileUploadField';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { IoAddCircleOutline, IoCloseCircleOutline } from 'react-icons/io5';
+import ColorPaletteSelector from '@/components/ColorPaletteSelector';
 
 // Define field types
 type FieldType = 'text' | 'date' | 'location' | 'document' | 'media';
@@ -31,11 +32,15 @@ export default function CreateCard() {
     bgImageUrl: '',
     vCardFileName: '',
     vCardContent: '',
+    logoColor: '',
+    bgColor: '',
   });
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
   const [showMap, setShowMap] = useState<{ [key: number]: boolean }>({});
   const mapRefs = useRef<{ [key: number]: google.maps.Map | null }>({});
   const markerRefs = useRef<{ [key: number]: google.maps.Marker | null }>({});
+  const [logoColor, setLogoColor] = useState<string>('');
+  const [bgColor, setBgColor] = useState<string | string[]>('');
 
   const existingLogos = [
     '/logos/babulogo.png',
@@ -83,30 +88,47 @@ export default function CreateCard() {
     }
   };
 
+  const handleColorSelect = (e: React.MouseEvent, type: 'logo' | 'bg', color: string | string[]) => {
+    e.preventDefault(); // Prevent form submission
+    if (type === 'logo') {
+      setLogoColor(color as string);
+      setFormData(prev => ({ ...prev, logoUrl: '', logoColor: color as string }));
+    } else {
+      setBgColor(color as string);
+      setFormData(prev => ({ ...prev, bgImageUrl: '', bgColor: color as string }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Confirmation dialog
+    const isConfirmed = window.confirm('Are you sure you want to create this business card?');
+    if (!isConfirmed) return;
+
     // Create the request body with custom fields
     const requestBody = {
       ...formData,
-      customFields: customFields.filter(field => field.label && field.value) // Only include fields that have both label and value
+      customFields: customFields.filter(field => field.label && field.value)
     };
 
-    console.log('Submitting data:', requestBody); // Debug log
+    try {
+      const response = await fetch('/api/cards', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
 
-    const response = await fetch('/api/cards', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody)
-    });
-
-    const data = await response.json();
-    console.log('Response:', data); // Debug log
-
-    if (data.shortId) {
-      router.push(`/card/${data.shortId}`);
+      const data = await response.json();
+      
+      if (data.shortId) {
+        router.push(`/card/${data.shortId}`);
+      }
+    } catch (error) {
+      console.error('Error creating card:', error);
+      alert('Failed to create business card. Please try again.');
     }
   };
 
@@ -166,7 +188,7 @@ export default function CreateCard() {
     });
     mapRefs.current[index] = map;
 
-    map.addListener('click', (e) => handleMapClick(index, e));
+    map.addListener('click', (e: google.maps.MapMouseEvent) => handleMapClick(index, e));
 
     // If there's an existing value, show it on the map
     const field = customFields[index];
@@ -375,25 +397,47 @@ export default function CreateCard() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <FileUploadField
-              label="Logo"
-              value={formData.logoUrl}
-              onChange={(url) => setFormData({...formData, logoUrl: url})}
-              accept="image/*"
-              existingFiles={existingLogos}
-              previewType="image"
-              uploadOnly={false}
-            />
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Logo</h3>
+              
+              <FileUploadField
+                label="Logo Image"
+                value={formData.logoUrl || ''}
+                onChange={(url) => setFormData({...formData, logoUrl: url})}
+                accept="image/*"
+                existingFiles={existingLogos}
+                previewType="image"
+              />
 
-            <FileUploadField
-              label="Background Image"
-              value={formData.bgImageUrl}
-              onChange={(url) => setFormData({...formData, bgImageUrl: url})}
-              accept="image/*"
-              existingFiles={existingBackgrounds}
-              previewType="image"
-              uploadOnly={false}
-            />
+              <div className="mt-4">
+                <ColorPaletteSelector
+                  onSelect={(color) => handleColorSelect(event as React.MouseEvent, 'logo', color)}
+                  type="solid"
+                  label="Or choose a color for logo"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Background</h3>
+              
+              <FileUploadField
+                label="Background Image"
+                value={formData.bgImageUrl || ''}
+                onChange={(url) => setFormData({...formData, bgImageUrl: url})}
+                accept="image/*"
+                existingFiles={existingBackgrounds}
+                previewType="image"
+              />
+
+              <div className="mt-4">
+                <ColorPaletteSelector
+                  onSelect={(colors) => handleColorSelect(event as React.MouseEvent, 'bg', colors)}
+                  type="gradient"
+                  label="Or choose a background style"
+                />
+              </div>
+            </div>
 
             <FileUploadField
               label="vCard File"

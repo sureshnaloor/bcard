@@ -39,6 +39,9 @@ export default async function CardPage({ params }: { params: { id: string } }) {
       bgImageUrl: card.bgImageUrl,
       vCardContent: card.vCardContent,
       vCardFileName: card.vCardFileName,
+      customFields: card.customFields,
+      logoColor: card.logoColor,
+      bgColor: card.bgColor
     };
 
     return <BusinessCard card={businessCard} />;

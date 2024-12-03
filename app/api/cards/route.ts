@@ -21,7 +21,10 @@ export async function POST(request: Request) {
       bgImageUrl,
       vCardFileName,
       vCardContent,
-      customFields // New field for dynamic custom fields
+      customFields,
+      // New field for dynamic custom fields
+      logoColor,    
+      bgColor
     } = data;
 
     // Create the document with all fields including custom fields
@@ -37,6 +40,8 @@ export async function POST(request: Request) {
       bgImageUrl,
       vCardFileName,
       vCardContent,
+      logoColor,
+      bgColor,
       customFields: customFields || [], // Store custom fields as an array
       createdAt: new Date()
     });
