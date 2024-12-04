@@ -39,38 +39,45 @@ const LocationMap = ({
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl">
         <h3 className="text-lg font-semibold mb-4">{label}</h3>
         <Script
-          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=marker`}
           strategy="lazyOnload"
-          onReady={() => {
+          onLoad={() => {
+            console.log('Google Maps script loaded');
+            console.log('API Key:', process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.slice(0, 8) + '...');
+            console.log('Current URL:', window.location.href);
+            
             const mapElement = document.getElementById(`map-${label}`);
-            if (!mapElement || !window.google) return;
+            if (!mapElement || !window.google) {
+              console.error('Map initialization failed', {
+                mapElement: !!mapElement,
+                googleAvailable: !!window.google,
+                apiKey: !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+              });
+              return;
+            }
 
             const map = new google.maps.Map(mapElement, {
               zoom: 12,
               center: { lat, lng },
               mapTypeControl: true,
               streetViewControl: false,
+              mapId: process.env.NEXT_PUBLIC_GOOGLE_MAPS_ID,
+              disableDefaultUI: false
             });
 
             // Marker for the field location
-            new google.maps.Marker({
-              position: { lat, lng },
+            const marker = new google.maps.marker.AdvancedMarkerElement({
               map,
-              title: label,
-              icon: {
-                url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-              }
+              position: { lat, lng },
+              title: label
             });
 
             // Add marker for current location if available
             if (currentLocation) {
-              new google.maps.Marker({
-                position: currentLocation,
+              const currentMarker = new google.maps.marker.AdvancedMarkerElement({
                 map,
-                title: 'Your Location',
-                icon: {
-                  url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-                }
+                position: currentLocation,
+                title: 'Your Location'
               });
 
               // Fit bounds to show both markers
@@ -79,6 +86,11 @@ const LocationMap = ({
               bounds.extend(currentLocation);
               map.fitBounds(bounds);
             }
+          }}
+          onError={(e) => {
+            console.error('Google Maps script error:', e);
+            console.log('Current domain:', window.location.hostname);
+            console.log('API Key present:', !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
           }}
         />
         <div 
