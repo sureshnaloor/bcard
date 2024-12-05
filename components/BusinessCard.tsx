@@ -31,7 +31,7 @@ export default function BusinessCard({ card }: Props) {
     <main 
       className="relative min-h-screen pb-10"
       style={{
-        backgroundColor: card.bgColor || '#f9fafb',
+        backgroundColor: (card.bgColor || '#f9fafb') as string,
         backgroundImage: card.bgImageUrl ? `url(${card.bgImageUrl})` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -48,7 +48,7 @@ export default function BusinessCard({ card }: Props) {
         {card._id && (
           <Link
             href={`/api/cards/${card._id}/vcard`}
-            className="flex items-center justify-center gap-2 w-full bg-blue-600/90 backdrop-blur-sm hover:bg-blue-700/90 text-white py-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 mb-6"
+            className="flex items-center justify-center gap-2 w-full bg-blue-600/60 backdrop-blur-md hover:bg-blue-700/90 text-white py-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 mb-6"
           >
             <FaUserPlus className="text-xl" />
             <span className="font-semibold">Add to Contacts</span>

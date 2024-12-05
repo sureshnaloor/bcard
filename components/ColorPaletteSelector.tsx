@@ -7,26 +7,54 @@ interface ColorPaletteSelectorProps {
   buttonType?: 'button' | 'submit' | 'reset';
 }
 
+const colors = {
+  backgrounds: [
+    '#e2e8f0', // slate-200
+    '#fecaca', // red-200
+    '#fed7aa', // orange-200
+    '#fef08a', // yellow-200
+    '#d9f99d', // lime-200
+    '#bbf7d0', // green-200
+    '#a5f3fc', // cyan-200
+    '#bae6fd', // sky-200
+    '#bfdbfe', // blue-200
+    '#e9d5ff', // purple-200
+    '#f5d0fe', // fuchsia-200
+    '#fecdd3', // rose-200
+  ],
+  logos: [
+    '#94a3b8', // slate-400
+    '#f87171', // red-400
+    '#fb923c', // orange-400
+    '#facc15', // yellow-400
+    '#a3e635', // lime-400
+    '#4ade80', // green-400
+    '#22d3ee', // cyan-400
+    '#38bdf8', // sky-400
+    '#60a5fa', // blue-400
+    '#c084fc', // purple-400
+    '#e879f9', // fuchsia-400
+    '#fb7185', // rose-400
+  ]
+};
+
 export default function ColorPaletteSelector({ 
   onSelect, 
   type, 
   label,
   buttonType = 'button'
 }: ColorPaletteSelectorProps) {
-  const solidColors = [
-    '#2563eb', '#16a34a', '#dc2626', '#9333ea', 
-    '#ea580c', '#0891b2', '#4f46e5', '#0f172a'
-  ];
+  const solidColors = colors.backgrounds;
 
   const gradients = [
-    ['from-blue-500 to-cyan-500'],
-    ['from-purple-500 to-pink-500'],
-    ['from-cyan-500 to-blue-500'],
-    ['from-emerald-500 to-teal-500'],
-    ['from-rose-500 to-orange-500'],
-    ['from-violet-500 to-purple-500'],
-    ['from-indigo-500 to-blue-500'],
-    ['from-slate-500 to-gray-500'],
+    ['from-blue-200 to-cyan-200'],
+    ['from-purple-200 to-pink-200'],
+    ['from-cyan-200 to-blue-200'],
+    ['from-emerald-200 to-teal-200'],
+    ['from-rose-200 to-orange-200'],
+    ['from-violet-200 to-purple-200'],
+    ['from-indigo-200 to-blue-200'],
+    ['from-slate-200 to-gray-200'],
   ];
 
   const renderSolidColorButton = (color: string) => (

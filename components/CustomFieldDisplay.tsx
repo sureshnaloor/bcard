@@ -202,7 +202,7 @@ export default function CustomFieldDisplay({ field }: CustomFieldDisplayProps) {
         
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center space-x-2 text-purple-600 hover:text-purple-700"
+          className="flex items-center space-x-2 text-stone-800 hover:text-stone-900"
         >
           <IoLocationOutline className="text-xl" />
           <span>View Location</span>
@@ -215,7 +215,7 @@ export default function CustomFieldDisplay({ field }: CustomFieldDisplayProps) {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="flex items-center space-x-2 text-purple-600 hover:text-purple-700"
+        className="flex items-center space-x-2 text-stone-600 hover:text-purple-700"
       >
         <IoPlayCircleOutline className="text-xl" />
         <span>Play Media</span>
@@ -270,17 +270,17 @@ export default function CustomFieldDisplay({ field }: CustomFieldDisplayProps) {
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 
-      rounded-xl shadow-md hover:shadow-lg 
+    <div className="bg-gradient-to-br from-gray-50/50 to-gray-100/60 dark:from-gray-800 dark:to-gray-900 
+      rounded-xl shadow-md hover:shadow-lg py-9
       transition-all duration-300 p-4 relative overflow-hidden
-      border border-gray-200/50 dark:border-gray-700/50">
+      border border-gray-200/50 dark:border-gray-700/70">
       
       {/* Label with gradient background strip - changed colors */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-pink-500" />
+      {/* <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-pink-500" /> */}
       
       {/* Label - updated text color */}
-      <h3 className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 
-        bg-clip-text text-transparent mb-2">
+      <h3 className="text-xl font-black bg-gradient-to-r from-zinc-300 to-zinc-900 
+        bg-clip-text text-transparent tracking-wider mb-2">
         {field.label}
       </h3>
       
