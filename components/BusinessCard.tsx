@@ -31,7 +31,7 @@ export default function BusinessCard({ card }: Props) {
     <main 
       className="relative min-h-screen pb-10"
       style={{
-        backgroundColor: (card.bgColor || '#93785b') as string,
+        backgroundColor: (card.bgColor || '#EBE9E1') as string,
         backgroundImage: card.bgImageUrl ? `url(${card.bgImageUrl})` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
