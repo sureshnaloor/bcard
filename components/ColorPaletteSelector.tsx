@@ -5,6 +5,7 @@ interface ColorPaletteSelectorProps {
   type: 'solid' | 'gradient';
   label?: string;
   buttonType?: 'button' | 'submit' | 'reset';
+  currentColor?: string | string[];
 }
 
 const colors = {
@@ -42,41 +43,21 @@ export default function ColorPaletteSelector({
   onSelect, 
   type, 
   label,
-  buttonType = 'button'
+  buttonType = 'button',
+  currentColor
 }: ColorPaletteSelectorProps) {
-  const solidColors = colors.backgrounds;
+  const colorArray = type === 'solid' ? colors.logos : colors.backgrounds;
 
-  const gradients = [
-    ['from-blue-200 to-cyan-200'],
-    ['from-purple-200 to-pink-200'],
-    ['from-cyan-200 to-blue-200'],
-    ['from-emerald-200 to-teal-200'],
-    ['from-rose-200 to-orange-200'],
-    ['from-violet-200 to-purple-200'],
-    ['from-indigo-200 to-blue-200'],
-    ['from-slate-200 to-gray-200'],
-  ];
-
-  const renderSolidColorButton = (color: string) => (
+  const renderColorButton = (color: string) => (
     <button
       key={color}
       type={buttonType}
       onClick={(e) => onSelect(color, e)}
-      className="w-6 h-6 rounded-full border border-white shadow-sm hover:scale-110 
-        transition-transform duration-200 hover:shadow-md"
+      className={`w-6 h-6 rounded-full border hover:scale-110 
+        transition-transform duration-200 hover:shadow-md
+        ${currentColor === color ? 'border-2 border-blue-500' : 'border-white shadow-sm'}`}
       style={{ backgroundColor: color }}
       aria-label={`Select ${color} color`}
-    />
-  );
-
-  const renderGradientButton = (gradientClasses: string[]) => (
-    <button
-      key={gradientClasses[0]}
-      type={buttonType}
-      onClick={(e) => onSelect(gradientClasses, e)}
-      className={`w-6 h-6 rounded-full border border-white shadow-sm hover:scale-110 
-        transition-transform duration-200 hover:shadow-md bg-gradient-to-r ${gradientClasses[0]}`}
-      aria-label={`Select gradient ${gradientClasses[0]}`}
     />
   );
 
@@ -86,10 +67,7 @@ export default function ColorPaletteSelector({
         {label}
       </label>
       <div className="flex gap-2 flex-wrap">
-        {type === 'solid' 
-          ? solidColors.map(renderSolidColorButton)
-          : gradients.map(renderGradientButton)
-        }
+        {colorArray.map(renderColorButton)}
       </div>
     </div>
   );

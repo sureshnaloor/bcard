@@ -435,9 +435,10 @@ export default function CreateCard() {
 
               <div className="mt-4">
                 <ColorPaletteSelector
-                  onSelect={(colors: string | string[]) => handleColorSelect(colors, 'bg')}
-                  type="gradient"
-                  label="Or choose a background style"
+                  onSelect={(colors) => handleColorSelect(colors, 'bg')}
+                  type="solid"
+                  label="Or choose a background color"
+                  currentColor={formData.bgColor}
                 />
               </div>
             </div>
