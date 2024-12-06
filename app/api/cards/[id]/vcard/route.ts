@@ -21,7 +21,7 @@ export async function GET(
     // Set proper headers for vCard download
     const headers = new Headers();
     headers.set('Content-Type', 'text/vcard');
-    headers.set('Content-Disposition', `attachment; filename="${card.vCardFileName || 'contact.vcf'}"`);
+    headers.set('Content-Disposition', `inline; filename="${card.vCardFileName || 'contact.vcf'}"`);
 
     return new Response(card.vCardContent, {
       headers,
