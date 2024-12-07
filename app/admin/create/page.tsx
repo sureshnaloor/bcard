@@ -7,9 +7,10 @@ import FileUploadField from '@/components/FileUploadField';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { IoAddCircleOutline, IoCloseCircleOutline } from 'react-icons/io5';
 import ColorPaletteSelector from '@/components/ColorPaletteSelector';
+import RichTextEditor from '@/components/RichTextEditor';
 
 // Define field types
-type FieldType = 'text' | 'date' | 'location' | 'document' | 'media';
+type FieldType = 'text' | 'date' | 'location' | 'document' | 'media' | 'richtext';
 
 interface CustomField {
   label: string;
@@ -41,6 +42,8 @@ export default function CreateCard() {
   const markerRefs = useRef<{ [key: number]: google.maps.Marker | null }>({});
   const [logoColor, setLogoColor] = useState<string>('');
   const [bgColor, setBgColor] = useState<string | string[]>('');
+  const [showRichTextEditor, setShowRichTextEditor] = useState(false);
+  const [activeFieldIndex, setActiveFieldIndex] = useState<number | null>(null);
 
   const existingLogos = [
     '/logos/babulogo.png',
@@ -211,13 +214,30 @@ export default function CreateCard() {
 
   // Render input based on field type
   const renderFieldInput = (field: CustomField, index: number) => {
-    const baseClassName = "mt-1 block w-full rounded-md border-blue-200 dark:border-blue-600 \
-      bg-white dark:bg-gray-700 \
-      text-gray-900 dark:text-white \
-      shadow-sm focus:border-blue-500 focus:ring-blue-500 \
-      py-2 px-4";
+    const baseClassName = "w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700";
 
     switch (field.type) {
+      case 'richtext':
+        return (
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveFieldIndex(index);
+                setShowRichTextEditor(true);
+              }}
+              className={baseClassName}
+            >
+              {field.value ? 'Edit Rich Text' : 'Add Rich Text'}
+            </button>
+            {field.value && (
+              <div 
+                className="prose dark:prose-invert max-w-none p-3 bg-gray-50 dark:bg-gray-800 rounded-md"
+                dangerouslySetInnerHTML={{ __html: field.value }}
+              />
+            )}
+          </div>
+        );
       case 'date':
         return (
           <input
@@ -500,8 +520,11 @@ export default function CreateCard() {
                       value={field.type}
                       onChange={(e) => {
                         const newFields = [...customFields];
-                        newFields[index].type = e.target.value as FieldType;
-                        newFields[index].value = ''; // Reset value when type changes
+                        newFields[index] = {
+                          ...newFields[index],
+                          type: e.target.value as CustomField['type'],
+                          value: ''
+                        };
                         setCustomFields(newFields);
                       }}
                       className={inputClassName}
@@ -511,6 +534,7 @@ export default function CreateCard() {
                       <option value="location">Location</option>
                       <option value="document">Document</option>
                       <option value="media">Media</option>
+                      <option value="richtext">Rich Text</option>
                     </select>
                   </div>
 
@@ -545,6 +569,21 @@ export default function CreateCard() {
           </button>
         </div>
       </form>
+      
+      {showRichTextEditor && activeFieldIndex !== null && (
+        <RichTextEditor
+          content={customFields[activeFieldIndex].value}
+          onChange={(html) => {
+            const newFields = [...customFields];
+            newFields[activeFieldIndex].value = html;
+            setCustomFields(newFields);
+          }}
+          onClose={() => {
+            setShowRichTextEditor(false);
+            setActiveFieldIndex(null);
+          }}
+        />
+      )}
     </div>
   );
 } 

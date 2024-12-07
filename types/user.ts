@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 interface CustomField {
   label: string;
   value: string;
-  type: 'text' | 'date' | 'location' | 'document' | 'media';
+  type: 'text' | 'date' | 'location' | 'document' | 'media' | 'richtext';
 }
 
 export interface BusinessCard {

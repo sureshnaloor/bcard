@@ -6,11 +6,12 @@ import { IoAddCircleOutline, IoCloseCircleOutline } from 'react-icons/io5';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import FileUploadField from '@/components/FileUploadField';
 import ColorPaletteSelector from '@/components/ColorPaletteSelector';
+import RichTextEditor from '@/components/RichTextEditor';
 
 interface CustomField {
   label: string;
   value: string;
-  type: 'text' | 'date' | 'location' | 'document' | 'media';
+  type: 'text' | 'date' | 'location' | 'document' | 'media' | 'richtext';
 }
 
 export default function EditCard({ params }: { params: { userid: string } }) {
@@ -38,6 +39,8 @@ export default function EditCard({ params }: { params: { userid: string } }) {
   });
   const [logoColor, setLogoColor] = useState<string>('');
   const [bgColor, setBgColor] = useState<string | string[]>('');
+  const [showRichTextEditor, setShowRichTextEditor] = useState(false);
+  const [activeFieldIndex, setActiveFieldIndex] = useState<number | null>(null);
 
   const existingLogos = [
     '/logos/babulogo.png',
@@ -53,6 +56,8 @@ export default function EditCard({ params }: { params: { userid: string } }) {
   const existingVCards = [
     '/vcards/sureshnaloor.vcf',
   ];
+
+  const baseClassName = "w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700";
 
   useEffect(() => {
     const fetchCard = async () => {
@@ -149,9 +154,28 @@ export default function EditCard({ params }: { params: { userid: string } }) {
   };
 
   const renderFieldInput = (field: CustomField, index: number) => {
-    const baseClassName = "w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700";
-
     switch (field.type) {
+      case 'richtext':
+        return (
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveFieldIndex(index);
+                setShowRichTextEditor(true);
+              }}
+              className={baseClassName}
+            >
+              {field.value ? 'Edit Rich Text' : 'Add Rich Text'}
+            </button>
+            {field.value && (
+              <div 
+                className="prose dark:prose-invert max-w-none p-3 bg-gray-50 dark:bg-gray-800 rounded-md"
+                dangerouslySetInnerHTML={{ __html: field.value }}
+              />
+            )}
+          </div>
+        );
       case 'date':
         return (
           <input
@@ -203,8 +227,8 @@ export default function EditCard({ params }: { params: { userid: string } }) {
       setLogoColor(color as string);
       setFormData(prev => ({ ...prev, logoUrl: '', logoColor: color as string }));
     } else {
-      setBgColor(color as string);
-      setFormData(prev => ({ ...prev, bgImageUrl: '', bgColor: color as string }));
+      setBgColor(color);
+      setFormData(prev => ({ ...prev, bgImageUrl: '', bgColor: color }));
     }
   };
 
@@ -357,8 +381,8 @@ export default function EditCard({ params }: { params: { userid: string } }) {
               <div className="mt-4">
                 <ColorPaletteSelector
                   onSelect={(colors) => handleColorSelect(colors, 'bg')}
-                  type="solid"
-                  label="Or choose a background color"
+                  type="gradient"
+                  label="Or choose a background style"
                   currentColor={formData.bgColor}
                 />
               </div>
@@ -408,7 +432,7 @@ export default function EditCard({ params }: { params: { userid: string } }) {
                   placeholder="Label"
                   value={field.label}
                   onChange={(e) => handleCustomFieldChange(index, 'label', e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
+                  className={baseClassName}
                 />
               </div>
               
@@ -420,17 +444,18 @@ export default function EditCard({ params }: { params: { userid: string } }) {
                     newFields[index] = {
                       ...newFields[index],
                       type: e.target.value as CustomField['type'],
-                      value: '' // Reset value when type changes
+                      value: ''
                     };
                     setCustomFields(newFields);
                   }}
-                  className="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
+                  className={baseClassName}
                 >
                   <option value="text">Text</option>
                   <option value="date">Date</option>
                   <option value="location">Location</option>
                   <option value="document">Document</option>
                   <option value="media">Media</option>
+                  <option value="richtext">Rich Text</option>
                 </select>
               </div>
 
@@ -466,6 +491,21 @@ export default function EditCard({ params }: { params: { userid: string } }) {
         </div>
       </form>
     </div>
+    
+    {showRichTextEditor && activeFieldIndex !== null && (
+      <RichTextEditor
+        content={customFields[activeFieldIndex].value}
+        onChange={(html) => {
+          const newFields = [...customFields];
+          newFields[activeFieldIndex].value = html;
+          setCustomFields(newFields);
+        }}
+        onClose={() => {
+          setShowRichTextEditor(false);
+          setActiveFieldIndex(null);
+        }}
+      />
+    )}
     </>
   );
 }
