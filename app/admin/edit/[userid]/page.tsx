@@ -14,6 +14,24 @@ interface CustomField {
   type: 'text' | 'date' | 'location' | 'document' | 'media' | 'richtext';
 }
 
+// Define the interface for form data
+interface FormData {
+  userId: string;
+  name: string;
+  title: string;
+  company: string;
+  description: string;
+  linkedin: string;
+  linktree: string;
+  website: string;
+  logoUrl: string;
+  bgImageUrl: string;
+  vCardFileName: string;
+  vCardContent: string;
+  logoColor: string;
+  bgColor: string;
+}
+
 export default function EditCard({ params }: { params: { userid: string } }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -21,7 +39,7 @@ export default function EditCard({ params }: { params: { userid: string } }) {
   const [customFields, setCustomFields] = useState<CustomField[]>([
     { label: '', value: '', type: 'text' }
   ]);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     userId: '',
     name: '',
     title: '',
@@ -105,7 +123,7 @@ export default function EditCard({ params }: { params: { userid: string } }) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev: FormData) => ({
       ...prev,
       [name]: value
     }));
@@ -228,7 +246,7 @@ export default function EditCard({ params }: { params: { userid: string } }) {
       setFormData(prev => ({ ...prev, logoUrl: '', logoColor: color as string }));
     } else {
       setBgColor(color);
-      setFormData(prev => ({ ...prev, bgImageUrl: '', bgColor: color }));
+      setFormData(prev => ({ ...prev, bgImageUrl: '', bgColor: color as string }));
     }
   };
 
