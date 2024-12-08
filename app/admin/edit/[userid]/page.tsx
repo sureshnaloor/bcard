@@ -274,11 +274,12 @@ export default function EditCard({ params }: { params: { userid: string } }) {
 
   return (
     <>
+    
+    <div className="bg-gray-50 min-w-full dark:bg-gray-900 text-stone-800/80 dark:text-gray-100 max-w-4xl mx-auto p-6">
+    <div className = "flex bg-gray-50 dark:bg-gray-900 justify-between items-center ml-3 mb-6" > 
     <ThemeSwitcher />
-    <div className="max-w-4xl mx-auto p-6">
-      
-      <h1 className="text-2xl font-bold mb-6">Edit Business Card</h1>
-      
+      <h1 className="text-xl font-bold mb-6">Edit Business Card</h1>
+      </div>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>

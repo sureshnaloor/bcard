@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FiPlus, FiEdit2, FiTrash2 } from 'react-icons/fi';
-
+import { FiPlus, FiEdit2, FiTrash2, FiEye } from 'react-icons/fi';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 interface BusinessCard {
   _id: string;
   userId: string;
@@ -65,9 +65,10 @@ export default function Dashboard() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Business Cards Dashboard</h1>
+        <ThemeSwitcher />
+        <h1 className="text-xl font-bold">Business Cards Dashboard</h1>
         <Link 
           href="/admin/create" 
           className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
@@ -89,11 +90,12 @@ export default function Dashboard() {
               className="bg-white p-6 rounded-lg shadow-sm border flex justify-between items-center"
             >
               <div>
-                <h2 className="text-xl font-semibold">{card.name}</h2>
+                <h2 className="text-xl text-stone-800 font-semibold">{card.name}</h2>
                 <p className="text-gray-600">{card.company}</p>
                 <p className="text-sm text-gray-400">
                   Created: {new Date(card.createdAt).toLocaleDateString()}
                 </p>
+                <p className="text-sm text-teal-800"  > short urlID: {card.userId}</p>
               </div>
               
               <div className="flex gap-3">
@@ -103,6 +105,14 @@ export default function Dashboard() {
                 >
                   <FiEdit2 className="w-4 h-4" />
                   Edit
+                </Link>
+
+                <Link
+                  href={`/card/${card.userId}`}
+                  className="flex items-center gap-1 px-3 py-2 text-blue-500 hover:bg-blue-50 rounded-md transition-colors"
+                >
+                  <FiEye className="w-4 h-4" />
+                  View
                 </Link>
                 <button
                   onClick={() => handleDelete(card.userId)}
