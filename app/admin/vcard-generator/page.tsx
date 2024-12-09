@@ -169,14 +169,15 @@ export default function VCardGenerator() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium italic text-gray-800/80 dark:text-gray-200/80 mb-1">
-                  First Name
+                  First Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-white"
+                  required
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-white invalid:border-red-500 focus:invalid:ring-red-500 focus:invalid:border-red-500"
                 />
               </div>
               <div>
@@ -193,14 +194,15 @@ export default function VCardGenerator() {
               </div>
               <div>
                 <label className="block text-sm font-medium italic text-gray-800/80 dark:text-gray-200/80 mb-1">
-                  Last Name
+                  Last Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-white"
+                  required
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-white invalid:border-red-500 focus:invalid:ring-red-500 focus:invalid:border-red-500"
                 />
               </div>
             </div>
@@ -208,14 +210,16 @@ export default function VCardGenerator() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium italic text-gray-800/80 dark:text-gray-200/80 mb-1">
-                  Email
+                  Email <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-white"
+                  required
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-white invalid:border-red-500 focus:invalid:ring-red-500 focus:invalid:border-red-500"
                 />
               </div>
               <div>
@@ -232,14 +236,16 @@ export default function VCardGenerator() {
               </div>
               <div>
                 <label className="block text-sm font-medium italic text-gray-800/80 dark:text-gray-200/80 mb-1">
-                  Mobile Phone
+                  Mobile Phone <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="tel"
                   name="mobilePhone"
                   value={formData.mobilePhone}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-white"
+                  required
+                  pattern="[0-9+\-\s()]+"
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-white invalid:border-red-500 focus:invalid:ring-red-500 focus:invalid:border-red-500"
                 />
               </div>
             </div>
@@ -357,26 +363,28 @@ export default function VCardGenerator() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium italic text-gray-800/80 dark:text-gray-200/80 mb-1">
-                  Organization
+                  Organization <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   name="organization"
                   value={formData.organization}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-white"
+                  required
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-white invalid:border-red-500 focus:invalid:ring-red-500 focus:invalid:border-red-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium italic text-gray-800/80 dark:text-gray-200/80 mb-1">
-                  Title
+                  Title <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-white"
+                  required
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-white invalid:border-red-500 focus:invalid:ring-red-500 focus:invalid:border-red-500"
                 />
               </div>
             </div>
@@ -592,7 +600,14 @@ export default function VCardGenerator() {
           {/* Generate Button */}
           <div className="flex justify-end">
             <button
-              onClick={generateVCard}
+              onClick={(e) => {
+                const form = e.currentTarget.closest('form');
+                if (form && form.checkValidity()) {
+                  generateVCard();
+                } else {
+                  form?.reportValidity();
+                }
+              }}
               className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
             >
               <IoDownloadOutline className="w-5 h-5" />

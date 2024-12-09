@@ -1,116 +1,163 @@
-import Image from "next/image";
 import Link from "next/link";
-import { FaUserPlus, FaLinkedin, FaLink, FaGlobe } from "react-icons/fa";
-import ThemeSwitcher from '@/components/ThemeSwitcher'
+import { FaArrowRight, FaRegQuestionCircle, FaTachometerAlt, FaIdCard } from "react-icons/fa";
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen pb-20">
-      {/* Background Image */}
-      <div className="fixed top-4 right-4 z-50">
-        <ThemeSwitcher />
-      </div>
-      <div className="absolute inset-0 -z-10">
-        <Image
-          src="/pictures/businesscardbg.jpg"  // Make sure this image is in your public folder
-          alt="Background"
-          fill
-          className="object-cover opacity-40 brightness-80"
-          priority
-        />
-      </div>
+    <div className="min-h-screen flex flex-col">
+      {/* Header/Nav */}
+      <header className="bg-white dark:bg-gray-800 shadow-sm">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center">
+            <h1 className="text-xl font-bold">
+              <span className="text-red-500">Digi</span><span className="text-cyan-500">Busi</span><span className="text-zinc-800 dark:text-white font-semibold"> CardMaker</span>
+            </h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/admin/dashboard" 
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+            >
+              <FaTachometerAlt className="w-4 h-4" />
+              Dashboard
+            </Link>
+            <Link 
+              href="/about" 
+              className="font-medium tracking-wide text-cyan-600 dark:text-cyan-400 hover:text-cyan-800 dark:hover:text-cyan-300 transition-all duration-200 ease-in-out relative group"
+            >
+              About Us
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-500 group-hover:w-full transition-all duration-200 ease-in-out"></span>
+            </Link>
+            <Link 
+              href="/pricing" 
+              className="font-medium tracking-wide text-cyan-600 dark:text-cyan-400 hover:text-cyan-800 dark:hover:text-cyan-300 transition-all duration-200 ease-in-out relative group"
+            >
+              Pricing
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-500 group-hover:w-full transition-all duration-200 ease-in-out"></span>
+            </Link>
+            <Link 
+              href="/contact" 
+              className="font-medium tracking-wide text-cyan-600 dark:text-cyan-400 hover:text-cyan-800 dark:hover:text-cyan-300 transition-all duration-200 ease-in-out relative group"
+            >
+              Contact Us
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-500 group-hover:w-full transition-all duration-200 ease-in-out"></span>
+            </Link>
+            <ThemeSwitcher />
+          </div>
+        </nav>
+      </header>
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 flex items-center justify-center min-h-screen">
-        {/* Card Container */}
-        <div className="relative w-full max-w-3xl mt-20 bg-white rounded-xl shadow-2xl p-8">
-          {/* Overlapping Logo */}
-          <div className="absolute -top-20 left-1/2 -translate-x-1/2">
-            <div className="relative w-40 h-40 rounded-full border-8 border-white shadow-xl overflow-hidden">
-              <Image
-                src="/pictures/logo.jpg"
-                alt="JAL Logo"
-                fill
-                className="object-cover"
-                priority
-              />
+      <main className="flex-grow">
+        {/* Hero Section */}
+        <section className="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
+                Create Your Digital Business Card
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+                Generate professional vCards in seconds. Share your contact information seamlessly.
+              </p>
+              <Link
+                href="/admin/vcard-generator"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Create Now
+                <FaArrowRight />
+              </Link>
             </div>
           </div>
+        </section>
 
-          {/* Card Content */}
-          <div className="mt-24 text-center">
-            <h1 className="text-2xl font-extrabold text-gray-800 tracking-tight">
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-900 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
-                JAL INTERNATIONAL CO LTD
-              </span>
-            </h1>
-            
-            {/* Divider */}
-            <div className="my-6 border-t border-gray-200"></div>
-            
-            <h2 className="text-3xl font-bold text-gray-800 tracking-tight">
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-gray-700 to-gray-900 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
-                Suresh Naloor
-              </span>
-            </h2>
-            <p className="text-2xl text-gray-600 mt-2 italic font-semibold">
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-zinc-500 to-zinc-800 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
-                Head, Materials Management
-              </span>
-            </p>
-            
-            {/* Divider */}
-            <div className="my-6 border-t border-gray-200"></div>
-            
-            {/* Job Description */}
-            <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto">
-            JAL International Co Ltd specializes in executing EPC projects in Power, Industrial, Oil & Gas verticals.We are specialized in building strategic partnerships and driving business growth across global markets. 
-            </p>
+        {/* Features Section */}
+        <section className="py-16 bg-gradient-to-b from-blue-50 via-blue-50/50 to-white dark:bg-none dark:bg-gray-800">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h3 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-12">
+              Key Features
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                {
+                  title: "Easy to Use",
+                  description: "Simple form-based interface to create vCards quickly"
+                },
+                {
+                  title: "Professional Format",
+                  description: "Generate standard VCF files compatible with all devices"
+                },
+                {
+                  title: "Custom Fields",
+                  description: "Add additional information with custom fields support"
+                }
+              ].map((feature, index) => (
+                <div 
+                  key={index}
+                  className="p-6 bg-white/80 backdrop-blur-sm dark:bg-gray-800 rounded-lg shadow-sm"
+                >
+                  <h4 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+                    {feature.title}
+                  </h4>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {feature.description}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-16 bg-gray-50 dark:bg-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h3 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-12">
+              Frequently Asked Questions
+            </h3>
+            <div className="max-w-3xl mx-auto space-y-6">
+              {[
+                {
+                  q: "What is a vCard?",
+                  a: "A vCard is a digital business card that can be shared electronically and imported into contact management systems."
+                },
+                {
+                  q: "How do I use the generated vCard?",
+                  a: "Simply download the .vcf file and share it via email or messaging. Recipients can click to add it to their contacts."
+                },
+                {
+                  q: "Can I include my photo?",
+                  a: "Yes, you can upload a profile photo and company logo to be included in your vCard."
+                }
+              ].map((faq, index) => (
+                <div 
+                  key={index}
+                  className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm"
+                >
+                  <div className="flex items-start gap-3">
+                    <FaRegQuestionCircle className="text-blue-600 text-xl flex-shrink-0 mt-1" />
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+                        {faq.q}
+                      </h4>
+                      <p className="text-gray-600 dark:text-gray-300">
+                        {faq.a}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white dark:bg-gray-800 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-gray-600 dark:text-gray-300">
+            © {new Date().getFullYear()} <span className="text-red-500">Digi</span><span className="text-cyan-500">Busi</span> CardMaker. Crafted by <span className="italic text-cyan-500">ExBeyond Inc</span>. All rights reserved.
+          </p>
         </div>
-      </div>
-
-      {/* Contact Actions Section */}
-      <div className="container mx-auto px-4 max-w-3xl space-y-6 mt-8">
-        {/* Add to Contact Button */}
-        <Link 
-          href="/vcards/sureshnaloor.vcf" 
-          className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
-        >
-          <FaUserPlus className="text-xl" />
-          <span className="font-semibold">Add to Contacts</span>
-        </Link>
-
-        {/* Social Links Grid */}
-        <div className="grid grid-cols-3 gap-4">
-          <Link 
-            href="https://linkedin.com/in/engineeringlead" 
-            target="_blank"
-            className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-          >
-            <FaLinkedin className="text-2xl text-[#0077b5]" />
-            <span className="text-sm font-medium text-gray-600">LinkedIn</span>
-          </Link>
-
-          <Link 
-            href="https://linktr.ee/sureshnaloor" 
-            target="_blank"
-            className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-          >
-            <FaLink className="text-2xl text-green-600" />
-            <span className="text-sm font-medium text-gray-600">LinkTree</span>
-          </Link>
-
-          <Link 
-            href="https://jalint.com.sa" 
-            target="_blank"
-            className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-          >
-            <FaGlobe className="text-2xl text-blue-600" />
-            <span className="text-sm font-medium text-gray-600">Website</span>
-          </Link>
-        </div>
-      </div>
-    </main>
+      </footer>
+    </div>
   );
 }
