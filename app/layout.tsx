@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Playfair_Display } from 'next/font/google';
 import Script from 'next/script';
+import Providers from '@/components/Providers';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -47,7 +48,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <Providers>
+            {children}
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

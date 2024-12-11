@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FaArrowRight, FaRegQuestionCircle, FaTachometerAlt, FaIdCard } from "react-icons/fa";
 import ThemeSwitcher from '@/components/ThemeSwitcher';
+import AuthButtons from '@/components/AuthButtons';
 
 export default function Home() {
   return (
@@ -42,6 +43,7 @@ export default function Home() {
               Contact Us
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-500 group-hover:w-full transition-all duration-200 ease-in-out"></span>
             </Link>
+            <AuthButtons />
             <ThemeSwitcher />
           </div>
         </nav>
