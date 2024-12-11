@@ -34,6 +34,7 @@ const handler = NextAuth({
   adapter: MongoDBAdapter(clientPromise),
   pages: {
     signIn: '/auth/signin',  // Path to our custom sign-in page
+    error: '/auth/signin', // Error code passed in query string as ?error=
   },
   session: {
     strategy: "jwt",
@@ -54,6 +55,7 @@ const handler = NextAuth({
       return session;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
 });
 
 export { handler as GET, handler as POST }; 
