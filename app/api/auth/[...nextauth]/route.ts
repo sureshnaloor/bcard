@@ -11,6 +11,9 @@ const handler = NextAuth({
     }),
   ],
   adapter: MongoDBAdapter(clientPromise),
+  pages: {
+    signIn: '/auth/signin',  // Path to our custom sign-in page
+  },
   session: {
     strategy: "jwt",
     maxAge: 24 * 60 * 60, // 24 hours
