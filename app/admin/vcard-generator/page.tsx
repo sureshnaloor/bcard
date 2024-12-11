@@ -77,45 +77,67 @@ export default function VCardGenerator() {
   };
 
   const generateVCard = () => {
-    const vCard = [
-      'BEGIN:VCARD',
-      'VERSION:3.0',
-      `N:${formData.lastName};${formData.firstName};${formData.middleName};;`,
-      `FN:${[formData.firstName, formData.middleName, formData.lastName].filter(Boolean).join(' ')}`,
-      `ORG:${formData.organization}`,
-      `TITLE:${formData.title}`,
-      `EMAIL:${formData.email}`,
-      ...(formData.workPhone ? [`TEL;TYPE=WORK:${formData.workPhone}`] : []),
-      ...(formData.homePhone ? [`TEL;TYPE=HOME:${formData.homePhone}`] : []),
-      ...(formData.mobilePhone ? [`TEL;TYPE=CELL:${formData.mobilePhone}`] : []),
-      ...(formData.fax ? [`TEL;TYPE=FAX:${formData.fax}`] : []),
-      ...(formData.pager ? [`TEL;TYPE=PAGER:${formData.pager}`] : []),
-      `ADR:;;${formData.address};${formData.city};${formData.state};${formData.zipCode};${formData.country}`,
-      `URL:${formData.website}`,
-      `NOTE:${formData.notes}`,
-      ...(formData.department ? [`ORG:${formData.department}`] : []),
-      ...(formData.secretary ? [`ROLE:${formData.secretary}`] : []),
-      ...(formData.photo ? [`PHOTO;ENCODING=BASE64;TYPE=JPEG:${formData.photo}`] : []),
-      ...(formData.logo ? [`LOGO;ENCODING=BASE64;TYPE=JPEG:${formData.logo}`] : []),
-      ...(formData.linkedin ? [`X-SOCIALPROFILE;TYPE=linkedin:${formData.linkedin}`] : []),
-      ...(formData.twitter ? [`X-SOCIALPROFILE;TYPE=twitter:${formData.twitter}`] : []),
-      ...(formData.facebook ? [`X-SOCIALPROFILE;TYPE=facebook:${formData.facebook}`] : []),
-      ...(formData.instagram ? [`X-SOCIALPROFILE;TYPE=instagram:${formData.instagram}`] : []),
-      ...(formData.youtube ? [`X-SOCIALPROFILE;TYPE=youtube:${formData.youtube}`] : []),
-      ...(formData.github ? [`X-SOCIALPROFILE;TYPE=github:${formData.github}`] : []),
-      ...(formData.customFields ? [`${formData.customFields}`] : []),
-      'END:VCARD'
-    ].join('\n');
+    console.log('Generating vCard...', formData); // Debug log
+    
+    // Check required fields first
+    if (!formData.firstName || !formData.lastName || !formData.email || 
+        !formData.mobilePhone || !formData.organization || !formData.title) {
+      alert('Please fill in all required fields marked with *');
+      return;
+    }
 
-    const blob = new Blob([vCard], { type: 'text/vcard' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `${formData.firstName}_${formData.lastName}.vcf`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    try {
+      const vCard = [
+        'BEGIN:VCARD',
+        'VERSION:3.0',
+        `N:${formData.lastName};${formData.firstName};${formData.middleName};;`,
+        `FN:${[formData.firstName, formData.middleName, formData.lastName].filter(Boolean).join(' ')}`,
+        `ORG:${formData.organization}`,
+        `TITLE:${formData.title}`,
+        `EMAIL:${formData.email}`,
+        ...(formData.workPhone ? [`TEL;TYPE=WORK:${formData.workPhone}`] : []),
+        ...(formData.homePhone ? [`TEL;TYPE=HOME:${formData.homePhone}`] : []),
+        ...(formData.mobilePhone ? [`TEL;TYPE=CELL:${formData.mobilePhone}`] : []),
+        ...(formData.fax ? [`TEL;TYPE=FAX:${formData.fax}`] : []),
+        ...(formData.pager ? [`TEL;TYPE=PAGER:${formData.pager}`] : []),
+        `ADR:;;${formData.address};${formData.city};${formData.state};${formData.zipCode};${formData.country}`,
+        ...(formData.website ? [`URL:${formData.website}`] : []),
+        ...(formData.notes ? [`NOTE:${formData.notes}`] : []),
+        ...(formData.department ? [`ORG:${formData.department}`] : []),
+        ...(formData.secretary ? [`ROLE:${formData.secretary}`] : []),
+        ...(formData.photo ? [`PHOTO;ENCODING=BASE64;TYPE=JPEG:${formData.photo}`] : []),
+        ...(formData.logo ? [`LOGO;ENCODING=BASE64;TYPE=JPEG:${formData.logo}`] : []),
+        ...(formData.linkedin ? [`X-SOCIALPROFILE;TYPE=linkedin:${formData.linkedin}`] : []),
+        ...(formData.twitter ? [`X-SOCIALPROFILE;TYPE=twitter:${formData.twitter}`] : []),
+        ...(formData.facebook ? [`X-SOCIALPROFILE;TYPE=facebook:${formData.facebook}`] : []),
+        ...(formData.instagram ? [`X-SOCIALPROFILE;TYPE=instagram:${formData.instagram}`] : []),
+        ...(formData.youtube ? [`X-SOCIALPROFILE;TYPE=youtube:${formData.youtube}`] : []),
+        ...(formData.github ? [`X-SOCIALPROFILE;TYPE=github:${formData.github}`] : []),
+        ...(formData.customFields ? formData.customFields.split('\n').map(field => field.trim()) : []),
+        'END:VCARD'
+      ].join('\r\n'); // Use \r\n for better compatibility
+
+      // Create blob and trigger download
+      const blob = new Blob([vCard], { type: 'text/vcard;charset=utf-8' });
+      const url = window.URL.createObjectURL(blob);
+      const downloadLink = document.createElement('a');
+      const fileName = `${formData.firstName}_${formData.lastName}.vcf`;
+
+      downloadLink.href = url;
+      downloadLink.download = fileName;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(downloadLink);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+
+    } catch (error) {
+      console.error('Error generating vCard:', error);
+      alert('Error generating vCard. Please try again.');
+    }
   };
 
   const convertToBase64 = (file: File): Promise<string> => {
@@ -601,13 +623,10 @@ export default function VCardGenerator() {
           <div className="flex justify-end">
             <button
               onClick={(e) => {
-                const form = e.currentTarget.closest('form');
-                if (form && form.checkValidity()) {
-                  generateVCard();
-                } else {
-                  form?.reportValidity();
-                }
+                e.preventDefault(); // Prevent form submission
+                generateVCard();
               }}
+              type="button" // Explicitly set type to button
               className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
             >
               <IoDownloadOutline className="w-5 h-5" />
