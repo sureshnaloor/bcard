@@ -1,36 +1,31 @@
 'use client';
 
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
+import Link from 'next/link';
+import { FaUserCircle } from 'react-icons/fa';
 
 export default function AuthButtons() {
-  const { data: session, status } = useSession();
-
-  if (status === 'loading') {
-    return <div>Loading...</div>;
-  }
+  const { data: session } = useSession();
 
   if (session) {
     return (
-      <div className="flex items-center gap-4">
-        <span className="text-gray-600 dark:text-gray-300">
-          {session.user?.email}
-        </span>
-        <button
-          onClick={() => signOut()}
-          className="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
-        >
-          Sign Out
-        </button>
-      </div>
+      <button
+        onClick={() => signOut()}
+        className="flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+      >
+        <FaUserCircle className="w-4 h-4" />
+        Sign Out
+      </button>
     );
   }
 
   return (
-    <button
-      onClick={() => signIn('google')}
-      className="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+    <Link
+      href="/auth/signin"
+      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
     >
-      Sign In with Google
-    </button>
+      <FaUserCircle className="w-4 h-4" />
+      Sign In
+    </Link>
   );
 } 
