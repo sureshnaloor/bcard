@@ -6,6 +6,11 @@ import { BusinessCard as BusinessCardType } from '@/types/user';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { FaHome, FaExclamationCircle } from 'react-icons/fa';
+import AddToHomeButton from '@/components/AddToHomeButton'
+
+export const metadata = {
+  manifest: '/api/manifest/[id]', // Dynamic manifest
+}
 
 export default async function CardPage({ params }: { params: { id: string } }) {
   const fullId = await findFullId(params.id);
@@ -67,7 +72,12 @@ export default async function CardPage({ params }: { params: { id: string } }) {
       bgColor: card.bgColor
     };
 
-    return <BusinessCard card={businessCard} />;
+    return (
+      <>
+        <BusinessCard card={businessCard} />
+        <AddToHomeButton name={businessCard.name} />
+      </>
+    );
   } catch (error) {
     console.error(error);
     notFound();
