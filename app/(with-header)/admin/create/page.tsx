@@ -4,10 +4,11 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import FileUploadField from '@/components/FileUploadField';
-import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { IoAddCircleOutline, IoCloseCircleOutline } from 'react-icons/io5';
 import ColorPaletteSelector from '@/components/ColorPaletteSelector';
 import RichTextEditor from '@/components/RichTextEditor';
+import { FaPlus } from 'react-icons/fa';
+import Link from 'next/link';
 
 // Define field types
 type FieldType = 'text' | 'date' | 'location' | 'document' | 'media' | 'richtext';
@@ -336,9 +337,6 @@ export default function CreateCard() {
 
   return (
     <div className="container mx-auto px-4 py-8 bg-teal-50 dark:bg-gray-900 min-h-screen">
-      <div className="fixed top-4 right-4 z-50">
-        <ThemeSwitcher />
-      </div>
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-gray-100">Create Business Card</h1>
         
@@ -463,18 +461,32 @@ export default function CreateCard() {
               </div>
             </div>
 
-            <FileUploadField
-              label="vCard File"
-              value={formData.vCardFileName}
-              onChange={(fileName, content) => setFormData({
-                ...formData, 
-                vCardFileName: fileName,
-                vCardContent: content || ''
-              })}
-              accept=".vcf"
-              previewType="file"
-              uploadOnly={true}
-            />
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">vCard</h3>
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <FileUploadField
+                    label="vCard File"
+                    value={formData.vCardFileName}
+                    onChange={(fileName, content) => setFormData({
+                      ...formData, 
+                      vCardFileName: fileName,
+                      vCardContent: content || ''
+                    })}
+                    accept=".vcf"
+                    previewType="file"
+                    uploadOnly={true}
+                  />
+                </div>
+                <Link
+                  href="/admin/vcard-generator"
+                  className="flex items-center justify-center w-8 h-8 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors"
+                  title="Create new vCard"
+                >
+                  <FaPlus className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-4 mt-8">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FaPlus, FaMobile } from 'react-icons/fa'
+import { FaMobile } from 'react-icons/fa'
 
 export default function AddToHomeButton({ name }: { name: string }) {
   const [showInstructions, setShowInstructions] = useState(false)
@@ -19,17 +19,22 @@ export default function AddToHomeButton({ name }: { name: string }) {
     <>
       <button
         onClick={handleClick}
-        className="fixed bottom-4 right-4 flex items-center gap-1.5 px-3 py-2 bg-cyan-600 text-white text-sm rounded-lg shadow-lg hover:bg-cyan-700 transition-colors z-20"
+        className="fixed bottom-4 right-4 flex items-center gap-1.5 px-3 py-2 
+          text-xs font-medium text-white
+          bg-gradient-to-r from-teal-400 to-cyan-400 
+          hover:from-teal-500 hover:to-cyan-500
+          rounded-lg shadow-lg transition-all duration-200 
+          backdrop-blur-sm bg-opacity-90
+          z-20"
       >
-        <FaMobile className="w-4 h-4" />
-        <FaPlus className="w-2.5 h-2.5" />
-        <span>Add to Home</span>
+        <FaMobile className="w-3.5 h-3.5" />
+        <span>Save to Mobile</span>
       </button>
 
       {showInstructions && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-sm w-full relative">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Add {name}'s Card to Home Screen
             </h3>
             {isIOS() ? (

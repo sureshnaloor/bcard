@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FiPlus, FiEdit2, FiTrash2, FiEye } from 'react-icons/fi';
-import ThemeSwitcher from '@/components/ThemeSwitcher';
+
 interface BusinessCard {
   _id: string;
   userId: string;
@@ -67,7 +67,6 @@ export default function Dashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <div className="flex justify-between items-center mb-8">
-        <ThemeSwitcher />
         <h1 className="text-xl font-bold">Business Cards Dashboard</h1>
         <Link 
           href="/admin/create" 
