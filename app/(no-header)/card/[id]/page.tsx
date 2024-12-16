@@ -8,6 +8,23 @@ import Link from 'next/link';
 import { FaHome, FaExclamationCircle } from 'react-icons/fa';
 import AddToHomeButton from '@/components/AddToHomeButton'
 
+// Generate static paths for all cards
+export async function generateStaticParams() {
+  const client = await clientPromise;
+  const db = client.db("businessCards");
+  
+  const cards = await db.collection("cards")
+    .find({}, { projection: { userId: 1 } })
+    .toArray();
+
+  return cards.map((card) => ({
+    id: card.userId,
+  }));
+}
+
+// Add revalidation period
+export const revalidate = 3600; // Revalidate every hour
+
 export const metadata = {
   manifest: '/api/manifest/[id]', // Dynamic manifest
 }
