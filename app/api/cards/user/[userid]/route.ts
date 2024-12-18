@@ -24,7 +24,7 @@ export async function PUT(
     }
 
     const isAdmin = session.user.email === process.env.ADMIN_EMAIL;
-    const isCreator = card.creatorEmail === session.user.email;
+    const isCreator = card.email === session.user.email;
 
     if (!isAdmin && !isCreator) {
       return NextResponse.json({ error: "Unauthorized to edit this card" }, { status: 403 });

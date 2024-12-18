@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { Playfair_Display } from 'next/font/google';
 import Script from 'next/script';
 import Providers from '@/components/Providers';
+import { Toaster } from 'react-hot-toast';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -52,6 +53,7 @@ export default function RootLayout({
             {children}
           </Providers>
         </ThemeProvider>
+        <Toaster position="top-right" />
       </body>
     </html>
   );

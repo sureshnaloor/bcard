@@ -29,10 +29,10 @@ export async function POST(request: Request) {
 
     const data = await request.json();
     
-    // Add creator information
+    // Changed creatorEmail to email
     const cardData = {
       ...data,
-      creatorEmail: session.user.email,
+      email: session.user.email,
       createdAt: new Date()
     };
 

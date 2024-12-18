@@ -11,7 +11,7 @@ interface BusinessCard {
   name: string;
   company: string;
   createdAt: string;
-  creatorEmail?: string;
+  email?: string;
 }
 
 export default function Dashboard() {
@@ -61,7 +61,7 @@ export default function Dashboard() {
 
   const filteredCards = isAdmin 
     ? cards 
-    : cards.filter(card => card.creatorEmail === session?.user?.email);
+    : cards.filter(card => card.email === session?.user?.email);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -97,7 +97,7 @@ export default function Dashboard() {
                   >
                     <FiEye />
                   </Link>
-                  {(isAdmin || card.creatorEmail === session?.user?.email) && (
+                  {(isAdmin || card.email === session?.user?.email) && (
                     <>
                       <Link
                         href={`/admin/edit/${card.userId}`}
