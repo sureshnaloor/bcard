@@ -9,6 +9,7 @@ import ColorPaletteSelector from '@/components/ColorPaletteSelector';
 import RichTextEditor from '@/components/RichTextEditor';
 import { FaPlus } from 'react-icons/fa';
 import Link from 'next/link';
+import CardLimits from '@/components/CardLimits';
 
 // Define field types
 type FieldType = 'text' | 'date' | 'location' | 'document' | 'media' | 'richtext';
@@ -337,6 +338,7 @@ export default function CreateCard() {
 
   return (
     <div className="container mx-auto px-4 py-8 bg-teal-50 dark:bg-gray-900 min-h-screen">
+      <CardLimits />
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-gray-100">Create Business Card</h1>
         

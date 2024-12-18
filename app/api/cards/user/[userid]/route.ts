@@ -1,13 +1,35 @@
 import { NextResponse } from 'next/server';
-import  clientPromise from '@/lib/mongodb';
+import clientPromise from '@/lib/mongodb';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function PUT(
   request: Request,
   { params }: { params: { userid: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const client = await clientPromise;
     const db = client.db("businessCards");
+
+    // Check if user is admin or card creator
+    const card = await db.collection("cards").findOne({ userId: params.userid });
+    
+    if (!card) {
+      return NextResponse.json({ error: "Card not found" }, { status: 404 });
+    }
+
+    const isAdmin = session.user.email === process.env.ADMIN_EMAIL;
+    const isCreator = card.creatorEmail === session.user.email;
+
+    if (!isAdmin && !isCreator) {
+      return NextResponse.json({ error: "Unauthorized to edit this card" }, { status: 403 });
+    }
+
     const data = await request.json();
 
     // Add validation for required fields

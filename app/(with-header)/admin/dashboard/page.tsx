@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { FiPlus, FiEdit2, FiTrash2, FiEye } from 'react-icons/fi';
 
@@ -10,29 +11,37 @@ interface BusinessCard {
   name: string;
   company: string;
   createdAt: string;
+  creatorEmail?: string;
 }
 
 export default function Dashboard() {
+  const { data: session } = useSession();
   const [cards, setCards] = useState<BusinessCard[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
   useEffect(() => {
     const fetchCards = async () => {
       try {
-        const response = await fetch('/api/cards');
+        const endpoint = isAdmin 
+          ? '/api/cards' 
+          : `/api/cards/user?email=${session?.user?.email}`;
+        
+        const response = await fetch(endpoint);
         if (!response.ok) throw new Error('Failed to fetch cards');
         const data = await response.json();
         setCards(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load cards');
+      } catch (error) {
+        console.error('Error fetching cards:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCards();
-  }, []);
+    if (session?.user?.email) {
+      fetchCards();
+    }
+  }, [session, isAdmin]);
 
   const handleDelete = async (userId: string) => {
     if (!confirm('Are you sure you want to delete this card?')) return;
@@ -43,84 +52,74 @@ export default function Dashboard() {
       });
 
       if (!response.ok) throw new Error('Failed to delete card');
-      
-      // Remove card from state
+
       setCards(cards.filter(card => card.userId !== userId));
-    } catch (err) {
-      alert('Failed to delete card');
-      console.error(err);
+    } catch (error) {
+      console.error('Error deleting card:', error);
     }
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-    </div>
-  );
-
-  if (error) return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="text-red-500">Error: {error}</div>
-    </div>
-  );
+  const filteredCards = isAdmin 
+    ? cards 
+    : cards.filter(card => card.creatorEmail === session?.user?.email);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-xl font-bold">Business Cards Dashboard</h1>
-        <Link 
-          href="/admin/create" 
-          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Business Cards Dashboard</h1>
+        <Link
+          href="/admin/create"
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-600"
         >
-          <FiPlus className="w-5 h-5" />
-          Create New Card
+          <FiPlus /> Create New Card
         </Link>
       </div>
 
-      {cards.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-500">No business cards found</p>
-        </div>
+      {loading ? (
+        <div>Loading...</div>
       ) : (
-        <div className="grid gap-4">
-          {cards.map((card) => (
-            <div 
-              key={card._id} 
-              className="bg-white p-6 rounded-lg shadow-sm border flex justify-between items-center"
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filteredCards.map((card) => (
+            <div
+              key={card.userId}
+              className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow"
             >
-              <div>
-                <h2 className="text-xl text-stone-800 font-semibold">{card.name}</h2>
-                <p className="text-gray-600">{card.company}</p>
-                <p className="text-sm text-gray-400">
-                  Created: {new Date(card.createdAt).toLocaleDateString()}
-                </p>
-                <p className="text-sm text-teal-800"  > short urlID: {card.userId}</p>
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h2 className="text-xl font-semibold">{card.name}</h2>
+                  <p className="text-gray-600 dark:text-gray-400">{card.company}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Link
+                    href={`/card/${card.userId}`}
+                    className="text-blue-500 hover:text-blue-600"
+                    title="View"
+                  >
+                    <FiEye />
+                  </Link>
+                  {(isAdmin || card.creatorEmail === session?.user?.email) && (
+                    <>
+                      <Link
+                        href={`/admin/edit/${card.userId}`}
+                        className="text-green-500 hover:text-green-600"
+                        title="Edit"
+                      >
+                        <FiEdit2 />
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(card.userId)}
+                        className="text-red-500 hover:text-red-600"
+                        title="Delete"
+                      >
+                        <FiTrash2 />
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
-              
-              <div className="flex gap-3">
-                <Link
-                  href={`/admin/edit/${card.userId}`}
-                  className="flex items-center gap-1 px-3 py-2 text-blue-500 hover:bg-blue-50 rounded-md transition-colors"
-                >
-                  <FiEdit2 className="w-4 h-4" />
-                  Edit
-                </Link>
-
-                <Link
-                  href={`/card/${card.userId}`}
-                  className="flex items-center gap-1 px-3 py-2 text-blue-500 hover:bg-blue-50 rounded-md transition-colors"
-                >
-                  <FiEye className="w-4 h-4" />
-                  View
-                </Link>
-                <button
-                  onClick={() => handleDelete(card.userId)}
-                  className="flex items-center gap-1 px-3 py-2 text-red-500 hover:bg-red-50 rounded-md transition-colors"
-                >
-                  <FiTrash2 className="w-4 h-4" />
-                  Delete
-                </button>
-              </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Created: {new Date(card.createdAt).toLocaleDateString()}
+              </p>
             </div>
           ))}
         </div>

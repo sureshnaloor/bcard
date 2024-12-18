@@ -17,6 +17,7 @@ interface ExtendedSession extends Session {
     email?: string | null;
     image?: string | null;
     role?: string;
+    isAdmin?: boolean;
   }
 }
 
@@ -51,8 +52,36 @@ const handler = NextAuth({
       if (session.user) {
         session.user.id = token.sub || '';
         session.user.role = token.role || 'user';
+        session.user.isAdmin = session.user.email === process.env.ADMIN_EMAIL;
       }
       return session;
+    },
+    async signIn({ user }) {
+      try {
+        const client = await clientPromise;
+        const db = client.db("businessCards");
+        
+        // Check if user exists in our limits collection
+        const existingUser = await db.collection("userLimits").findOne({ 
+          email: user.email 
+        });
+
+        if (!existingUser) {
+          // Create new user with default limits
+          await db.collection("userLimits").insertOne({
+            email: user.email,
+            cardLimit: 10, // Default limit
+            cardIds: [],
+            createdAt: new Date(),
+            updatedAt: new Date()
+          });
+        }
+
+        return true;
+      } catch (error) {
+        console.error("Error in signIn callback:", error);
+        return false;
+      }
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
