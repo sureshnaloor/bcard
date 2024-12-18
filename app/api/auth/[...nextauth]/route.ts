@@ -70,7 +70,7 @@ const handler = NextAuth({
           // Create new user with default limits
           await db.collection("userLimits").insertOne({
             email: user.email,
-            cardLimit: 10, // Default limit
+            cardLimit: 1, // Default limit
             cardIds: [],
             createdAt: new Date(),
             updatedAt: new Date()
