@@ -12,6 +12,7 @@ interface FileUploadFieldProps {
   previewType: 'image' | 'file';
   uploadOnly?: boolean;
   hideUpload?: boolean;
+  disabled?: boolean;
 }
 
 export default function FileUploadField({
@@ -22,7 +23,8 @@ export default function FileUploadField({
   existingFiles = [],
   previewType,
   uploadOnly = false,
-  hideUpload = false
+  hideUpload = false,
+  disabled = false
 }: FileUploadFieldProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
