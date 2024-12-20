@@ -1,11 +1,11 @@
 'use client';
 
 interface ColorPaletteSelectorProps {
-  onSelect: (color: string | string[], e?: React.MouseEvent) => void;
+  onSelect: (color: string | string[]) => void;
   type: 'solid' | 'gradient';
   label?: string;
-  buttonType?: 'button' | 'submit' | 'reset';
-  currentColor?: string | string[];
+  currentColor?: string;
+  disabled?: boolean;
 }
 
 const colors = {
@@ -43,21 +43,22 @@ export default function ColorPaletteSelector({
   onSelect, 
   type, 
   label,
-  buttonType = 'button',
-  currentColor
+  currentColor,
+  disabled = false
 }: ColorPaletteSelectorProps) {
   const colorArray = type === 'solid' ? colors.logos : colors.backgrounds;
 
   const renderColorButton = (color: string) => (
     <button
       key={color}
-      type={buttonType}
+      type="button"
       onClick={(e) => onSelect(color, e)}
       className={`w-6 h-6 rounded-full border hover:scale-110 
         transition-transform duration-200 hover:shadow-md
         ${currentColor === color ? 'border-2 border-blue-500' : 'border-white shadow-sm'}`}
       style={{ backgroundColor: color }}
       aria-label={`Select ${color} color`}
+      disabled={disabled}
     />
   );
 
