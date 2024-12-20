@@ -52,7 +52,7 @@ export default function ColorPaletteSelector({
     <button
       key={color}
       type="button"
-      onClick={(e) => onSelect(color, e)}
+      onClick={() => onSelect(color)}
       className={`w-6 h-6 rounded-full border hover:scale-110 
         transition-transform duration-200 hover:shadow-md
         ${currentColor === color ? 'border-2 border-blue-500' : 'border-white shadow-sm'}`}
