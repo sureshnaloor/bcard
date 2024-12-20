@@ -46,6 +46,7 @@ export default function CreateCard() {
   const [bgColor, setBgColor] = useState<string | string[]>('');
   const [showRichTextEditor, setShowRichTextEditor] = useState(false);
   const [activeFieldIndex, setActiveFieldIndex] = useState<number | null>(null);
+  const [isLimitReached, setIsLimitReached] = useState(false);
 
   const existingLogos = [
     '/logos/babulogo.png',
@@ -336,10 +337,24 @@ export default function CreateCard() {
     }
   };
 
+  // Add this callback function to receive limit status from CardLimits
+  const handleLimitStatus = (hasReachedLimit: boolean) => {
+    setIsLimitReached(hasReachedLimit);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 bg-teal-50 dark:bg-gray-900 min-h-screen">
-      <CardLimits />
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
+      <CardLimits onLimitStatus={handleLimitStatus} />
+      
+      {isLimitReached && (
+        <div className="max-w-4xl mx-auto mt-4  mb-4 p-4 bg-teal-50 border border-teal-200 rounded-md text-red-500">
+          <p className="text-center font-medium">
+            You have reached your card creation limit. Please contact DigiBusinessCard to add credits to increase your limit.
+          </p>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className={`max-w-4xl mx-auto space-y-6 ${isLimitReached ? 'opacity-50 pointer-events-none' : ''}`}>
         <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-gray-100">Create Business Card</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -351,6 +366,7 @@ export default function CreateCard() {
               onChange={(e) => setFormData({...formData, name: e.target.value})}
               className={inputClassName}
               required
+              disabled={isLimitReached}
             />
           </div>
 
@@ -362,6 +378,7 @@ export default function CreateCard() {
               onChange={(e) => setFormData({...formData, title: e.target.value})}
               className={inputClassName}
               required
+              disabled={isLimitReached}
             />
           </div>
 
@@ -373,6 +390,7 @@ export default function CreateCard() {
               onChange={(e) => setFormData({...formData, company: e.target.value})}
               className={inputClassName}
               required
+              disabled={isLimitReached}
             />
           </div>
 
@@ -383,6 +401,7 @@ export default function CreateCard() {
               value={formData.linkedin}
               onChange={(e) => setFormData({...formData, linkedin: e.target.value})}
               className={inputClassName}
+              disabled={isLimitReached}
             />
           </div>
 
@@ -393,6 +412,7 @@ export default function CreateCard() {
               value={formData.website}
               onChange={(e) => setFormData({...formData, website: e.target.value})}
               className={inputClassName}
+              disabled={isLimitReached}
             />
           </div>
 
@@ -403,6 +423,7 @@ export default function CreateCard() {
               value={formData.linktree}
               onChange={(e) => setFormData({...formData, linktree: e.target.value})}
               className={inputClassName}
+              disabled={isLimitReached}
             />
           </div>
         </div>
@@ -416,6 +437,7 @@ export default function CreateCard() {
               rows={3}
               className={`${inputClassName} py-3`}
               required
+              disabled={isLimitReached}
             />
           </div>
 
@@ -437,6 +459,7 @@ export default function CreateCard() {
                   onSelect={(colors: string | string[]) => handleColorSelect(colors, 'logo')}
                   type="solid"
                   label="Or choose a color for logo"
+                  disabled={isLimitReached}
                 />
               </div>
             </div>
@@ -451,6 +474,7 @@ export default function CreateCard() {
                 accept="image/*"
                 existingFiles={existingBackgrounds}
                 previewType="image"
+                disabled={isLimitReached}
               />
 
               <div className="mt-4">
@@ -459,6 +483,7 @@ export default function CreateCard() {
                   type="solid"
                   label="Or choose a background color"
                   currentColor={formData.bgColor}
+                  disabled={isLimitReached}
                 />
               </div>
             </div>
@@ -478,6 +503,7 @@ export default function CreateCard() {
                     accept=".vcf"
                     previewType="file"
                     uploadOnly={true}
+                    disabled={isLimitReached}
                   />
                 </div>
                 <Link
@@ -505,6 +531,7 @@ export default function CreateCard() {
                     hover:from-blue-600 hover:to-indigo-600 transition-all duration-200
                     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
                     shadow-md hover:shadow-lg"
+                  disabled={isLimitReached}
                 >
                   <IoAddCircleOutline className="h-5 w-5 mr-2" />
                   Add
@@ -525,6 +552,7 @@ export default function CreateCard() {
                       }}
                       className={inputClassName}
                       placeholder="Enter field label"
+                      disabled={isLimitReached}
                     />
                   </div>
                   
@@ -542,6 +570,7 @@ export default function CreateCard() {
                         setCustomFields(newFields);
                       }}
                       className={inputClassName}
+                      disabled={isLimitReached}
                     >
                       <option value="text">Text</option>
                       <option value="date">Date</option>
@@ -562,6 +591,7 @@ export default function CreateCard() {
                     onClick={() => removeCustomField(index)}
                     className="mt-6 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
                     aria-label="Remove field"
+                    disabled={isLimitReached}
                   >
                     <IoCloseCircleOutline className="h-6 w-6" />
                   </button>
@@ -572,12 +602,15 @@ export default function CreateCard() {
 
           <button
             type="submit"
-            className="w-full mt-6 bg-gradient-to-r from-teal-500 to-cyan-500 text-white 
+            disabled={isLimitReached}
+            className={`w-full mt-6 bg-gradient-to-r from-teal-500 to-cyan-500 text-white 
               py-3 px-4 rounded-md 
               hover:from-teal-600 hover:to-cyan-600 
               transition-all duration-200
               shadow-md hover:shadow-lg
-              focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+              focus:ring-2 focus:ring-teal-500 focus:ring-offset-2
+              disabled:opacity-50 disabled:cursor-not-allowed
+              ${isLimitReached ? 'from-gray-400 to-gray-500 hover:from-gray-400 hover:to-gray-500' : ''}`}
           >
             Create Card
           </button>
