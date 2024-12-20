@@ -277,7 +277,7 @@ export default function EditCard({ params }: { params: { userid: string } }) {
     
     <div className="bg-gray-50 min-w-full dark:bg-gray-900 text-stone-800/80 dark:text-gray-100 max-w-4xl mx-auto p-6">
     <div className = "flex bg-gray-50 dark:bg-gray-900 justify-between items-center ml-3 mb-6" > 
-    <ThemeSwitcher />
+    {/* <ThemeSwitcher /> */}
       <h1 className="text-xl font-bold mb-6">Edit Business Card</h1>
       </div>
       <form onSubmit={handleSubmit} className="space-y-6">

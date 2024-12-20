@@ -64,9 +64,9 @@ export default function Dashboard() {
     : cards.filter(card => card.email === session?.user?.email);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Business Cards Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Business Cards Dashboard</h1>
         <Link
           href="/admin/create"
           className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-600"
@@ -76,7 +76,9 @@ export default function Dashboard() {
       </div>
 
       {loading ? (
-        <div>Loading...</div>
+        <div className="flex justify-center items-center min-h-[200px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredCards.map((card) => (

@@ -141,10 +141,10 @@ export default function CreateCard() {
     }
   };
 
-  const inputClassName = "mt-1 block w-full rounded-md border-teal-200 dark:border-gray-600 \
-    bg-teal-100 dark:bg-gray-700 \
+  const inputClassName = "mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 \
+    bg-white dark:bg-gray-800 \
     text-gray-900 dark:text-white \
-    shadow-sm focus:border-teal-500 focus:ring-teal-500 \
+    shadow-sm focus:border-cyan-500 focus:ring-cyan-500 \
     py-2 px-4";
 
   const labelClassName = "block text-xs italic font-medium text-gray-600 dark:text-gray-400";

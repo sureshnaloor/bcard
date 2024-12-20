@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useSession } from 'next-auth/react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   FaTachometerAlt, 
   FaBars,
@@ -13,7 +14,6 @@ import ThemeSwitcher from '@/components/ThemeSwitcher'
 import AuthButtons from '@/components/AuthButtons'
 
 function UserAvatar({ name }: { name: string }) {
-  // Get initials from name (first letter of first name and last name)
   const initials = name
     .split(' ')
     .map(word => word[0])
@@ -29,18 +29,41 @@ function UserAvatar({ name }: { name: string }) {
 }
 
 export default function Header() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Don't render anything until we know the session status
+  if (!mounted || status === 'loading') {
+    return (
+      <header className="bg-zinc-100 dark:bg-gray-800 shadow-sm h-16">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
+          {/* Empty placeholder to maintain layout */}
+        </nav>
+      </header>
+    )
+  }
 
   return (
     <header className="bg-zinc-100 dark:bg-gray-800 shadow-sm">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center">
-          <h1 className="text-xl font-bold">
+        <div className="flex items-center gap-3">
+          <Image
+            src="/images/smartwave-logo.svg"
+            alt="SmartWave Logo"
+            width={150}
+            height={150}
+            className="w-46 h-32"
+          />
+          {/* <h1 className="text-xl font-bold">
             <span className="text-red-500">Smart</span>
             <span className="text-cyan-500">Wave</span>
             <span className="text-zinc-800 dark:text-white font-semibold"> Cards</span>
-          </h1>
+          </h1> */}
         </div>
 
         {/* Desktop Navigation */}

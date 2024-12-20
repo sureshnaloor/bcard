@@ -24,8 +24,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Business Cards",
-  description: "Digital Business Cards designed for the modern world",
+  title: "SmartWave cards",
+  description: "Digital Business Cards designed for the gen-new",
   icons: {
     icon: "/icons/favicon.ico",
     apple: "/icons/apple-touch-icon.png",
