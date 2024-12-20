@@ -22,7 +22,7 @@ function UserAvatar({ name }: { name: string }) {
     .slice(0, 2)
 
   return (
-    <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium italic">
+    <div className="w-8 h-8 rounded-full bg-cyan-600 flex items-center justify-center text-white font-bold text-xs p-1">
       {initials}
     </div>
   )
@@ -33,13 +33,13 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm">
+    <header className="bg-zinc-100 dark:bg-gray-800 shadow-sm">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center">
           <h1 className="text-xl font-bold">
-            <span className="text-red-500">Digi</span>
-            <span className="text-cyan-500">Busi</span>
-            <span className="text-zinc-800 dark:text-white font-semibold"> CardMaker</span>
+            <span className="text-red-500">Smart</span>
+            <span className="text-cyan-500">Wave</span>
+            <span className="text-zinc-800 dark:text-white font-semibold"> Cards</span>
           </h1>
         </div>
 
@@ -48,7 +48,7 @@ export default function Header() {
           {session && (
             <Link 
               href="/admin/dashboard" 
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+              className="flex items-center gap-2 px-4 py-2 font-bold tracking-wider bg-gray-100 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-600 text-cyan-600 dark:text-cyan-300 hover:text-cyan-800 dark:hover:text-white"
             >
               <FaTachometerAlt className="w-4 h-4" />
               Dashboard

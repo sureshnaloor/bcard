@@ -1,19 +1,18 @@
-import { Suspense } from 'react'
-import Header from '@/components/layout/Header'
+import Header from '@/components/layout/Header';
+import Footer from '@/components/Footer';
 
-export default function WithHeaderLayout({
+export default function Layout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Header />
-      </Suspense>
+      <Header />
       <main className="min-h-screen">
         {children}
       </main>
+      <Footer />
     </>
-  )
+  );
 } 
