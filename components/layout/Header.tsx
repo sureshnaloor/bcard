@@ -52,6 +52,7 @@ export default function Header() {
     <header className="bg-zinc-100 dark:bg-gray-800 shadow-sm">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
+          <Link href="/">
           <Image
             src="/images/smartwave-logo.svg"
             alt="SmartWave Logo"
@@ -64,6 +65,7 @@ export default function Header() {
             <span className="text-cyan-500">Wave</span>
             <span className="text-zinc-800 dark:text-white font-semibold"> Cards</span>
           </h1> */}
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
