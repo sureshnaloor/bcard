@@ -6,10 +6,11 @@ import { Playfair_Display } from 'next/font/google';
 import Script from 'next/script';
 import Providers from '@/components/Providers';
 import { Toaster } from 'react-hot-toast';
-import { ShoppingProvider } from '@/context/ShoppingContext';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
+  src: "./fonts/GeistVF.woff", 
   variable: "--font-geist-sans",
   weight: "100 900",
 });
@@ -33,11 +34,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en" suppressHydrationWarning className={playfair.className}>
       <head>
@@ -51,11 +54,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ShoppingProvider>
-            <Providers>
-              {children}
-            </Providers>
-          </ShoppingProvider>
+          <Providers session={session}>
+            {children}
+          </Providers>
         </ThemeProvider>
         <Toaster position="top-right" />
       </body>

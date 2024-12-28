@@ -1,12 +1,27 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { usePaymentGateway } from '@/hooks/usePaymentGateway';
-import LoadingSpinner from '@/components/LoadingSpinner';
 import StripePaymentForm from '@/components/payment/StripePaymentForm';
 import { countryGatewayMappings } from '@/config/payment-gateways';
-import { useState, useEffect } from 'react';
 
-export default function TestLocation() {
+export default function TestLocationPage() {
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/api/auth/signin');
+    },
+  });
+  if (status === 'loading') {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
   // Use the actual location detection
   const { gateway: detectedGateway, loading, country } = usePaymentGateway();
   const [debugInfo, setDebugInfo] = useState<any>({});
@@ -20,10 +35,6 @@ export default function TestLocation() {
     };
     setDebugInfo(browserInfo);
   }, []);
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
 
   const countryInfo = countryGatewayMappings.find(m => m.country === country);
 

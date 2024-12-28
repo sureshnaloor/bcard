@@ -1,12 +1,30 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 import { useShopping } from '@/context/ShoppingContext';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 export default function CartPage() {
-  const { state, dispatch } = useShopping();
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/api/auth/signin');
+    },
+  });
+
+  // Show loading state while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  const { state, dispatch, loading } = useShopping();
   const { cart } = state;
 
   const updateQuantity = (productId: string, quantity: number) => {
@@ -24,9 +42,17 @@ export default function CartPage() {
     });
   };
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = 9.99; // Example shipping cost
+  const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+  const shipping = 9.99;
   const total = subtotal + shipping;
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (
@@ -74,7 +100,7 @@ export default function CartPage() {
         <div className="lg:col-span-8">
           {cart.map((item) => (
             <motion.div
-              key={item.id}
+              key={item.productId} // Changed from id to productId to match CartItem type
               layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -95,19 +121,19 @@ export default function CartPage() {
                   {item.name}
                 </h3>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  {item.currency} {item.price}
+                  {item.currency} {item.unitPrice}
                 </p>
 
                 <div className="mt-2 flex items-center">
                   <button
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    onClick={() => updateQuantity(item.productId, item.quantity - 1)}
                     className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     -
                   </button>
                   <span className="mx-2 w-8 text-center">{item.quantity}</span>
                   <button
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    onClick={() => updateQuantity(item.productId, item.quantity + 1)}
                     className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     +
@@ -117,12 +143,11 @@ export default function CartPage() {
 
               <div className="ml-4">
                 <p className="text-lg font-medium text-gray-900 dark:text-white">
-                  {item.currency} {(item.price * item.quantity).toFixed(2)}
+                  {item.currency} {item.totalPrice.toFixed(2)}
                 </p>
               </div>
-
               <button
-                onClick={() => removeFromCart(item.id)}
+                onClick={() => removeFromCart(item.productId)}
                 className="ml-4 p-2 text-gray-400 hover:text-red-500"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

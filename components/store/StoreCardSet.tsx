@@ -21,14 +21,16 @@ export default function StoreCardSet({ set }: StoreCardSetProps) {
     dispatch({
       type: 'ADD_TO_CART',
       payload: {
-        id: set.id,
+        productId: set.id,
         name: set.name,
-        price: set.price,
-        description: set.description,
-        image: set.image,
+        quantity: quantity,
+        unitPrice: set.price,
+        totalPrice: set.price * quantity,
         currency: set.currency,
-        quantity,
-      },
+        image: set.image,
+        description: set.description,
+        addedAt: new Date()
+      }
     });
   };
 

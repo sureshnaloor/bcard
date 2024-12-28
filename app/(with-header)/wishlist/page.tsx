@@ -5,8 +5,24 @@ import { useShopping } from '@/context/ShoppingContext';
 import CardSetList from '@/components/cards/CardSetList';
 import { cardSets } from '@/data/card-sets';
 import EmptyWishlist from '@/components/wishlist/EmptyWishlist';
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 export default function WishlistPage() {
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/api/auth/signin');
+    },
+  });
+  if (status === 'loading') {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 dark:border-white"></div>
+      </div>
+    );
+  }
+
   const { state } = useShopping();
   const wishlistItems = state.wishlist;
 

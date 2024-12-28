@@ -9,20 +9,22 @@ interface CardSetListProps {
 }
 
 export default function CardSetList({ sets }: CardSetListProps) {
-  const { dispatch } = useShopping();
+  const { state, dispatch } = useShopping();
 
   const handleAddToCart = (set: CardSet) => {
     dispatch({
       type: 'ADD_TO_CART',
       payload: {
-        id: set.id,
+        productId: set.id,
         name: set.name,
-        price: set.price,
-        description: set.description,
-        image: set.image,
-        currency: set.currency,
         quantity: 1,
-      },
+        unitPrice: set.price,
+        totalPrice: set.price * 1,
+        currency: set.currency,
+        image: set.image,
+        description: set.description,
+        addedAt: new Date()
+      }
     });
   };
 
