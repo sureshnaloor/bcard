@@ -14,18 +14,16 @@ export default function CartPage() {
       redirect('/api/auth/signin');
     },
   });
+  const { state, dispatch, loading } = useShopping();
+  const { cart } = state;
 
-  // Show loading state while checking authentication
-  if (status === 'loading') {
+  if (status === 'loading' || loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
-
-  const { state, dispatch, loading } = useShopping();
-  const { cart } = state;
 
   const updateQuantity = (productId: string, quantity: number) => {
     if (quantity < 1) return;
@@ -45,14 +43,6 @@ export default function CartPage() {
   const subtotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
   const shipping = 9.99;
   const total = subtotal + shipping;
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
 
   if (cart.length === 0) {
     return (
