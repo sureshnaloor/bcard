@@ -8,23 +8,15 @@ import StripePaymentForm from '@/components/payment/StripePaymentForm';
 import { countryGatewayMappings } from '@/config/payment-gateways';
 
 export default function TestLocationPage() {
-  const { data: session, status } = useSession({
+  const { status } = useSession({
     required: true,
     onUnauthenticated() {
       redirect('/api/auth/signin');
     },
   });
-  if (status === 'loading') {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  // Use the actual location detection
   const { gateway: detectedGateway, loading, country } = usePaymentGateway();
   const [debugInfo, setDebugInfo] = useState<any>({});
+  const [location, setLocation] = useState<GeolocationPosition | null>(null);
 
   useEffect(() => {
     const browserInfo = {
@@ -35,6 +27,14 @@ export default function TestLocationPage() {
     };
     setDebugInfo(browserInfo);
   }, []);
+
+  if (status === 'loading' || loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   const countryInfo = countryGatewayMappings.find(m => m.country === country);
 

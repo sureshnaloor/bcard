@@ -1,12 +1,11 @@
 'use client';
-'use client';
 
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 import { useShopping } from '@/context/ShoppingContext';
 import CardSetList from '@/components/cards/CardSetList';
 import { cardSets } from '@/data/card-sets';
 import EmptyWishlist from '@/components/wishlist/EmptyWishlist';
-import { useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
 
 export default function WishlistPage() {
   const { data: session, status } = useSession({
@@ -15,6 +14,8 @@ export default function WishlistPage() {
       redirect('/api/auth/signin');
     },
   });
+  const { state } = useShopping();
+
   if (status === 'loading') {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -23,9 +24,7 @@ export default function WishlistPage() {
     );
   }
 
-  const { state } = useShopping();
   const wishlistItems = state.wishlist;
-
   const wishlistSets = cardSets.filter(set => 
     wishlistItems.some(item => item.productId === set.id)
   );
