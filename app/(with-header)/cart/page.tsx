@@ -11,7 +11,7 @@ export default function CartPage() {
   const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
-      redirect('/api/auth/signin');
+      redirect('/api/auth/signin?callbackUrl=/cart');
     },
   });
   const { state, dispatch, loading } = useShopping();

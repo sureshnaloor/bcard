@@ -8,10 +8,10 @@ import StripePaymentForm from '@/components/payment/StripePaymentForm';
 import { countryGatewayMappings } from '@/config/payment-gateways';
 
 export default function TestLocationPage() {
-  const { status } = useSession({
+  const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
-      redirect('/api/auth/signin');
+      redirect('/api/auth/signin?callbackUrl=/test-location');
     },
   });
   const { gateway: detectedGateway, loading, country } = usePaymentGateway();

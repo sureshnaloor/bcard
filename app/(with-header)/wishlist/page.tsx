@@ -11,7 +11,7 @@ export default function WishlistPage() {
   const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
-      redirect('/api/auth/signin');
+      redirect('/api/auth/signin?callbackUrl=/wishlist');
     },
   });
   const { state } = useShopping();
