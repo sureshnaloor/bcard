@@ -48,5 +48,7 @@ export const config = {
     '/test-location/:path*',
     '/store/:path*',
     '/store',
+    '/checkout/:path*',
+    '/checkout',
   ],
 }; 
