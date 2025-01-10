@@ -39,19 +39,22 @@ function SignInForm() {
         
         <div className="text-center">
           <h1 className="text-3xl font-bold">
-            <span className="text-red-500">Digi</span>
-            <span className="text-cyan-500">Busi</span>
+            <span className="text-red-500">smart</span>
+            <span className="text-cyan-500">wave</span>
             <span className="text-zinc-800 dark:text-white"> CardMaker</span>
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
             Sign in to manage your digital business cards
           </p>
+          <h3 className="text-teal-500 dark:text-white text-sm mt-2 italic font-light">
+            (Currently we support only google sign-in)
+          </h3>
         </div>
 
         <div className="mt-8 space-y-6">
           <button
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
           >
             <FcGoogle className="w-6 h-6" />
             <span>Continue with Google</span>
@@ -65,6 +68,14 @@ function SignInForm() {
               <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">
                 Secure authentication powered by Google
               </span>
+            </div>
+            <div className="text-center italic text-xs text-teal-600 dark:text-teal-400 mt-4">
+              <p className=" mt-3 pt-3">
+                We do not use any of your data for any purpose.
+              
+               You will never get any spam emails from any of our services. this is a secure authentication powered by Google.
+                We do not share any of your data.
+              </p>
             </div>
           </div>
         </div>
