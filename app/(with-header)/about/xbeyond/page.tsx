@@ -11,7 +11,7 @@ export default function AboutPage() {
             About <span className="text-cyan-600">ExBeyond Inc</span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Transforming business connections through innovative digital solutions
+            Transforming business through sustainable, digital AI solutions.
           </p>
         </div>
 
@@ -20,13 +20,13 @@ export default function AboutPage() {
           <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Our Mission</h2>
             <p className="text-gray-600 dark:text-gray-300">
-              To revolutionize professional networking by providing cutting-edge digital business card solutions that enhance connectivity and sustainability in the modern business world.
+              To make business processes easier and more efficient by providing cutting-edge digital solutions that enhance efficiency and sustainability in the modern business world.
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Our Vision</h2>
             <p className="text-gray-600 dark:text-gray-300">
-              To become the global leader in digital business card solutions, driving the transition from traditional paper cards to eco-friendly, feature-rich digital alternatives.
+              To become leading provider of AI solutions for business processes especially in the area of business intelligence and data analytics.
             </p>
           </div>
         </div>
@@ -79,10 +79,10 @@ export default function AboutPage() {
             About ExBeyond Inc
           </h2>
           <p className="text-gray-600 dark:text-gray-300 mb-4">
-            ExBeyond Inc is a pioneering technology company specializing in digital transformation solutions. Founded with the vision of bridging traditional business practices with modern digital innovations, we've become a trusted partner for businesses worldwide.
+            ExBeyond Inc is a technology company founded by Suresh Menon, Engineer and Supply Chain and projects specialist with 40 years of experience, with the vision of bridging traditional business practices in Supply Chain and Projects with digital innovations, to make business processes easier and more efficient.
           </p>
           <p className="text-gray-600 dark:text-gray-300">
-            Our flagship product, DigiBusi CardMaker, represents our commitment to revolutionizing professional networking through sustainable, feature-rich digital business cards. We combine cutting-edge technology with user-friendly design to create solutions that make business connections more efficient and environmentally conscious.
+            Our flagship products, SmartWave and SmartWave AI, represents our commitment to revolutionizing professional networking through sustainable, feature-rich digital business cards. We combine cutting-edge technology with user-friendly design to create solutions that make business connections more efficient and environmentally conscious.
           </p>
         </div>
       </div>

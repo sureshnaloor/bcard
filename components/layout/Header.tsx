@@ -13,7 +13,9 @@ import {
   FaChevronDown,
   FaStore,
   FaDollarSign,
-  FaEnvelope
+  FaEnvelope,
+  FaHeart,
+  FaShoppingCart
 } from 'react-icons/fa'
 import ThemeSwitcher from '@/components/ThemeSwitcher'
 import AuthButtons from '@/components/AuthButtons'
@@ -284,38 +286,42 @@ export default function Header() {
         {/* User Info and Cart/Wishlist Icons */}
         <div className="flex items-center gap-4">
           {/* Cart Icon */}
-          <Link href="/cart" className="relative">
-            <svg className="w-6 h-6 text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" 
-              fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-            {state.cart.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {state.cart.length}
-              </span>
-            )}
-          </Link>
+          {session && (
+            <Link href="/cart" className="relative">
+              <svg className="w-6 h-6 text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" 
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              {state.cart.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {state.cart.length}
+                </span>
+              )}
+            </Link>
+          )}
 
           {/* Wishlist Icon */}
-          <Link href="/wishlist" className="relative">
-            <svg className="w-6 h-6 text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" 
-              fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
-            {state.wishlist.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {state.wishlist.length}
-              </span>
-            )}
-          </Link>
+          {session && (
+            <Link href="/wishlist" className="relative">
+              <svg className="w-6 h-6 text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" 
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              {state.wishlist.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {state.wishlist.length}
+                </span>
+              )}
+            </Link>
+          )}
 
           {/* User Avatar */}
           {session ? (
             <UserAvatar name={session.user?.name || 'User'} />
           ) : (
-            <FaUserCircle className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+            <FaUserCircle className={`w-6 h-6 ${session ? '' : 'opacity-50'}`} />
           )}
           
           <AuthButtons />
@@ -327,7 +333,7 @@ export default function Header() {
           {session ? (
             <UserAvatar name={session.user?.name || 'User'} />
           ) : (
-            <FaUserCircle className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+            <FaUserCircle className={`w-6 h-6 ${session ? '' : 'opacity-50'}`} />
           )}
           <ThemeSwitcher />
           <button

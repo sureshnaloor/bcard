@@ -1,120 +1,141 @@
-import Link from "next/link";
-import { FaArrowRight, FaRegQuestionCircle } from "react-icons/fa";
+"use client"
 
-export default function Home() {
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+
+const testimonials = [
+  {
+    name: 'John Doe',
+    text: 'SmartWave has transformed the way I do business. Highly recommend!',
+  },
+  {
+    name: 'Jane Smith',
+    text: 'The best service I have ever used. Exceptional quality and support!',
+  },
+  {
+    name: 'Alice Johnson',
+    text: 'SmartWave is a game changer! I love the features and ease of use.',
+  },
+];
+
+const carouselImages = [
+  {
+    src: "/images/carousel1.jpg",
+    alt: "Business Meeting"
+  },
+  {
+    src: "/images/carousel2.jpg",
+    alt: "Technology Innovation"
+  },
+  {
+    src: "/images/carousel3.jpg",
+    alt: "Digital Solutions"
+  }
+];
+
+const HomePage = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Auto-advance carousel
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((current) => (current + 1) % carouselImages.length);
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const nextSlide = () => {
+    setCurrentIndex((current) => (current + 1) % carouselImages.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((current) => 
+      current === 0 ? carouselImages.length - 1 : current - 1
+    );
+  };
+
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Main Content */}
-      <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">
-                Create Your Digital Business Card
-              </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-                Generate professional vCards in seconds. Share your contact information seamlessly.
-              </p>
-              <Link
-                href="/admin/vcard-generator"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Create Now
-                <FaArrowRight />
-              </Link>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+      {/* Hero Section with Carousel */}
+      <div className="relative w-full h-[600px]">
+        {/* Carousel Container */}
+        <div className="relative w-full h-full overflow-hidden">
+          {carouselImages.map((image, index) => (
+            <div
+              key={index}
+              className={`absolute w-full h-full transition-opacity duration-500 ease-in-out ${
+                index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+              }`}
+            >
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                priority={index === 0}
+                style={{ objectFit: 'cover' }}
+                className="brightness-75"
+              />
             </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="py-16 bg-gradient-to-b from-blue-50 via-blue-50/50 to-white dark:bg-none dark:bg-gray-800">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h3 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-12">
-              Key Features
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  title: "Easy to Use",
-                  description: "Simple form-based interface to create vCards quickly"
-                },
-                {
-                  title: "Professional Format",
-                  description: "Generate standard VCF files compatible with all devices"
-                },
-                {
-                  title: "Custom Fields",
-                  description: "Add additional information with custom fields support"
-                }
-              ].map((feature, index) => (
-                <div 
-                  key={index}
-                  className="p-6 bg-white/80 backdrop-blur-sm dark:bg-gray-800 rounded-lg shadow-sm"
-                >
-                  <h4 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
-                    {feature.title}
-                  </h4>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    {feature.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ Section */}
-        <section className="py-16 bg-gray-50 dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h3 className="text-2xl font-bold text-gray-800 dark:text-white text-center mb-12">
-              Frequently Asked Questions
-            </h3>
-            <div className="max-w-3xl mx-auto space-y-6">
-              {[
-                {
-                  q: "What is a vCard?",
-                  a: "A vCard is a digital business card that can be shared electronically and imported into contact management systems."
-                },
-                {
-                  q: "How do I use the generated vCard?",
-                  a: "Simply download the .vcf file and share it via email or messaging. Recipients can click to add it to their contacts."
-                },
-                {
-                  q: "Can I include my photo?",
-                  a: "Yes, you can upload a profile photo and company logo to be included in your vCard."
-                }
-              ].map((faq, index) => (
-                <div 
-                  key={index}
-                  className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm"
-                >
-                  <div className="flex items-start gap-3">
-                    <FaRegQuestionCircle className="text-blue-600 text-xl flex-shrink-0 mt-1" />
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
-                        {faq.q}
-                      </h4>
-                      <p className="text-gray-600 dark:text-gray-300">
-                        {faq.a}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* Footer removed since footer added in layout
-      {/* <footer className="bg-white dark:bg-gray-800 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-600 dark:text-gray-300">
-            © {new Date().getFullYear()} <span className="text-red-500">Smart</span><span className="text-cyan-500">Wave</span> Cards. Crafted by <span className="italic text-cyan-500">ExBeyond Inc</span>. All rights reserved.
-          </p>
+          ))}
         </div>
-      </footer> */}
+
+        {/* Navigation Buttons */}
+        <button 
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg transition-colors"
+          aria-label="Previous slide"
+        >
+          &#10094;x§
+        </button>
+        <button 
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-lg transition-colors"
+          aria-label="Next slide"
+        >
+          &#10095;
+        </button>
+
+        {/* Hero Content */}
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white">
+          <h1 className="text-5xl font-bold mb-4 px-4">
+            Welcome to SmartWave
+          </h1>
+          <p className="text-xl mb-8 px-4">
+            Innovating your business solutions
+          </p>
+          <a 
+            href="/auth/signup" 
+            className="px-8 py-3 bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors text-lg font-semibold"
+          >
+            Get Started
+          </a>
+        </div>
+      </div>
+
+      {/* Testimonials Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
+          What Our Clients Say
+        </h2>
+        <div className="grid md:grid-cols-3 gap-8">
+          {testimonials.map((testimonial, index) => (
+            <div 
+              key={index}
+              className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg"
+            >
+              <p className="text-gray-700 dark:text-gray-300 italic mb-4">
+                "{testimonial.text}"
+              </p>
+              <p className="font-semibold text-gray-900 dark:text-white">
+                {testimonial.name}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default HomePage;

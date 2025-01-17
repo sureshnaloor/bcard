@@ -4,12 +4,30 @@ import Link from 'next/link'
 export default function PricingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      {/* Hero Section for Card Store */}
+      <div className="border-b border-teal-500 pb-6 text-center mb-2 pt-6">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+          Welcome to Our <span className="text-cyan-600">Card Store</span>
+        </h1>
+        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-4">
+          Explore our exclusive collection of digital SmartWave business cards tailored for your needs.
+        </p>
+        <Link 
+          href="/store"
+          className="inline-block px-6 py-3 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
+        >
+          Visit the Card Store
+        </Link>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className="text-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Simple, Transparent <span className="text-cyan-600">Pricing</span>
           </h1>
+          <h3 className="text-gray-800 dark:text-gray-300 text-xl italic mb-4"> For virtual business cards and enterprise solutions </h3>
+          
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Choose the plan that best fits your needs
           </p>
@@ -104,7 +122,7 @@ export default function PricingPage() {
             <ul className="space-y-4 mb-8">
               <li className="flex items-start gap-3">
                 <FaCheck className="w-5 h-5 text-green-500 mt-0.5" />
-                <span className="text-gray-600 dark:text-gray-300">Unlimited Cards</span>
+                <span className="text-gray-600 dark:text-gray-300">Upto 100 Cards</span>
               </li>
               <li className="flex items-start gap-3">
                 <FaCheck className="w-5 h-5 text-green-500 mt-0.5" />
@@ -127,7 +145,7 @@ export default function PricingPage() {
               href="/auth/signup"
               className="block w-full px-6 py-3 text-center bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
             >
-              Start Free Trial
+              Start the journey
             </Link>
           </div>
         </div>
