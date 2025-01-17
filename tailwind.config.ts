@@ -12,6 +12,13 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        'auth-gradient-from': '#ffffff',
+        'auth-gradient-to': '#f0f9ff',
+        'smart-wave': 'rgba(255, 255, 255, 0.85)',
+      },
+      backgroundImage: {
+        'auth-gradient': 'linear-gradient(to bottom right, var(--tw-gradient-stops))',
+        'glossy': 'linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)',
       },
     },
   },

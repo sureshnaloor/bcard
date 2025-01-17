@@ -207,8 +207,8 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-zinc-100 dark:bg-gray-800 shadow-sm">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <header className="bg-zinc-100 dark:bg-gray-800 shadow-sm fixed top-0 w-full z-50">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
         <div className="flex items-center gap-3">
           <Link href="/">
           <Image
@@ -234,24 +234,24 @@ export default function Header() {
                 href="/admin/dashboard" 
                 className={`flex items-center gap-2 px-3 py-2 text-sm font-medium backdrop-blur-sm rounded-lg shadow-sm border transition-all duration-200 group
                   ${pathname === '/admin/dashboard' 
-                    ? 'bg-cyan-50/90 dark:bg-cyan-900/90 border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300 cursor-default pointer-events-none' 
+                    ? 'bg-cyan-50/90 dark:bg-cyan-900/90 border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300' 
                     : 'bg-white/90 dark:bg-gray-800/90 border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/90 hover:shadow-md'
                   }`}
               >
                 <FaTachometerAlt className={`w-4 h-4 ${pathname === '/admin/dashboard' ? 'text-cyan-600 dark:text-cyan-400' : 'text-cyan-500 dark:text-cyan-400 group-hover:scale-110 transition-transform'}`} />
-                <span>Dashboard</span>
+                <span className="hidden lg:inline">Dashboard</span>
               </Link>
               
               <Link 
                 href="/store" 
                 className={`flex items-center gap-2 px-3 py-2 text-sm font-medium backdrop-blur-sm rounded-lg shadow-sm border transition-all duration-200 group
                   ${pathname === '/store' 
-                    ? 'bg-cyan-50/90 dark:bg-cyan-900/90 border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300 cursor-default pointer-events-none' 
+                    ? 'bg-cyan-50/90 dark:bg-cyan-900/90 border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300' 
                     : 'bg-white/90 dark:bg-gray-800/90 border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/90 hover:shadow-md'
                   }`}
               >
                 <FaStore className={`w-4 h-4 ${pathname === '/store' ? 'text-cyan-600 dark:text-cyan-400' : 'text-cyan-500 dark:text-cyan-400 group-hover:scale-110 transition-transform'}`} />
-                <span>Store</span>
+                <span className="hidden lg:inline">Store</span>
               </Link>
             </>
           )}
@@ -262,39 +262,35 @@ export default function Header() {
             href="/pricing" 
             className={`flex items-center gap-2 px-3 py-2 text-sm font-medium backdrop-blur-sm rounded-lg shadow-sm border transition-all duration-200 group
               ${pathname === '/pricing' 
-                ? 'bg-cyan-50/90 dark:bg-cyan-900/90 border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300 cursor-default pointer-events-none' 
+                ? 'bg-cyan-50/90 dark:bg-cyan-900/90 border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300' 
                 : 'bg-white/90 dark:bg-gray-800/90 border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/90 hover:shadow-md'
               }`}
           >
             <FaDollarSign className={`w-4 h-4 ${pathname === '/pricing' ? 'text-cyan-600 dark:text-cyan-400' : 'text-cyan-500 dark:text-cyan-400 group-hover:scale-110 transition-transform'}`} />
-            <span>Pricing</span>
+            <span className="hidden lg:inline">Pricing</span>
           </Link>
 
           <Link 
             href="/contact" 
             className={`flex items-center gap-2 px-3 py-2 text-sm font-medium backdrop-blur-sm rounded-lg shadow-sm border transition-all duration-200 group
               ${pathname === '/contact' 
-                ? 'bg-cyan-50/90 dark:bg-cyan-900/90 border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300 cursor-default pointer-events-none' 
+                ? 'bg-cyan-50/90 dark:bg-cyan-900/90 border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300' 
                 : 'bg-white/90 dark:bg-gray-800/90 border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/90 hover:shadow-md'
               }`}
           >
             <FaEnvelope className={`w-4 h-4 ${pathname === '/contact' ? 'text-cyan-600 dark:text-cyan-400' : 'text-cyan-500 dark:text-cyan-400 group-hover:scale-110 transition-transform'}`} />
-            <span>Contact</span>
+            <span className="hidden lg:inline">Contact</span>
           </Link>
         </div>
 
-        {/* User Info and Cart/Wishlist Icons */}
-        <div className="flex items-center gap-4">
+        {/* User Info and Controls - Desktop */}
+        <div className="hidden md:flex items-center gap-4">
           {/* Cart Icon */}
           {session && (
             <Link href="/cart" className="relative">
-              <svg className="w-6 h-6 text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" 
-                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
+              <FaShoppingCart className="w-5 h-5 text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" />
               {state.cart.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                   {state.cart.length}
                 </span>
               )}
@@ -304,13 +300,9 @@ export default function Header() {
           {/* Wishlist Icon */}
           {session && (
             <Link href="/wishlist" className="relative">
-              <svg className="w-6 h-6 text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" 
-                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
+              <FaHeart className="w-5 h-5 text-gray-600 dark:text-gray-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" />
               {state.wishlist.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                   {state.wishlist.length}
                 </span>
               )}
@@ -321,21 +313,43 @@ export default function Header() {
           {session ? (
             <UserAvatar name={session.user?.name || 'User'} />
           ) : (
-            <FaUserCircle className={`w-6 h-6 ${session ? '' : 'opacity-50'}`} />
+            <FaUserCircle className="w-6 h-6 opacity-50" />
           )}
           
-          <AuthButtons />
-          <ThemeSwitcher />
+          <div className="flex items-center gap-2">
+            <AuthButtons showText={false} />
+            <ThemeSwitcher />
+          </div>
         </div>
 
-        {/* Mobile menu button */}
+        {/* Mobile Controls */}
         <div className="md:hidden flex items-center gap-4">
-          {session ? (
-            <UserAvatar name={session.user?.name || 'User'} />
-          ) : (
-            <FaUserCircle className={`w-6 h-6 ${session ? '' : 'opacity-50'}`} />
+          {session && (
+            <>
+              {/* Cart Icon */}
+              <Link href="/cart" className="relative">
+                <FaShoppingCart className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                {state.cart.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    {state.cart.length}
+                  </span>
+                )}
+              </Link>
+
+              {/* Wishlist Icon */}
+              <Link href="/wishlist" className="relative">
+                <FaHeart className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                {state.wishlist.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    {state.wishlist.length}
+                  </span>
+                )}
+              </Link>
+            </>
           )}
+
           <ThemeSwitcher />
+
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white p-2"
@@ -347,9 +361,9 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation Menu */}
         {isMenuOpen && (
-          <div className="absolute top-16 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg md:hidden py-2">
+          <div className="absolute top-16 left-0 right-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-lg md:hidden py-2 z-50">
             {session && (
               <>
                 <Link
@@ -369,14 +383,26 @@ export default function Header() {
                 </Link>
               </>
             )}
-            <Link
-              href="/about"
-              onClick={() => setIsMenuOpen(false)}
-              className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
-            >
-              <FaInfoCircle className="w-4 h-4" />
-              About Us
-            </Link>
+            
+            {/* About Us section with sub-links */}
+            <div className="px-4 py-2 text-gray-700 dark:text-gray-200">
+              <div className="font-medium mb-1">About Us</div>
+              <Link
+                href="/about/xbeyond"
+                onClick={() => setIsMenuOpen(false)}
+                className="block pl-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                About XBeyond
+              </Link>
+              <Link
+                href="/about/smartwave"
+                onClick={() => setIsMenuOpen(false)}
+                className="block pl-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                About SmartWave
+              </Link>
+            </div>
+
             <Link
               href="/pricing"
               onClick={() => setIsMenuOpen(false)}
@@ -391,9 +417,6 @@ export default function Header() {
             >
               Contact Us
             </Link>
-            <div className="px-4 py-2">
-              <AuthButtons />
-            </div>
           </div>
         )}
       </nav>

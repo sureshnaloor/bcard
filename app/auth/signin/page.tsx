@@ -4,6 +4,8 @@ import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { FcGoogle } from "react-icons/fc";
 import { useState, Suspense } from 'react';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/Footer';
 
 // Create a separate component for the sign-in form
 function SignInForm() {
@@ -27,8 +29,10 @@ function SignInForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+    <div>
+    <Header />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-[#5f9dc6] to-[#091218]">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg">
         {error && (
           <div className="p-4 text-red-500 bg-red-50 dark:bg-red-900/10 rounded-lg">
             {error === 'OAuthCallback' ? 
@@ -91,6 +95,8 @@ function SignInForm() {
           </a>
         </div>
       </div>
+    </div>
+    <Footer />
     </div>
   );
 }

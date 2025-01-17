@@ -1,31 +1,35 @@
 'use client';
 
-import { useSession, signOut } from 'next-auth/react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import Link from 'next/link';
-import { FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle, FaSignOutAlt, FaSignInAlt } from 'react-icons/fa';
 
-export default function AuthButtons() {
+interface AuthButtonsProps {
+  showText?: boolean;
+}
+
+export default function AuthButtons({ showText = true }: AuthButtonsProps) {
   const { data: session } = useSession();
 
   if (session) {
     return (
       <button
         onClick={() => signOut()}
-        className="flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
       >
-        <FaUserCircle className="w-4 h-4" />
-        Sign Out
+        <FaSignOutAlt className="w-4 h-4" />
+        {showText && <span>Sign Out</span>}
       </button>
     );
   }
 
   return (
-    <Link
-      href="/auth/signin"
-      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+    <button
+      onClick={() => signIn()}
+      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-cyan-600 hover:text-cyan-700 dark:text-cyan-400 dark:hover:text-cyan-300"
     >
-      <FaUserCircle className="w-4 h-4" />
-      Sign In
-    </Link>
+      <FaSignInAlt className="w-4 h-4" />
+      {showText && <span>Sign In</span>}
+    </button>
   );
 } 
