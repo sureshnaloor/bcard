@@ -348,6 +348,7 @@ export default function Header() {
             </>
           )}
 
+          <AuthButtons showText={false} />
           <ThemeSwitcher />
 
           <button
