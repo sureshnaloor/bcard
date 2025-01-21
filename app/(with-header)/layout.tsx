@@ -1,18 +1,18 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/Footer';
 
-export default function Layout({
+export default function WithHeaderLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="min-h-screen">
+      <div className="flex-1 flex flex-col">
         {children}
-      </main>
+      </div>
       <Footer />
-    </>
+    </div>
   );
-} 
+}

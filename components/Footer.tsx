@@ -1,6 +1,6 @@
-export default function Footer() {
+const Footer = () => {
   return (
-    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+    <footer className="w-full bg-gray-900 text-white py-8 relative z-[999]" style={{ position: 'relative', zIndex: 999 }}>
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -32,4 +32,6 @@ export default function Footer() {
       </div>
     </footer>
   );
-} 
+};
+
+export default Footer; 
