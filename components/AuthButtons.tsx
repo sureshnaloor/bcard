@@ -1,7 +1,7 @@
 'use client';
 
 import { useSession, signIn, signOut } from 'next-auth/react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FaUserCircle, FaSignOutAlt, FaSignInAlt } from 'react-icons/fa';
 
 interface AuthButtonsProps {
@@ -10,11 +10,17 @@ interface AuthButtonsProps {
 
 export default function AuthButtons({ showText = true }: AuthButtonsProps) {
   const { data: session } = useSession();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    router.push('/');
+  };
 
   if (session) {
     return (
       <button
-        onClick={() => signOut()}
+        onClick={handleSignOut}
         className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
       >
         <FaSignOutAlt className="w-4 h-4" />
