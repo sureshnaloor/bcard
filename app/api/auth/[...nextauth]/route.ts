@@ -43,20 +43,35 @@ const handler = NextAuth({
   },
   callbacks: {
     async jwt({ token }): Promise<ExtendedToken> {
-      return {
-        ...token,
-        role: token.role || 'user'
-      };
+      try {
+        return {
+          ...token,
+          role: token.role || 'user'
+        };
+      } catch (error) {
+        console.error("Error in jwt callback:", error);
+        return token;
+      }
     },
     async session({ session, token }: { session: ExtendedSession; token: ExtendedToken }): Promise<ExtendedSession> {
-      if (session.user) {
-        session.user.id = token.sub || '';
-        session.user.role = token.role || 'user';
-        session.user.isAdmin = session.user.email === process.env.ADMIN_EMAIL;
+      try {
+        if (session.user) {
+          session.user.id = token.sub || '';
+          session.user.role = token.role || 'user';
+          session.user.isAdmin = session.user.email === process.env.ADMIN_EMAIL;
+        }
+        return session;
+      } catch (error) {
+        console.error("Error in session callback:", error);
+        return session;
       }
-      return session;
     },
     async signIn({ user }) {
+      if (!user?.email) {
+        console.error("No user email provided");
+        return false;
+      }
+
       try {
         const client = await clientPromise;
         const db = client.db("businessCards");
@@ -80,6 +95,11 @@ const handler = NextAuth({
         return true;
       } catch (error) {
         console.error("Error in signIn callback:", error);
+        // Log more details about the error
+        if (error instanceof Error) {
+          console.error("Error message:", error.message);
+          console.error("Error stack:", error.stack);
+        }
         return false;
       }
     },

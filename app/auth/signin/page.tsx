@@ -3,28 +3,75 @@
 import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { FcGoogle } from "react-icons/fc";
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/Footer';
 
 // Create a separate component for the sign-in form
 function SignInForm() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
-  const error = searchParams.get('error');
+  const searchParams = useSearchParams() ?? null;
+  const callbackUrl = searchParams?.get('callbackUrl') || '/';
+  const error = searchParams?.get('error');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [showError, setShowError] = useState(false);
 
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-      await signIn('google', { 
+      setErrorMessage('');
+      setShowError(false);
+      
+      const result = await signIn('google', { 
         callbackUrl,
         redirect: true,
       });
+
+      // We'll only reach this code if there's an actual error
+      // Normal OAuth redirects won't trigger this
+      if (result?.error) {
+        setErrorMessage('Failed to sign in with Google. Please try again.');
+        console.error('Sign in error:', result.error);
+      }
+      
     } catch (error) {
       console.error('Sign in error:', error);
+      setErrorMessage('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Only show error messages that are actual errors
+  useEffect(() => {
+    let errorTimer: NodeJS.Timeout;
+    
+    if (error || (errorMessage && !isLoading)) {
+      errorTimer = setTimeout(() => {
+        setShowError(true);
+      }, 1000);
+    } else {
+      setShowError(false);
+    }
+
+    return () => {
+      if (errorTimer) {
+        clearTimeout(errorTimer);
+      }
+    };
+  }, [error, errorMessage, isLoading]);
+
+  // Error message mapping
+  const getErrorMessage = (errorCode: string | null) => {
+    switch (errorCode) {
+      case 'OAuthCallback':
+        return 'Error connecting to Google. Please try again.';
+      case 'AccessDenied':
+        return 'Access denied. Please try again.';
+      case 'Configuration':
+        return 'There is a problem with the server configuration.';
+      default:
+        return 'An error occurred during sign in.';
     }
   };
 
@@ -33,11 +80,9 @@ function SignInForm() {
     <Header />
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-[#5f9dc6] to-[#091218]">
       <div className="max-w-md w-full space-y-8 p-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg">
-        {error && (
+        {showError && (
           <div className="p-4 text-red-500 bg-red-50 dark:bg-red-900/10 rounded-lg">
-            {error === 'OAuthCallback' ? 
-              'Error connecting to Google. Please try again.' : 
-              'An error occurred during sign in.'}
+            {error ? getErrorMessage(error) : errorMessage}
           </div>
         )}
         
@@ -58,10 +103,22 @@ function SignInForm() {
         <div className="mt-8 space-y-6">
           <button
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
+            disabled={isLoading}
+            className={`w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 ${
+              isLoading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
-            <FcGoogle className="w-6 h-6" />
-            <span>Continue with Google</span>
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 border-t-2 border-b-2 border-gray-700 rounded-full animate-spin"></div>
+                <span>Signing in...</span>
+              </div>
+            ) : (
+              <>
+                <FcGoogle className="w-6 h-6" />
+                <span>Continue with Google</span>
+              </>
+            )}
           </button>
 
           <div className="relative">

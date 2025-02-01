@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 
 const testimonials = [
   {
@@ -37,6 +38,7 @@ const carouselImages = [
 ];
 
 const HomePage = () => {
+  const { data: session } = useSession();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Auto-advance carousel
@@ -57,6 +59,50 @@ const HomePage = () => {
       current === 0 ? carouselImages.length - 1 : current - 1
     );
   };
+  if (session) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-24 p-8">
+        <div className="bg-white p-8 rounded-xl shadow-lg max-w-2xl w-full">
+          <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+            Welcome Back, {session.user?.name || session.user?.email}!
+          </h1>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+            <p className="text-blue-800 text-center text-lg">
+              🚧 Under Construction 🚧
+            </p>
+            <p className="text-blue-600 text-center mt-2">
+              We're building your personalized dashboard where you'll be able to manage your vCard, 
+              digital card, and SmartWave profile.
+            </p>
+          </div>
+          <div className="grid gap-4 text-center">
+            <Button 
+              variant="outline" 
+              className="w-full"
+              disabled
+            >
+              Create vCard (Coming Soon)
+            </Button>
+            <Button 
+              variant="outline"
+              className="w-full"
+              disabled
+            >
+              Generate Digital Card (Coming Soon)
+            </Button>
+            <Button 
+              variant="outline"
+              className="w-full"
+              disabled
+            >
+              Setup SmartWave Profile (Coming Soon)
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col w-full">
       {/* Hero Section with Carousel */}
