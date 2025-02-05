@@ -38,8 +38,15 @@ const carouselImages = [
 ];
 
 const HomePage = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (status !== 'loading') {
+      setIsLoading(false);
+    }
+  }, [status]);
 
   // Auto-advance carousel
   useEffect(() => {
@@ -59,6 +66,15 @@ const HomePage = () => {
       current === 0 ? carouselImages.length - 1 : current - 1
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
   if (session) {
     return (
       <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-24 p-8">
@@ -83,6 +99,7 @@ const HomePage = () => {
             >
               Create vCard (Coming Soon)
             </Button>
+          
             <Button 
               variant="outline"
               className="w-full"

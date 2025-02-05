@@ -8,6 +8,9 @@ import Providers from '@/components/Providers';
 import { Toaster } from 'react-hot-toast';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import React from 'react';
+import { ErrorBoundary } from '@/app/components/ErrorBoundary';
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff", 
@@ -55,7 +58,18 @@ export default async function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <Providers session={session}>
-            {children}
+            <ErrorBoundary
+              fallback={
+                <div className="flex min-h-screen items-center justify-center">
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold text-red-600">Something went wrong!</h1>
+                    <p className="mt-2 text-gray-600">Please try refreshing the page</p>
+                  </div>
+                </div>
+              }
+            >
+              {children}
+            </ErrorBoundary>
           </Providers>
         </ThemeProvider>
         <Toaster position="top-right" />
