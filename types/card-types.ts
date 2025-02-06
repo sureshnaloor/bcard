@@ -1,50 +1,51 @@
-export interface VCardData {
-  // Personal Information
+import { ObjectId } from 'mongodb';
+
+export interface DigiVCard {
+  _id?: ObjectId;
+  userId: string;
   firstName: string;
-  middleName: string;
+  middleName?: string;
   lastName: string;
-  
-  // Professional Information
   organization: string;
   title: string;
-  department?: string;
-  
-  // Contact Information
-  email: string;
+  email?: string;
   mobilePhone: string;
   workPhone?: string;
   homePhone?: string;
   fax?: string;
   website?: string;
-  
-  // Address Information
   address?: string;
   city?: string;
   state?: string;
   zipCode?: string;
   country?: string;
-  
-  // Social Media
   linkedin?: string;
   twitter?: string;
   facebook?: string;
   instagram?: string;
   youtube?: string;
   github?: string;
-  
-  // Additional Information
   notes?: string;
-  
-  // System Fields
-  isDefault?: boolean;
+  isDefault: boolean;
+  qrCodeUrl?: string;
+  cardImageUrl?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface MediaData {
   location: {
+    address: string;
     lat?: number;
     lng?: number;
-    address?: string;
-  } | null;
+    useCurrentLocation?: boolean;
+  };
+  branding: {
+    logo?: string;
+    logoColor?: string;
+    backgroundImage?: string;
+    backgroundColor?: string;
+  };
   audioFiles: string[];
   images: string[];
   richText: string;
