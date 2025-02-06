@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import VCardStep from './steps/VCardStep';
 import { DigiVCard } from '@/types/card-types';
@@ -11,16 +10,15 @@ interface CardBuilderProps {
 }
 
 export default function CardBuilder({ initialData }: CardBuilderProps) {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const { data: session } = useSession();
   const [vCardData, setVCardData] = useState<DigiVCard>({
-    userId: session?.user?.email || '',
+    userId: '',
     firstName: '',
     middleName: '',
     lastName: '',
     organization: '',
     title: '',
-    email: session?.user?.email || '',
+    email: '',
     mobilePhone: '',
     workPhone: '',
     homePhone: '',
@@ -47,34 +45,53 @@ export default function CardBuilder({ initialData }: CardBuilderProps) {
   const [hasExistingCard, setHasExistingCard] = useState(false);
 
   useEffect(() => {
-    if (status === 'loading') return; // Wait for session to load
-    if (status === 'unauthenticated') {
-      router.push('/login'); // Redirect to login if not authenticated
-    } else if (status === 'authenticated') {
-      fetchExistingCard();
-    }
-  }, [status, session?.user?.email, router]);
-
-  const fetchExistingCard = async () => {
-    try {
-      const response = await fetch('/api/cards/get-vcard');
-      if (response.ok) {
-        const data = await response.json();
-        if (data.card) {
-          setVCardData(data.card);
-          setShowForm(false);
-          setHasExistingCard(true);
-        } else {
-          setShowForm(true);
-          setHasExistingCard(false);
+    const initializeData = async () => {
+      if (session?.user?.email) {
+        try {
+          const response = await fetch('/api/cards/get-vcard');
+          if (response.ok) {
+            const data = await response.json();
+            if (data.card) {
+              setVCardData(data.card);
+              setShowForm(false);
+              setHasExistingCard(true);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching card:', error);
+        } finally {
+          setIsLoading(false);
         }
       }
+    };
+
+    initializeData();
+  }, [session]);
+
+  const handleStepComplete = async () => {
+    try {
+      const response = await fetch('/api/cards/save-vcard', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...vCardData,
+          userId: session?.user?.email,
+          email: session?.user?.email
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save card');
+      }
+
+      setShowForm(false);
+      setHasExistingCard(true);
+      return await response.json();
     } catch (error) {
-      console.error('Error fetching card:', error);
-      setShowForm(true);
-      setHasExistingCard(false);
-    } finally {
-      setIsLoading(false);
+      console.error('Error saving card:', error);
+      throw error;
     }
   };
 
@@ -86,28 +103,6 @@ export default function CardBuilder({ initialData }: CardBuilderProps) {
       vCardData.title &&
       vCardData.mobilePhone
     );
-  };
-
-  const handleStepComplete = async () => {
-    try {
-      const response = await fetch('/api/cards/save-vcard', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(vCardData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save card');
-      }
-
-      setShowForm(false);
-      return await response.json();
-    } catch (error) {
-      console.error('Error saving card:', error);
-      throw error;
-    }
   };
 
   if (isLoading) {
