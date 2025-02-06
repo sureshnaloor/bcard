@@ -6,19 +6,22 @@ import VCardStep from './steps/VCardStep';
 import { DigiVCard } from '@/types/card-types';
 
 interface CardBuilderProps {
+  userEmail?: string;
   initialData?: DigiVCard;
 }
 
-export default function CardBuilder({ initialData }: CardBuilderProps) {
+export default function CardBuilder({ userEmail, initialData }: CardBuilderProps) {
   const { data: session } = useSession();
+  const email = userEmail || session?.user?.email || '';
+
   const [vCardData, setVCardData] = useState<DigiVCard>({
-    userId: '',
+    userId: email,
     firstName: '',
     middleName: '',
     lastName: '',
     organization: '',
     title: '',
-    email: '',
+    email: email,
     mobilePhone: '',
     workPhone: '',
     homePhone: '',
