@@ -6,58 +6,40 @@ import { ObjectId } from 'mongodb';
 
 export async function POST(req: Request) {
   try {
-    // Check authentication
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Connect to MongoDB
+    const data = await req.json();
     const client = await clientPromise;
     const db = client.db();
-    const collection = db.collection('digivcard');
 
-    // Get request body
-    const cardData = await req.json();
-
-    // If _id exists, update the existing document
-    if (cardData._id) {
-      const { _id, ...updateData } = cardData;
-      const result = await collection.updateOne(
-        { _id: new ObjectId(_id) },
-        { 
-          $set: {
-            ...updateData,
-            updatedAt: new Date()
-          }
-        }
+    // Validate and process the photo if it exists
+    if (data.photo && data.photo.length > 1000000) { // Check if base64 string is too long
+      return NextResponse.json(
+        { error: 'Photo size too large' },
+        { status: 400 }
       );
-      
-      return NextResponse.json({ 
-        success: true, 
-        message: 'Card updated successfully',
-        cardId: _id 
-      });
     }
 
-    // If no _id, create new document
-    const result = await collection.insertOne({
-      ...cardData,
-      userId: session.user.email,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
+    const { _id, ...dataWithoutId } = data; // Remove _id from the update data
+    const result = await db.collection('digivcard').updateOne(
+      { userId: session.user.email },
+      { 
+        $set: {
+          ...dataWithoutId,
+          updatedAt: new Date()
+        }
+      },
+      { upsert: true }
+    );
 
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Card saved successfully',
-      cardId: result.insertedId 
-    });
-
+    return NextResponse.json({ success: true, result });
   } catch (error) {
-    console.error('Error saving card:', error);
+    console.error('Error saving vCard:', error);
     return NextResponse.json(
-      { error: 'Error saving card' },
+      { error: 'Error saving vCard' },
       { status: 500 }
     );
   }
@@ -87,5 +69,22 @@ export async function GET(req: Request) {
       { error: 'Error fetching cards' },
       { status: 500 }
     );
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const card = await request.json();
+    const { _id, ...cardWithoutId } = card; // Remove _id from the update data
+    const client = await clientPromise;
+    const db = client.db();
+    const result = await db.collection('cards').updateOne(
+      { _id: new ObjectId(_id) },
+      { $set: cardWithoutId }
+    );
+    return Response.json({ success: true });
+  } catch (error) {
+    console.error('Error saving card:', error);
+    return Response.json({ error: 'Failed to save card' }, { status: 500 });
   }
 } 

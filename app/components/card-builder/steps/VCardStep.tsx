@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import Image from 'next/image';
 import * as htmlToImage from 'html-to-image';
@@ -16,33 +16,85 @@ interface VCardStepProps {
   hasExistingCard: boolean;
 }
 
+const processImage = async (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = document.createElement('img');
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        // Set smaller dimensions
+        const maxSize = 200; // smaller profile photo size
+        const scale = Math.min(maxSize / img.width, maxSize / img.height);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Failed to get canvas context'));
+          return;
+        }
+        
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        // Convert to JPEG with lower quality
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
+        resolve(dataUrl);
+      };
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = reader.result as string;
+    };
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
+  });
+};
+
+const getImageSrc = (photoData: string) => {
+  // Check if the string already includes the data URL prefix
+  if (photoData.startsWith('data:image')) {
+    return photoData;
+  }
+  // If it doesn't, add the prefix
+  return `data:image/jpeg;base64,${photoData}`;
+};
+
 export default function VCardStep({ data, onChange, onComplete, isValid, showForm, isEditing, hasExistingCard }: VCardStepProps) {
   const [showMore, setShowMore] = useState(false);
   const [showQR, setShowQR] = useState(!showForm);
   const [isGenerating, setIsGenerating] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const handleChange = (field: keyof DigiVCard, value: string) => {
-    onChange({ ...data, [field]: value });
+  const generateVCardString = () => {
+    const vcard = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      `FN:${data.firstName} ${data.middleName ? data.middleName + ' ' : ''}${data.lastName}`,
+      `N:${data.lastName};${data.firstName};${data.middleName || ''};;`,
+      `ORG:${data.organization}`,
+      `TITLE:${data.title}`,
+      `EMAIL:${data.email}`,
+      data.mobilePhone ? `TEL;TYPE=CELL:${data.mobilePhone}` : '',
+      data.workPhone ? `TEL;TYPE=WORK:${data.workPhone}` : '',
+      data.homePhone ? `TEL;TYPE=HOME:${data.homePhone}` : '',
+      data.fax ? `TEL;TYPE=FAX:${data.fax}` : '',
+      data.website ? `URL:${data.website}` : '',
+      data.address ? `ADR;TYPE=WORK:;;${data.address};${data.city};${data.state};${data.zipCode};${data.country}` : '',
+      data.linkedin ? `X-SOCIALPROFILE;TYPE=linkedin:${data.linkedin}` : '',
+      data.twitter ? `X-SOCIALPROFILE;TYPE=twitter:${data.twitter}` : '',
+      data.facebook ? `X-SOCIALPROFILE;TYPE=facebook:${data.facebook}` : '',
+      data.instagram ? `X-SOCIALPROFILE;TYPE=instagram:${data.instagram}` : '',
+      data.youtube ? `X-SOCIALPROFILE;TYPE=youtube:${data.youtube}` : '',
+      data.github ? `X-SOCIALPROFILE;TYPE=github:${data.github}` : '',
+      data.notes ? `NOTE:${data.notes}` : '',
+      'END:VCARD'
+    ].filter(Boolean).join('\n');
+
+    return vcard;
   };
 
-  const generateVCardString = () => {
-    const fullName = `${data.firstName} ${data.middleName} ${data.lastName}`.trim();
-    return `BEGIN:VCARD
-VERSION:3.0
-FN:${fullName}
-N:${data.lastName};${data.firstName};${data.middleName};;
-ORG:${data.organization}
-TITLE:${data.title}
-EMAIL:${data.email}
-TEL;TYPE=WORK:${data.workPhone}
-TEL;TYPE=HOME:${data.homePhone}
-TEL;TYPE=CELL:${data.mobilePhone}
-${data.fax ? `TEL;TYPE=FAX:${data.fax}` : ''}
-ADR:;;${data.address};${data.city};${data.state};${data.zipCode};${data.country}
-${data.website ? `URL:${data.website}` : ''}
-${data.notes ? `NOTE:${data.notes}` : ''}
-END:VCARD`;
+  const vCardString = useMemo(() => generateVCardString(), [data]);
+
+  const handleChange = (field: keyof DigiVCard, value: string) => {
+    onChange({ ...data, [field]: value });
   };
 
   const handleGenerateCard = async () => {
@@ -110,6 +162,42 @@ END:VCARD`;
     }
   };
 
+  const downloadVCard = () => {
+    const vCardString = generateVCardString();
+    const blob = new Blob([vCardString], { type: 'text/vcard;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${data.firstName}_${data.lastName}_contact.vcf`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size should be less than 5MB');
+      return;
+    }
+
+    try {
+      const dataUrl = await processImage(file);
+      handleChange('photo', dataUrl);
+    } catch (error) {
+      console.error('Error processing image:', error);
+      alert('Failed to process image. Please try again.');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Show title ONLY for new card creation */}
@@ -124,6 +212,59 @@ END:VCARD`;
 
       {showForm && (
         <>
+          {/* Add Photo Upload Section at the top */}
+          <div className="md:col-span-2">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Profile Photo</h3>
+            <div className="flex items-center space-x-6">
+              <div className="relative w-24 h-24">
+                {data.photo ? (
+                  <Image
+                    src={data.photo}
+                    alt="Profile photo"
+                    fill
+                    className="rounded-full object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
+                    <svg
+                      className="w-12 h-12 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              <div>
+                <label className="block">
+                  <span className="sr-only">Choose profile photo</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="block w-full text-sm text-gray-500
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-full file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-blue-50 file:text-blue-700
+                      hover:file:bg-blue-100"
+                  />
+                </label>
+                <p className="mt-1 text-sm text-gray-500">
+                  PNG, JPG, GIF up to 5MB
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Form fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Name Section */}
@@ -435,7 +576,7 @@ END:VCARD`;
               <h4 className="text-lg font-medium mb-4">Scan QR Code</h4>
               <div className="inline-block p-4 bg-white rounded-lg shadow-md qr-code">
                 <QRCodeSVG 
-                  value={generateVCardString()} 
+                  value={vCardString}
                   size={200}
                   level="H"
                   includeMargin={true}
@@ -453,13 +594,26 @@ END:VCARD`;
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-2xl">
                   <div className="absolute inset-0.5 bg-white/90 backdrop-blur-sm rounded-xl p-6">
                     <div className="h-full flex flex-col justify-between">
-                      {/* Header */}
-                      <div>
-                        <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                          {`${data.firstName} ${data.lastName}`}
-                        </h2>
-                        <p className="text-gray-600 font-medium">{data.title}</p>
-                        <p className="text-blue-600">{data.organization}</p>
+                      {/* Header with Photo */}
+                      <div className="flex items-center gap-4">
+                        {data.photo && (
+                          <div className="relative w-16 h-16">
+                            <Image
+                              src={data.photo}
+                              alt="Profile"
+                              fill
+                              className="rounded-full object-cover"
+                              unoptimized
+                            />
+                          </div>
+                        )}
+                        <div>
+                          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            {`${data.firstName} ${data.lastName}`}
+                          </h2>
+                          <p className="text-gray-600 font-medium">{data.title}</p>
+                          <p className="text-blue-600">{data.organization}</p>
+                        </div>
                       </div>
 
                       {/* Contact Details */}
@@ -493,7 +647,7 @@ END:VCARD`;
                       {/* QR Code */}
                       <div className="absolute bottom-4 right-4 w-16 h-16 bg-white rounded-lg p-1">
                         <QRCodeSVG 
-                          value={generateVCardString()} 
+                          value={vCardString}
                           size={56}
                           level="H"
                         />
@@ -502,15 +656,26 @@ END:VCARD`;
                   </div>
                 </div>
               </div>
-              <button
-                onClick={downloadDigitalCard}
-                className="mt-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center gap-2 mx-auto"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Download Digital Card
-              </button>
+              <div className="flex justify-center gap-4 mt-4">
+                <button
+                  onClick={downloadVCard}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-200 flex items-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Download vCard
+                </button>
+                <button
+                  onClick={downloadDigitalCard}
+                  className="mt-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center gap-2 mx-auto"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download Digital Card
+                </button>
+              </div>
             </div>
           </div>
         </div>

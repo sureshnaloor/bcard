@@ -31,6 +31,7 @@ export interface DigiVCard {
   cardImageUrl?: string;
   createdAt: Date;
   updatedAt: Date;
+  photo?: string;
 }
 
 export interface MediaData {
