@@ -5,6 +5,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import Image from 'next/image';
 import * as htmlToImage from 'html-to-image';
 import { DigiVCard } from '@/types/card-types';
+import imageCompression from 'browser-image-compression';
 
 interface VCardStepProps {
   data: DigiVCard;
@@ -17,35 +18,22 @@ interface VCardStepProps {
 }
 
 const processImage = async (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = document.createElement('img');
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        // Set smaller dimensions
-        const maxSize = 200; // smaller profile photo size
-        const scale = Math.min(maxSize / img.width, maxSize / img.height);
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          reject(new Error('Failed to get canvas context'));
-          return;
-        }
-        
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        // Convert to JPEG with lower quality
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
-        resolve(dataUrl);
-      };
-      img.onerror = () => reject(new Error('Failed to load image'));
-      img.src = reader.result as string;
-    };
-    reader.onerror = () => reject(new Error('Failed to read file'));
-    reader.readAsDataURL(file);
-  });
+  const options = {
+    maxSizeMB: 0.005, // 5KB
+    maxWidthOrHeight: 150, // Smaller dimension
+    useWebWorker: true,
+    fileType: 'image/jpeg',
+    initialQuality: 0.3 // Lower initial quality
+  };
+
+  try {
+    const compressedFile = await imageCompression(file, options);
+    const base64 = await imageCompression.getDataUrlFromFile(compressedFile);
+    return base64;
+  } catch (error) {
+    console.error('Error compressing image:', error);
+    throw new Error('Failed to compress image');
+  }
 };
 
 const getImageSrc = (photoData: string) => {
@@ -62,6 +50,35 @@ export default function VCardStep({ data, onChange, onComplete, isValid, showFor
   const [showQR, setShowQR] = useState(!showForm);
   const [isGenerating, setIsGenerating] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  const generateFullVCardString = () => {
+    const vcard = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      `FN:${data.firstName} ${data.middleName ? data.middleName + ' ' : ''}${data.lastName}`,
+      `N:${data.lastName};${data.firstName};${data.middleName || ''};;`,
+      `ORG:${data.organization}`,
+      `TITLE:${data.title}`,
+      `EMAIL:${data.email}`,
+      data.mobilePhone ? `TEL;TYPE=CELL:${data.mobilePhone}` : '',
+      data.workPhone ? `TEL;TYPE=WORK:${data.workPhone}` : '',
+      data.homePhone ? `TEL;TYPE=HOME:${data.homePhone}` : '',
+      data.fax ? `TEL;TYPE=FAX:${data.fax}` : '',
+      data.website ? `URL:${data.website}` : '',
+      data.address ? `ADR;TYPE=WORK:;;${data.address};${data.city};${data.state};${data.zipCode};${data.country}` : '',
+      data.linkedin ? `X-SOCIALPROFILE;TYPE=linkedin:${data.linkedin}` : '',
+      data.twitter ? `X-SOCIALPROFILE;TYPE=twitter:${data.twitter}` : '',
+      data.facebook ? `X-SOCIALPROFILE;TYPE=facebook:${data.facebook}` : '',
+      data.instagram ? `X-SOCIALPROFILE;TYPE=instagram:${data.instagram}` : '',
+      data.youtube ? `X-SOCIALPROFILE;TYPE=youtube:${data.youtube}` : '',
+      data.github ? `X-SOCIALPROFILE;TYPE=github:${data.github}` : '',
+      data.notes ? `NOTE:${data.notes}` : '',
+      data.photo ? `PHOTO;ENCODING=b;TYPE=JPEG:${data.photo.split(',')[1]}` : '',
+      'END:VCARD'
+    ].filter(Boolean).join('\n');
+
+    return vcard;
+  };
 
   const generateVCardString = () => {
     const vcard = [
@@ -163,8 +180,8 @@ export default function VCardStep({ data, onChange, onComplete, isValid, showFor
   };
 
   const downloadVCard = () => {
-    const vCardString = generateVCardString();
-    const blob = new Blob([vCardString], { type: 'text/vcard;charset=utf-8' });
+    const fullVCardString = generateFullVCardString();
+    const blob = new Blob([fullVCardString], { type: 'text/vcard;charset=utf-8' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -578,7 +595,7 @@ export default function VCardStep({ data, onChange, onComplete, isValid, showFor
                 <QRCodeSVG 
                   value={vCardString}
                   size={200}
-                  level="H"
+                  level="L"
                   includeMargin={true}
                 />
               </div>
@@ -649,7 +666,7 @@ export default function VCardStep({ data, onChange, onComplete, isValid, showFor
                         <QRCodeSVG 
                           value={vCardString}
                           size={56}
-                          level="H"
+                          level="L"
                         />
                       </div>
                     </div>
