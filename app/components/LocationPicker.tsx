@@ -1,4 +1,4 @@
-import { useLoadScript, GoogleMap, Marker } from '@react-google-maps/api';
+import { GoogleMap, Marker } from '@react-google-maps/api';
 import { useState, useCallback, useEffect } from 'react';
 
 interface Landmark {
@@ -34,11 +34,6 @@ export default function LocationPicker({ onLocationSelect, onLocationSave }: Loc
     address: string;
     landmark?: string;
   } | null>(null);
-
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-    libraries: ['places'],
-  });
 
   const findNearbyLandmarks = async (location: google.maps.LatLngLiteral) => {
     const service = new google.maps.places.PlacesService(
@@ -87,7 +82,7 @@ export default function LocationPicker({ onLocationSelect, onLocationSave }: Loc
           setMarker(currentLocation);
           setInitialLocationSet(true);
           
-          if (isLoaded) {
+          if (navigator.geolocation) {
             const geocoder = new google.maps.Geocoder();
             geocoder.geocode({ location: currentLocation }, (results, status) => {
               if (status === 'OK' && results?.[0]) {
@@ -109,7 +104,7 @@ export default function LocationPicker({ onLocationSelect, onLocationSave }: Loc
         }
       );
     }
-  }, [isLoaded, onLocationSelect, initialLocationSet]);
+  }, [onLocationSelect, initialLocationSet]);
 
   const handleMapClick = useCallback(async (e: google.maps.MapMouseEvent) => {
     if (!e.latLng) return;
@@ -146,9 +141,6 @@ export default function LocationPicker({ onLocationSelect, onLocationSave }: Loc
       onLocationSave(locationToSave);
     }
   };
-
-  if (loadError) return <div>Error loading map</div>;
-  if (!isLoaded) return <div>Loading map...</div>;
 
   return (
     <div className="space-y-4">

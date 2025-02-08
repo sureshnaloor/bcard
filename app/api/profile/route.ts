@@ -28,12 +28,14 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    console.log('Received profile data:', body); // Debug log
+
     const { 
       email,
       name,
       position,
       companyName,
-      linkedinUrl,
+      linkedinUrl, // Ensure this is included
       description,
       location,
       birthday,
@@ -54,7 +56,7 @@ export async function POST(request: Request) {
       name,
       position,
       companyName,
-      linkedinUrl,
+      linkedinUrl, // Include in profile object
       description,
       location,
       birthday: birthday ? new Date(birthday) : null,
@@ -69,6 +71,8 @@ export async function POST(request: Request) {
       { $set: profile },
       { upsert: true }
     );
+
+    console.log('Save result:', result); // Debug log
 
     return NextResponse.json({ 
       success: true, 
