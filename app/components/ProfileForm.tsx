@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -8,6 +8,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import 'react-datepicker/dist/react-datepicker.css';
 import LocationPicker from './LocationPicker';
 import RichTextEditor from './RichTextEditor';
+import { useSession } from 'next-auth/react';
 
 interface ProfileFormData {
   name: string;
@@ -20,8 +21,8 @@ interface ProfileFormData {
     lng: number;
     address: string;
   };
-  birthday: Date;
-  anniversary: Date;
+  birthday?: Date | null;
+  anniversary?: Date | null;
   richContent: string;
   youtubeUrl: string;
 }
@@ -39,15 +40,23 @@ export default function ProfileForm() {
     },
   });
 
+  const session = useSession();
+
   const onSubmit = async (data: ProfileFormData) => {
     try {
-      const response = await fetch('/api/cards/save-vcard', {
+      const response = await fetch('/api/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          email: session?.data?.user?.email
+        }),
       });
-      if (!response.ok) throw new Error('Failed to save');
-      // Handle success
+
+      if (!response.ok) throw new Error('Failed to save profile');
+      
+      const result = await response.json();
+      // Handle success (e.g., show notification, redirect)
     } catch (error) {
       // Handle error
     }
@@ -69,6 +78,35 @@ export default function ProfileForm() {
   }) => {
     setValue('location', savedLocation);
   };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (session?.data?.user?.email) {
+        try {
+          const response = await fetch(`/api/profile?email=${session.data.user.email}`);
+          if (response.ok) {
+            const { profile } = await response.json();
+            if (profile) {
+              Object.entries(profile).forEach(([key, value]) => {
+                const typedKey = key as keyof ProfileFormData;
+                if (key === 'birthday' || key === 'anniversary') {
+                  setValue(typedKey, value ? new Date(value as string) : null);
+                } else if (key === 'location') {
+                  setValue(typedKey, value as { lat: number; lng: number; address: string });
+                } else {
+                  setValue(typedKey, value as ProfileFormData[typeof typedKey]);
+                }
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching profile:', error);
+        }
+      }
+    };
+
+    fetchProfile();
+  }, [session, setValue]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl mx-auto p-6 space-y-6">
