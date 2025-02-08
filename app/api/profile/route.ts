@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
 
 // Get profile by user email
 export async function GET(request: Request) {
@@ -13,9 +12,11 @@ export async function GET(request: Request) {
     }
 
     const client = await clientPromise;
-    const db = client.db("your_database_name");
+    const db = client.db('test');  // Explicitly use 'test' database
     
-    const profile = await db.collection('profiles').findOne({ email });
+    // Query by userId (which is session.user.email)
+    const profile = await db.collection('profiles').findOne({ userId: email });
+    console.log('DEBUG: Fetched profile:', profile);
     
     return NextResponse.json({ profile: profile || null });
   } catch (error) {
@@ -28,55 +29,74 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    console.log('Received profile data:', body); // Debug log
+    console.log('DEBUG: Received body:', body);
 
     const { 
-      email,
+      userId,  // This is session.user.email
+      email,   // This is the editable email field
       name,
       position,
       companyName,
-      linkedinUrl, // Ensure this is included
+      linkedinUrl,
       description,
       location,
       birthday,
       anniversary,
       richContent,
-      youtubeUrl
+      youtubeUrl,
+      backgroundColor, // New field
+      logo,           // New field
     } = body;
 
-    if (!email) {
-      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
+    // Validate logo size if present
+    if (logo) {
+      const base64Size = Buffer.from(logo.split(',')[1], 'base64').length;
+      if (base64Size > 10 * 1024) {
+        return NextResponse.json({ error: 'Logo must be less than 10KB' }, { status: 400 });
+      }
     }
 
     const client = await clientPromise;
-    const db = client.db("your_database_name");
+    const db = client.db('test');  // Explicitly use 'test' database
 
-    const profile = {
-      email,
-      name,
-      position,
-      companyName,
-      linkedinUrl, // Include in profile object
-      description,
-      location,
-      birthday: birthday ? new Date(birthday) : null,
-      anniversary: anniversary ? new Date(anniversary) : null,
-      richContent,
-      youtubeUrl,
-      updatedAt: new Date(),
+    const updateData = {
+      $set: {
+        userId,        // Store session.user.email as userId
+        email,         // Store editable email
+        name,
+        position,
+        companyName,
+        linkedinUrl,
+        description,
+        location,
+        birthday: birthday ? new Date(birthday) : null,
+        anniversary: anniversary ? new Date(anniversary) : null,
+        richContent,
+        youtubeUrl,
+        backgroundColor, // Store background color
+        logo,           // Store logo as base64
+        updatedAt: new Date()
+      }
     };
 
+    console.log('DEBUG: Update data:', updateData);
+
+    // Save to profiles collection, using userId as the identifier
     const result = await db.collection('profiles').updateOne(
-      { email },
-      { $set: profile },
+      { userId }, 
+      updateData,
       { upsert: true }
     );
 
-    console.log('Save result:', result); // Debug log
+    console.log('DEBUG: MongoDB result:', result);
 
     return NextResponse.json({ 
       success: true, 
-      profile,
+      profile: updateData.$set,
       upserted: result.upsertedId ? true : false 
     });
   } catch (error) {
@@ -96,9 +116,10 @@ export async function DELETE(request: Request) {
     }
 
     const client = await clientPromise;
-    const db = client.db("your_database_name");
+    const db = client.db('test');  // Explicitly use 'test' database
     
-    await db.collection('profiles').deleteOne({ email });
+    // Delete by userId
+    await db.collection('profiles').deleteOne({ userId: email });
     
     return NextResponse.json({ success: true });
   } catch (error) {

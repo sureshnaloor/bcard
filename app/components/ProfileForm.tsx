@@ -10,6 +10,8 @@ import LocationPicker from './LocationPicker';
 import RichTextEditor from './RichTextEditor';
 import { useSession } from 'next-auth/react';
 import GoogleMapsProvider from './GoogleMapsProvider';
+import ColorPicker from './ColorPicker';
+import LogoUpload from './LogoUpload';
 
 interface ProfileFormData {
   name: string;
@@ -26,6 +28,9 @@ interface ProfileFormData {
   anniversary?: Date | null;
   richContent: string;
   youtubeUrl: string;
+  email: string;
+  backgroundColor: string;
+  logo?: string | null;
 }
 
 export default function ProfileForm() {
@@ -40,7 +45,10 @@ export default function ProfileForm() {
       birthday: null,
       anniversary: null,
       richContent: '',
-      youtubeUrl: ''
+      youtubeUrl: '',
+      email: '',
+      backgroundColor: '#ffffff',
+      logo: null
     }
   });
 
@@ -48,14 +56,21 @@ export default function ProfileForm() {
 
   const onSubmit = async (data: ProfileFormData) => {
     try {
-      console.log('Submitting data:', data); // Debug log
+      const sessionEmail = session?.data?.user?.email;
+      console.log('DEBUG: Form data before submit:', {
+        ...data,
+        userId: sessionEmail,
+        sessionEmail,
+        formEmail: data.email
+      });
+
       const response = await fetch('/api/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...data,
-          email: session?.data?.user?.email,
-          linkedinUrl: data.linkedinUrl // Ensure linkedinUrl is included
+          userId: sessionEmail,
+          email: data.email || sessionEmail // Ensure email is included
         }),
       });
 
@@ -65,15 +80,41 @@ export default function ProfileForm() {
       }
       
       const result = await response.json();
-      console.log('Save result:', result); // Debug log
-      
-      // Show success message
+      console.log('DEBUG: Save response:', result);
       alert('Profile saved successfully!');
     } catch (error) {
       console.error('Error saving profile:', error);
       alert('Failed to save profile. Please try again.');
     }
   };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (session?.data?.user?.email) {
+        try {
+          const response = await fetch(`/api/profile?email=${session.data.user.email}`);
+          if (response.ok) {
+            const { profile } = await response.json();
+            console.log('DEBUG: Fetched profile:', profile);
+            if (profile) {
+              Object.entries(profile).forEach(([key, value]) => {
+                console.log('DEBUG: Setting form value:', key, value);
+                if (key === 'birthday' || key === 'anniversary') {
+                  setValue(key as keyof ProfileFormData, value ? new Date(value as string) : null);
+                } else {
+                  setValue(key as keyof ProfileFormData, value as any);
+                }
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching profile:', error);
+        }
+      }
+    };
+
+    fetchProfile();
+  }, [session, setValue]);
 
   // Use the form's watch function to debug field values
   useEffect(() => {
@@ -86,6 +127,16 @@ export default function ProfileForm() {
   return (
     <GoogleMapsProvider>
       <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl mx-auto p-6 space-y-6">
+        {/* Add email field at the top */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Email</label>
+          <input
+            {...register('email')}
+            type="email"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          />
+        </div>
+
         {/* Basic Text Fields */}
         <div className="space-y-4">
           <div>
@@ -178,6 +229,26 @@ export default function ProfileForm() {
               type="url"
               placeholder="https://youtube.com/..."
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Background Color
+            </label>
+            <ColorPicker
+              value={watch('backgroundColor')}
+              onChange={(color) => setValue('backgroundColor', color)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Logo (max 10KB)
+            </label>
+            <LogoUpload
+              value={watch('logo')}
+              onChange={(base64) => setValue('logo', base64)}
             />
           </div>
         </div>

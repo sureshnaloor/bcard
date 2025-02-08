@@ -22,7 +22,7 @@ export default function CardBuilder({ userEmail, initialData, onCardCreated }: C
     lastName: '',
     organization: '',
     title: '',
-    email: email,
+    email: '',
     mobilePhone: '',
     workPhone: '',
     homePhone: '',
@@ -84,7 +84,6 @@ export default function CardBuilder({ userEmail, initialData, onCardCreated }: C
         body: JSON.stringify({
           ...vCardData,
           userId: session?.user?.email,
-          email: session?.user?.email
         }),
       });
 
