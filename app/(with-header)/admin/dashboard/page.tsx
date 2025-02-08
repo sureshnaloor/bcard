@@ -60,8 +60,8 @@ export default function Dashboard() {
   };
 
   const filteredCards = isAdmin 
-    ? cards 
-    : cards.filter(card => card.email === session?.user?.email);
+    ? (cards || []) 
+    : (cards || []).filter(card => card.email === session?.user?.email);
 
   return (
     <div className="container mx-auto px-4 py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
