@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
+import { generateShortId } from '@/utils/profileidgenerator';
 
 // Get profile by user email
 export async function GET(request: Request) {
@@ -63,10 +65,19 @@ export async function POST(request: Request) {
     const client = await clientPromise;
     const db = client.db('test');  // Explicitly use 'test' database
 
+    // First check if profile exists
+    const existingProfile = await db.collection('profiles').findOne({ userId });
+    
+    // Use existing _id if profile exists, otherwise generate new one
+    const _id = existingProfile ? existingProfile._id : new ObjectId();
+    
+    // Generate shortId from ObjectId
+    const shortId = generateShortId(_id.toString());
+
     const updateData = {
       $set: {
-        userId,        // Store session.user.email as userId
-        email,         // Store editable email
+        userId,
+        email,
         name,
         position,
         companyName,
@@ -77,11 +88,20 @@ export async function POST(request: Request) {
         anniversary: anniversary ? new Date(anniversary) : null,
         richContent,
         youtubeUrl,
-        backgroundColor, // Store background color
-        logo,           // Store logo as base64
+        backgroundColor,
+        logo,
+        shortId,
         updatedAt: new Date()
       }
     };
+
+    // Only include $setOnInsert if this is a new profile
+    if (!existingProfile) {
+      updateData.$setOnInsert = {
+        _id,
+        createdAt: new Date()
+      };
+    }
 
     console.log('DEBUG: Update data:', updateData);
 
@@ -96,7 +116,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      profile: updateData.$set,
+      profile: { ...updateData.$set, _id },
+      shortId,
       upserted: result.upsertedId ? true : false 
     });
   } catch (error) {
