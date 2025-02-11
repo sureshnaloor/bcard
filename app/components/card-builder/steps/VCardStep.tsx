@@ -6,6 +6,7 @@ import Image from 'next/image';
 import * as htmlToImage from 'html-to-image';
 import { DigiVCard } from '@/types/card-types';
 import imageCompression from 'browser-image-compression';
+import BCardComponent from '../Bcardcomponent';
 
 interface VCardStepProps {
   data: DigiVCard;
@@ -585,103 +586,57 @@ export default function VCardStep({ data, onChange, onComplete, isValid, showFor
       {showQR && !showForm && (
         <div className="mt-8 p-6 bg-gray-50 rounded-lg">
           {!isEditing && (
-            <h3 className="text-xl font-semibold mb-4">Your Digital Card is Ready!</h3>
+            null
           )}
           <div className="grid md:grid-cols-2 gap-8">
-            {/* QR Code - for display only */}
+            {/* QR Code - with updated size and styling */}
             <div className="text-center">
-              <h4 className="text-lg font-medium mb-4">Scan QR Code</h4>
+              <h4 className="text-[16px] font-semibold italic mb-4">Scan QR Code</h4>
               <div className="inline-block p-4 bg-white rounded-lg shadow-md qr-code">
                 <QRCodeSVG 
                   value={vCardString}
-                  size={200}
-                  level="L"
+                  size={160} // 2 inches = 192 pixels (96dpi)
+                  level="M"  // Medium error correction for better reliability
                   includeMargin={true}
+                  className="transition-transform hover:scale-105"
                 />
               </div>
-              <p className="mt-4 text-sm text-gray-600">
+              <p className="mt-4 text-[12px] font-semibold text-gray-600">
                 Scan this QR code with your phone to save contact
               </p>
             </div>
 
             {/* Digital Card Preview with Download */}
-            <div className="text-center">
-              <h4 className="text-lg font-medium mb-4">Digital Business Card</h4>
+            <div >
+              <h4 className="text-[16px] font-semibold italic text-gray-600 text-center mb-4">Digital Business Card</h4>
               <div className="relative w-full aspect-[1.75] max-w-md mx-auto" ref={cardRef}>
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-2xl">
-                  <div className="absolute inset-0.5 bg-white/90 backdrop-blur-sm rounded-xl p-6">
-                    <div className="h-full flex flex-col justify-between">
-                      {/* Header with Photo */}
-                      <div className="flex items-center gap-4">
-                        {data.photo && (
-                          <div className="relative w-16 h-16">
-                            <Image
-                              src={data.photo}
-                              alt="Profile"
-                              fill
-                              className="rounded-full object-cover"
-                              unoptimized
-                            />
-                          </div>
-                        )}
-                        <div>
-                          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                            {`${data.firstName} ${data.lastName}`}
-                          </h2>
-                          <p className="text-gray-600 font-medium">{data.title}</p>
-                          <p className="text-blue-600">{data.organization}</p>
-                        </div>
-                      </div>
-
-                      {/* Contact Details */}
-                      <div className="text-sm text-gray-600 space-y-1">
-                        <div className="flex items-center gap-2">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                          </svg>
-                          <span>{data.mobilePhone}</span>
-                        </div>
-                        {data.email && (
-                          <div className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                            </svg>
-                            <span>{data.email}</span>
-                          </div>
-                        )}
-                        {data.website && (
-                          <div className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                            </svg>
-                            <span>{data.website}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* QR Code */}
-                      <div className="absolute bottom-4 right-4 w-16 h-16 bg-white rounded-lg p-1">
-                        <QRCodeSVG 
-                          value={vCardString}
-                          size={56}
-                          level="L"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <BCardComponent 
+                  name={`${data.firstName} ${data.lastName}`}
+                  company={data.organization || ''}
+                  title={data.title || ''}
+                  address={{
+                    street: data.address || '',
+                    city: data.city || '',
+                    country: data.country || ''
+                  }}
+                  phone={data.mobilePhone || ''}
+                  email={data.email || ''}
+                  website={data.website || ''}
+                />
               </div>
               <div className="flex justify-center gap-4 mt-4">
                 <button
                   onClick={downloadVCard}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-200 flex items-center gap-2"
+                  className="px-3 text-xs md:text-sm bg-blue-100 text-blue-600 
+                    rounded-md hover:bg-blue-200 transition-all duration-200 
+                    flex items-center gap-2 font-medium"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" 
+                    />
                   </svg>
-                  Download vCard
+                  <p className="text-xs md:text-sm font-semibold">vCard</p>
                 </button>
                 <button
                   onClick={downloadDigitalCard}
@@ -690,7 +645,7 @@ export default function VCardStep({ data, onChange, onComplete, isValid, showFor
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
-                  Download Digital Card
+                  Digital Card
                 </button>
               </div>
             </div>

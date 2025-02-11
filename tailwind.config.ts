@@ -1,15 +1,23 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: ['class', 'class'],
+  darkMode: ['class'],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+	container: {
+		center: true,
+		padding: "2rem",
+		screens: {
+		  "2xl": "1400px",
+		},
+	},
   	extend: {
   		colors: {
+			"pearl-white": "#f0eae2",
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			'auth-gradient-from': '#ffffff',
@@ -58,6 +66,7 @@ const config: Config = {
   			'auth-gradient': 'linear-gradient(to bottom right, var(--tw-gradient-stops))',
   			glossy: 'linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)'
   		},
+		
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',

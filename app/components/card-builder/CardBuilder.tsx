@@ -119,15 +119,21 @@ export default function CardBuilder({ userEmail, initialData, onCardCreated }: C
     <div className="max-w-4xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         {!showForm && (
-          <h1 className="text-2xl font-bold">Your Digital Card</h1>
+          <h1 className="text-[14px] md:text-lg font-bold px-4 py-2 rounded-lg 
+            bg-white/30 backdrop-blur-sm border border-white/20 shadow-lg
+            dark:bg-gray-800/30 dark:border-gray-700/30
+            transition-all duration-300 hover:bg-white/40 dark:hover:bg-gray-800/40
+            text-gray-800 dark:text-gray-200">
+            Your Digital Card
+          </h1>
         )}
         <div className="flex gap-4">
           {hasExistingCard && !showForm && (
             <button
               onClick={() => setShowForm(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center gap-2"
+              className="px-2 py-1 md:px-4 md:py-2 text-xs md:text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center gap-1 md:gap-2"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
               Edit Card
@@ -136,9 +142,9 @@ export default function CardBuilder({ userEmail, initialData, onCardCreated }: C
           {showProfileButton && (
             <button
               onClick={() => onCardCreated()}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center gap-2"
+              className="px-2 py-1 md:px-4 md:py-2 text-xs md:text-sm bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center gap-1 md:gap-2"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
               Create Digital Profile
