@@ -28,8 +28,11 @@ export default function CardBuilderPage() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-24 p-8">
       <div className="bg-white p-8 rounded-xl shadow-lg max-w-4xl w-full">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-          Create Your Business Card
+        <h1 className="text-xl font-bold text-gray-800 mb-6 text-center px-4 py-2 rounded-lg 
+          bg-white/30 backdrop-blur-sm border border-white/20 shadow-lg
+          dark:bg-gray-800/30 dark:border-gray-700/30
+          transition-all duration-300 hover:bg-white/40 dark:hover:bg-gray-800/40">
+          Business Card
         </h1>
         <CardBuilder userEmail={session.user?.email || ''} onCardCreated={handleCardCreated} />
       </div>

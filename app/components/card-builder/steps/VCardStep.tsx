@@ -627,25 +627,37 @@ export default function VCardStep({ data, onChange, onComplete, isValid, showFor
               <div className="flex justify-center gap-4 mt-4">
                 <button
                   onClick={downloadVCard}
-                  className="px-3 text-xs md:text-sm bg-blue-100 text-blue-600 
-                    rounded-md hover:bg-blue-200 transition-all duration-200 
-                    flex items-center gap-2 font-medium"
+                  className="group inline-flex items-center gap-1 transition-all duration-300"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
-                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" 
-                    />
-                  </svg>
-                  <p className="text-xs md:text-sm font-semibold">vCard</p>
+                  <div className="p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 
+                    transition-colors duration-200">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" 
+                      />
+                    </svg>
+                  </div>
+                  <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs 
+                    transition-all duration-300 ease-in-out text-xs text-blue-600">
+                    download vCard
+                  </span>
                 </button>
                 <button
                   onClick={downloadDigitalCard}
-                  className="mt-4 px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 transition-all duration-200 flex items-center gap-2 mx-auto"
+                  className="group inline-flex items-center gap-1 transition-all duration-300"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  Digital Card
+                  <div className="p-2 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 
+                    transition-colors duration-200">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" 
+                      />
+                    </svg>
+                  </div>
+                  <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs 
+                    transition-all duration-300 ease-in-out text-xs text-blue-600">
+                    download digital card
+                  </span>
                 </button>
               </div>
             </div>
