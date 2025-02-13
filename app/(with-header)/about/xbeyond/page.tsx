@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { FaLightbulb, FaUsers, FaGlobe } from 'react-icons/fa'
 
 export default function AboutPage() {

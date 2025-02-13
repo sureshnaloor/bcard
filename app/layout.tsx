@@ -9,7 +9,7 @@ import { Toaster } from 'react-hot-toast';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import React from 'react';
-import { ErrorBoundary } from '@/app/components/ErrorBoundary';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 
 const geistSans = localFont({

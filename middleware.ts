@@ -50,5 +50,7 @@ export const config = {
     '/store',
     '/checkout/:path*',
     '/checkout',
+    '/card-builder/:path*',
+    '/card-builder',
   ],
 }; 

@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb';
 import { parseShortId } from '@/utils/profileidgenerator';
-import ProfileCard, { ProfileCardProps } from '@/app/components/ProfileCard';
+import ProfileCard, { ProfileCardProps } from '@/components/ProfileCard';
 
 interface ProfilePageProps {
   params: {

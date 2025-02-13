@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { FcGoogle } from "react-icons/fc";
 import { useState, Suspense, useEffect } from 'react';
 import Header from '@/components/layout/Header';
-import Footer from '@/components/Footer';
+import Footer from '@/components/layout/Footer';
 
 // Create a separate component for the sign-in form
 function SignInForm() {

@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import CardBuilder from '@/app/components/card-builder/CardBuilder';
-import ProfileForm from '@/app/components/ProfileForm';
+import CardBuilder from '@/components/card-builder/CardBuilder';
+import ProfileForm from '@/components/ProfileForm';
 import { redirect } from 'next/navigation';
 
 export default function CardBuilderPage() {

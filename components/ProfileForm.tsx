@@ -7,7 +7,7 @@ import DatePicker from 'react-datepicker';
 import type { SubmitHandler } from 'react-hook-form';
 import 'react-datepicker/dist/react-datepicker.css';
 import LocationPicker from './LocationPicker';
-import RichTextEditor from './RichTextEditor';
+import RichTextEditor from './RichTextEditor1';
 import { useSession } from 'next-auth/react';
 import GoogleMapsProvider from './GoogleMapsProvider';
 import ColorPicker from './ColorPicker';
