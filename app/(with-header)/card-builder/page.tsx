@@ -1,21 +1,24 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import CardBuilder from '@/components/card-builder/CardBuilder';
 import ProfileForm from '@/components/ProfileForm';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export default function CardBuilderPage() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [showProfileForm, setShowProfileForm] = useState(false);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin');
+    }
+  }, [status, router]);
 
   if (status === 'loading') {
     return <div>Loading...</div>;
-  }
-
-  if (!session) {
-    redirect('/auth/signin');
   }
 
   const handleCardCreated = () => {
@@ -34,7 +37,7 @@ export default function CardBuilderPage() {
           transition-all duration-300 hover:bg-white/40 dark:hover:bg-gray-800/40">
           Business Card
         </h1>
-        <CardBuilder userEmail={session.user?.email || ''} onCardCreated={handleCardCreated} />
+        <CardBuilder userEmail={session?.user?.email || ''} onCardCreated={handleCardCreated} />
       </div>
 
       {/* Profile Form Modal */}
@@ -56,4 +59,4 @@ export default function CardBuilderPage() {
       )}
     </div>
   );
-} 
+}
