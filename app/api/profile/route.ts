@@ -97,7 +97,7 @@ export async function POST(request: Request) {
 
     // Only include $setOnInsert if this is a new profile
     if (!existingProfile) {
-      updateData.$setOnInsert = {
+      (updateData as any).$setOnInsert = {
         _id,
         createdAt: new Date()
       };
