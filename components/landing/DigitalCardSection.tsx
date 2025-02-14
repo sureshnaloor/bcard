@@ -3,9 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { DigitalCard } from "./DigitalCard"
 
 interface DigitalCardSectionProps {
   isComplete: boolean
@@ -13,7 +11,15 @@ interface DigitalCardSectionProps {
     name: string
     company: string
     title: string
-  }
+    address: {
+      street: string
+      city: string
+      country: string
+    };
+    email: string
+    website: string
+    phone: string
+  };
   setUserData: React.Dispatch<React.SetStateAction<any>>
 }
 
@@ -26,64 +32,35 @@ export function DigitalCardSection({ isComplete, userData, setUserData }: Digita
   }
 
   if (isComplete && !isEditing) {
+    const { name, company, title, address, email, website, phone } = userData;
+    const digitalCardProps = {
+      name,
+      company,
+      title,
+      address: {
+        ...address,
+        coordinates: { latitude: 0, longitude: 0 } // Default coordinates, replace with actual values if available
+      },
+      email,
+      website,
+      phone
+    };
+
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Digital Card</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>
-            <strong>Name:</strong> {userData.name}
-          </p>
-          <p>
-            <strong>Company:</strong> {userData.company}
-          </p>
-          <p>
-            <strong>Title:</strong> {userData.title}
-          </p>
-          <Button onClick={() => setIsEditing(true)} className="mt-4">
-            Edit Digital Card
-          </Button>
-        </CardContent>
-      </Card>
-    )
+      <div>
+        <DigitalCard {...digitalCardProps} />
+        <Button onClick={() => setIsEditing(true)} className="mt-4">
+          Edit Digital Card
+        </Button>
+      </div>
+    );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{isComplete ? "Edit Digital Card" : "Create Digital Card"}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={userData.name}
-              onChange={(e) => setUserData({ ...userData, name: e.target.value })}
-            />
-          </div>
-          <div>
-            <Label htmlFor="company">Company</Label>
-            <Input
-              id="company"
-              value={userData.company}
-              onChange={(e) => setUserData({ ...userData, company: e.target.value })}
-            />
-          </div>
-          <div>
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              value={userData.title}
-              onChange={(e) => setUserData({ ...userData, title: e.target.value })}
-            />
-          </div>
-          <Button type="submit">Save Digital Card</Button>
-        </form>
-      </CardContent>
-    </Card>
-  )
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Form fields for editing the digital card */}
+      <Button type="submit">Save Digital Card</Button>
+    </form>
+  );
 }
 

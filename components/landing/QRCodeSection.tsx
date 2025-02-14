@@ -70,7 +70,7 @@ export function QRCodeSection({ isComplete, userData }: QRCodeSectionProps) {
           level={"H"}
           includeMargin={true}
           imageSettings={{
-            src: "/logo.png",
+            src: "/backgrounds/businesscard.png",
             x: undefined,
             y: undefined,
             height: 40,
