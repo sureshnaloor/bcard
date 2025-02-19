@@ -8,27 +8,20 @@ import { DigitalProfileSection } from "./DigitalProfileSection"
 import { Progress } from "@/components/ui/progress"
 import { CSSTransition, TransitionGroup } from "react-transition-group"
 
-// This would typically come from your backend
-const mockUserData = {
-  name: "John Doe",
-  company: "Acme Inc",
-  title: "Software Engineer",
-  email: "john@acme.com",
-  phone: "+1234567890",
-  website: "www.acme.com",
-  address: {
-    street: "123 Tech St",
-    city: "San Francisco",
-    country: "USA",
-    coordinates: {
-      latitude: 37.7749,
-      longitude: -122.4194,
-    },
-  },
+interface UserData {
+  firstName?: string;
+  email?: string;
+  organization?: string;
+  title?: string;
+  mobilePhone?: string;
+  address?: string;
+  website?: string;
+  // ... add other fields as needed
 }
 
 export function Dashboard() {
-  const [userData, setUserData] = useState(mockUserData)
+  const [userData, setUserData] = useState<UserData | null>(null)
+  const [loading, setLoading] = useState(true)
   const [progress, setProgress] = useState({
     qrCode: false,
     digitalCard: false,
@@ -37,15 +30,35 @@ export function Dashboard() {
   })
 
   useEffect(() => {
-    // Check completeness of user data
-    const updatedProgress = {
-      qrCode: !!userData.name && !!userData.email,
-      digitalCard: !!userData.name && !!userData.company && !!userData.title,
-      vCard: !!userData.name && !!userData.email && !!userData.phone,
-      digitalProfile: !!userData.name && !!userData.company && !!userData.title && !!userData.address,
+    async function fetchUserData() {
+      try {
+        const response = await fetch("/api/userdata")
+        if (!response.ok) throw new Error("Failed to fetch user data")
+        const data = await response.json()
+        setUserData(data)
+      } catch (error) {
+        console.error("Error fetching user data:", error)
+      } finally {
+        setLoading(false)
+      }
     }
-    setProgress(updatedProgress)
+
+    fetchUserData()
+  }, [])
+
+  useEffect(() => {
+    if (userData) {
+      const updatedProgress = {
+        qrCode: userData?.firstName && userData?.email ? true : false,
+        digitalCard: userData?.firstName && userData?.organization && userData?.title ? true : false,
+        vCard: userData?.firstName && userData?.email && userData?.mobilePhone ? true : false,
+        digitalProfile: userData?.firstName && userData?.organization && userData?.title && userData?.address ? true : false,
+      }
+      setProgress(updatedProgress)
+    }
   }, [userData])
+
+  if (loading) return <div>Loading...</div>
 
   const overallProgress = Object.values(progress).filter(Boolean).length * 25
 
@@ -57,19 +70,66 @@ export function Dashboard() {
 
       <TransitionGroup className="space-y-8">
         <CSSTransition key="qr-code" timeout={300} classNames="fade">
-          <QRCodeSection isComplete={progress.qrCode} userData={userData} />
+          <QRCodeSection 
+            isComplete={progress.qrCode} 
+            userData={{
+              name: userData?.firstName || '',
+              email: userData?.email || ''
+            }} 
+          />
         </CSSTransition>
 
         <CSSTransition key="digital-card" timeout={300} classNames="fade">
-          <DigitalCardSection isComplete={progress.digitalCard} userData={userData} setUserData={setUserData} />
+          <DigitalCardSection 
+            isComplete={progress.digitalCard} 
+            userData={{
+              name: userData?.firstName || '',
+              company: userData?.organization || '',
+              title: userData?.title || '',
+              address: {
+                street: userData?.address || '',
+                city: '',
+                country: ''
+              },
+              email: userData?.email || '',
+              website: userData?.website || '',
+              phone: userData?.mobilePhone || ''
+            }}
+            setUserData={setUserData}
+          />
         </CSSTransition>
 
         <CSSTransition key="vcard" timeout={300} classNames="fade">
-          <VCardSection isComplete={progress.vCard} userData={userData} setUserData={setUserData} />
+          <VCardSection 
+            isComplete={progress.vCard} 
+            userData={{
+              name: userData?.firstName || '',
+              email: userData?.email || '',
+              phone: userData?.mobilePhone || ''
+            }}
+            setUserData={setUserData}
+          />
         </CSSTransition>
 
         <CSSTransition key="digital-profile" timeout={300} classNames="fade">
-          <DigitalProfileSection isComplete={progress.digitalProfile} userData={userData} setUserData={setUserData} />
+          <DigitalProfileSection 
+            isComplete={progress.digitalProfile} 
+            userData={{
+              name: userData?.firstName || '',
+              company: userData?.organization || '',
+              title: userData?.title || '',
+              address: {
+                street: userData?.address || '',
+                city: '',
+                country: '',
+                coordinates: {
+                  latitude: 0,
+                  longitude: 0
+                }
+              }
+            }}
+            setUserData={setUserData}
+          />
         </CSSTransition>
       </TransitionGroup>
     </div>
