@@ -13,10 +13,20 @@ export async function GET() {
 
     const client = await clientPromise;
     const db = client.db('test');  // Explicitly use 'test' database
+// Add error handling timeout
+const timeoutPromise = new Promise((_, reject) => {
+  setTimeout(() => {
+    reject(new Error('Database operation timed out'))
+  }, 5000)
+})
 
-    const userData = await db
-      .collection("userdata")
-      .findOne({ email: session.user?.email })
+    
+    const userData = await Promise.race([
+        db
+        .collection("userdata")
+        .findOne({ email: session.user?.email }),
+      timeoutPromise
+    ])
 
     return NextResponse.json(userData || {})
   } catch (error) {

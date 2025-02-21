@@ -10,6 +10,7 @@ const options = {
   minPoolSize: 5,
   maxIdleTimeMS: 60000,
   connectTimeoutMS: 10000,
+  serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
 }
 
