@@ -1,57 +1,54 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import clientPromise from '@/lib/mongodb';
-import { authOptions } from '@/lib/auth';
+import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import clientPromise from "@/lib/mongodb"
+import { authOptions } from "@/lib/auth"
 
-export async function GET(request: Request) {
+
+export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const session = await getServerSession(authOptions)
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const client = await clientPromise;
-    const db = client.db("businessCards");
-    
-    const userData = await db.collection("userdata").findOne({
-      email: session.user.email
-    });
+    const db = client.db('test');  // Explicitly use 'test' database
 
-    return NextResponse.json(userData || {});
+    const userData = await db
+      .collection("userdata")
+      .findOne({ email: session.user?.email })
+
+    return NextResponse.json(userData || {})
   } catch (error) {
-    console.error('Error fetching user data:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch user data" }, { status: 500 })
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const session = await getServerSession(authOptions)
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const data = await request.json();
+    const data = await request.json()
     const client = await clientPromise;
-    const db = client.db("businessCards");
+    const db = client.db('test');  // Explicitly use 'test' database
 
-    const result = await db.collection("userdata").updateOne(
-      { email: session.user.email },
+    await db.collection("userdata").updateOne(
+      { email: session.user?.email },
       { 
-        $set: {
+        $set: { 
           ...data,
+          email: session.user?.email,
           updatedAt: new Date()
-        },
-        $setOnInsert: {
-          createdAt: new Date()
         }
       },
       { upsert: true }
-    );
+    )
 
-    return NextResponse.json({ success: true, result });
+    return NextResponse.json({ message: "Data saved successfully" })
   } catch (error) {
-    console.error('Error saving user data:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: "Failed to save user data" }, { status: 500 })
   }
-}
+} 

@@ -1,66 +1,66 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DigitalCard } from "./DigitalCard"
+import type { VCardData } from "@/types/vcard"
+import html2canvas from "html2canvas"
+import jsPDF from "jspdf"
 
 interface DigitalCardSectionProps {
-  isComplete: boolean
-  userData: {
-    name: string
-    company: string
-    title: string
-    address: {
-      street: string
-      city: string
-      country: string
-    };
-    email: string
-    website: string
-    phone: string
-  };
-  setUserData: React.Dispatch<React.SetStateAction<any>>
+  userData: VCardData | null
 }
 
-export function DigitalCardSection({ isComplete, userData, setUserData }: DigitalCardSectionProps) {
-  const [isEditing, setIsEditing] = useState(!isComplete)
+export function DigitalCardSection({ userData }: DigitalCardSectionProps) {
+  if (!userData) return null
+  const frontCardRef = useRef<HTMLDivElement>(null)
+  const backCardRef = useRef<HTMLDivElement>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsEditing(false)
-  }
+  const downloadCards = async () => {
+    if (!frontCardRef.current || !backCardRef.current) return
 
-  if (isComplete && !isEditing) {
-    const { name, company, title, address, email, website, phone } = userData;
-    const digitalCardProps = {
-      name,
-      company,
-      title,
-      address: {
-        ...address,
-        coordinates: { latitude: 0, longitude: 0 } // Default coordinates, replace with actual values if available
-      },
-      email,
-      website,
-      phone
-    };
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "in",
+      format: [3.5, 2]
+    })
 
-    return (
-      <div>
-        <DigitalCard {...digitalCardProps} />
-        <Button onClick={() => setIsEditing(true)} className="mt-4">
-          Edit Digital Card
-        </Button>
-      </div>
-    );
+    // Capture front card
+    const frontCanvas = await html2canvas(frontCardRef.current)
+    const frontImgData = frontCanvas.toDataURL("image/png")
+    pdf.addImage(frontImgData, "PNG", 0, 0, 3.5, 2)
+
+    // Add new page and capture back card
+    pdf.addPage()
+    const backCanvas = await html2canvas(backCardRef.current)
+    const backImgData = backCanvas.toDataURL("image/png")
+    pdf.addImage(backImgData, "PNG", 0, 0, 3.5, 2)
+
+    pdf.save("digital-cards.pdf")
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Form fields for editing the digital card */}
-      <Button type="submit">Save Digital Card</Button>
-    </form>
-  );
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Digital Business Card</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+          <div ref={frontCardRef}>
+            <DigitalCard userData={userData} side="front" />
+          </div>
+          <div ref={backCardRef}>
+            <DigitalCard userData={userData} side="back" />
+          </div>
+        </div>
+        
+        <Button onClick={downloadCards} className="w-full">
+          Download Business Cards
+        </Button>
+      </CardContent>
+    </Card>
+  )
 }
 
