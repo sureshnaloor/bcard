@@ -13,41 +13,54 @@ interface VCardSectionProps {
 export function VCardSection({ userData }: VCardSectionProps) {
   if (!userData) return null
 
-  const downloadVCard = () => {
+  const generateVCardString = (data: any) => {
     // Construct full name
-    const lastName = userData.lastName?.trim() || ''
-    const firstName = userData.firstName?.trim() || ''
-    const middleName = userData.middleName?.trim() || ''
+    const lastName = data.lastName?.trim() || ''
+    const firstName = data.firstName?.trim() || ''
+    const middleName = data.middleName?.trim() || ''
     const fullName = [firstName, middleName, lastName].filter(Boolean).join(' ')
 
-    const vCardData = `BEGIN:VCARD
-VERSION:3.0
-N:${lastName};${firstName};${middleName};;;
-FN:${fullName}
-${userData.organization ? `ORG:${userData.organization}\n` : ''}
-${userData.title ? `TITLE:${userData.title}\n` : ''}
-${userData.role ? `ROLE:${userData.role}\n` : ''}
-${userData.workEmail ? `EMAIL;type=WORK:${userData.workEmail}\n` : ''}
-${userData.personalEmail ? `EMAIL;type=HOME:${userData.personalEmail}\n` : ''}
-${userData.mobilePhone ? `TEL;type=CELL:${userData.mobilePhone}\n` : ''}
-${userData.workPhone ? `TEL;type=WORK:${userData.workPhone}\n` : ''}
-${userData.homePhone ? `TEL;type=HOME:${userData.homePhone}\n` : ''}
-${userData.fax ? `TEL;type=FAX:${userData.fax}\n` : ''}
-${userData.website ? `URL:${userData.website}\n` : ''}
-${userData.workStreet ? `ADR;type=WORK:;;${userData.workStreet};${userData.workCity || ''};${userData.workState || ''};${userData.workPostalCode || ''};${userData.workCountry || ''}\n` : ''}
-${userData.linkedin ? `X-SOCIALPROFILE;type=linkedin:${userData.linkedin}\n` : ''}
-${userData.twitter ? `X-SOCIALPROFILE;type=twitter:${userData.twitter}\n` : ''}
-${userData.facebook ? `X-SOCIALPROFILE;type=facebook:${userData.facebook}\n` : ''}
-${userData.instagram ? `X-SOCIALPROFILE;type=instagram:${userData.instagram}\n` : ''}
-${userData.youtube ? `X-SOCIALPROFILE;type=youtube:${userData.youtube}\n` : ''}
-${userData.github ? `X-SOCIALPROFILE;type=github:${userData.github}\n` : ''}
-${userData.birthday ? `BDAY:${userData.birthday}\n` : ''}
-${userData.notes ? `NOTE:${userData.notes}\n` : ''}
-${userData.photoUrl ? `PHOTO;VALUE=URL:${userData.photoUrl}\n` : ''}
-${userData.logoUrl ? `LOGO;VALUE=URL:${userData.logoUrl}\n` : ''}
-END:VCARD`.replace(/\n+/g, '\n')
+    const vCardData = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      `N:${lastName};${firstName};${middleName};;;`,
+      `FN:${fullName}`,
+      data.organization ? `ORG:${data.organization}` : '',
+      data.title ? `TITLE:${data.title}` : '',
+      data.role ? `ROLE:${data.role}` : '',
+      data.workEmail ? `EMAIL;type=WORK:${data.workEmail}` : '',
+      data.personalEmail ? `EMAIL;type=HOME:${data.personalEmail}` : '',
+      data.mobilePhone ? `TEL;type=CELL:${data.mobilePhone}` : '',
+      data.workPhone ? `TEL;type=WORK:${data.workPhone}` : '',
+      data.homePhone ? `TEL;type=HOME:${data.homePhone}` : '',
+      data.fax ? `TEL;type=FAX:${data.fax}` : '',
+      data.website ? `URL:${data.website}` : '',
+      data.workStreet ? `ADR;type=WORK:;;${data.workStreet};${data.workCity || ''};${data.workState || ''};${data.workPostalCode || ''};${data.workCountry || ''}` : '',
+      data.linkedin ? `X-SOCIALPROFILE;type=linkedin:${data.linkedin}` : '',
+      data.twitter ? `X-SOCIALPROFILE;type=twitter:${data.twitter}` : '',
+      data.facebook ? `X-SOCIALPROFILE;type=facebook:${data.facebook}` : '',
+      data.instagram ? `X-SOCIALPROFILE;type=instagram:${data.instagram}` : '',
+      data.youtube ? `X-SOCIALPROFILE;type=youtube:${data.youtube}` : '',
+      data.github ? `X-SOCIALPROFILE;type=github:${data.github}` : '',
+      data.birthday ? `BDAY:${data.birthday}` : '',
+      data.notes ? `NOTE:${data.notes}` : '',
+      // Updated PHOTO property format
+      data.photo ? `PHOTO;ENCODING=BASE64;TYPE=JPEG;VALUE=URI:${data.photo.split(',')[1]}` : '',
+      'END:VCARD'
+    ].filter(Boolean).join('\r\n')
 
-    const blob = new Blob([vCardData], { type: "text/vcard;charset=utf-8" })
+    return vCardData
+  }
+
+  const downloadVCard = () => {
+    // Create a copy of userData without logo
+    const vcardUserData = {
+      ...userData,
+      logo: undefined
+    }
+
+    const vCardString = generateVCardString(vcardUserData)
+    const blob = new Blob([vCardString], { type: "text/vcard;charset=utf-8" })
     FileSaver.saveAs(blob, "contact.vcf")
   }
 
@@ -57,11 +70,22 @@ END:VCARD`.replace(/\n+/g, '\n')
         <CardTitle>vCard</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col space-y-6">
-        {/* <p className="text-sm text-gray-500">
-          Your vCard contains the following information. Click the download button to save as a .vcf file.
-        </p> */}
-        
         <div className="text-sm space-y-6 border rounded-md p-6 bg-gray-50">
+          {/* Show only photo in preview, not logo */}
+          {userData.photo && (
+            <div className="space-y-2">
+              <h3 className="font-medium">Profile Photo</h3>
+              <div>
+                <img 
+                  src={userData.photo} 
+                  alt="Profile Photo" 
+                  className="w-24 h-24 object-cover rounded-lg"
+                />
+              </div>
+              <Separator className="my-2" />
+            </div>
+          )}
+
           {/* Name Information */}
           {(userData.firstName || userData.middleName || userData.lastName) && (
             <div className="space-y-2">

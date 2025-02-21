@@ -16,6 +16,13 @@ export function QRCodeSection({ userData }: QRCodeSectionProps) {
 
   const qrRef = useRef<SVGSVGElement>(null)
 
+  // Create a copy of userData without photo and logo for QR code
+  const qrUserData = {
+    ...userData,
+    photo: undefined,
+    logo: undefined
+  }
+
   const downloadQRCode = () => {
     if (qrRef.current) {
       const canvas = document.createElement("canvas")
@@ -56,7 +63,7 @@ export function QRCodeSection({ userData }: QRCodeSectionProps) {
       <CardContent className="flex flex-col items-center space-y-4">
         <QRCodeSVG
           ref={qrRef}
-          value={generateVCardString(userData)}
+          value={generateVCardString(qrUserData)}
           size={200}
           level="H"
           includeMargin={true}
