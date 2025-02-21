@@ -57,9 +57,9 @@ END:VCARD`.replace(/\n+/g, '\n')
         <CardTitle>vCard</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col space-y-6">
-        <p className="text-sm text-gray-500">
+        {/* <p className="text-sm text-gray-500">
           Your vCard contains the following information. Click the download button to save as a .vcf file.
-        </p>
+        </p> */}
         
         <div className="text-sm space-y-6 border rounded-md p-6 bg-gray-50">
           {/* Name Information */}
