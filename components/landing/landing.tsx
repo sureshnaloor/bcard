@@ -41,11 +41,11 @@ export function Dashboard() {
         </CSSTransition>
 
         <CSSTransition key="digital-card" timeout={300} classNames="fade">
-          <DigitalCardSection userData={userData} setUserData={setUserData} />
+          <DigitalCardSection userData={userData} />
         </CSSTransition>
 
         <CSSTransition key="vcard" timeout={300} classNames="fade">
-          <VCardSection userData={userData} setUserData={setUserData} />
+          <VCardSection userData={userData} />
         </CSSTransition>
 
         {/* <CSSTransition key="digital-profile" timeout={300} classNames="fade">
