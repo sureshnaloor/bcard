@@ -1,5 +1,7 @@
 import { MapPin, Mail, Phone, Globe, Calendar, MessageSquare } from "lucide-react"
 import { FaLinkedin, FaTwitter, FaGithub, FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa"
+import { QRCodeSVG } from "qrcode.react"
+import { generateVCardString } from "@/lib/utils/generateVCard"
 import type { VCardData } from "@/types/vcard"
 
 interface DigitalCardProps {
@@ -80,59 +82,79 @@ export function DigitalCard({ userData, side }: DigitalCardProps) {
 
   return (
     <div className="w-[3.5in] h-[2in] bg-pearl-white p-4 rounded-lg shadow-lg">
-      <div className="space-y-3">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-          {userData.linkedin && (
-            <p className="text-[10px] text-blue-600 flex items-center">
-              <FaLinkedin className="mr-1 text-[12px] flex-shrink-0 text-blue-600" />
-              {userData.linkedin}
-            </p>
-          )}
-          {userData.twitter && (
-            <p className="text-[10px] text-purple-600 flex items-center">
-              <FaTwitter className="mr-1 text-[12px] flex-shrink-0 text-purple-600" />
-              {userData.twitter}
-            </p>
-          )}
-          {userData.github && (
-            <p className="text-[10px] text-blue-600 flex items-center">
-              <FaGithub className="mr-1 text-[12px] flex-shrink-0 text-blue-600" />
-              {userData.github}
-            </p>
-          )}
-          {userData.facebook && (
-            <p className="text-[10px] text-purple-600 flex items-center">
-              <FaFacebook className="mr-1 text-[12px] flex-shrink-0 text-purple-600" />
-              {userData.facebook}
-            </p>
-          )}
-          {userData.instagram && (
-            <p className="text-[10px] text-blue-600 flex items-center">
-              <FaInstagram className="mr-1 text-[12px] flex-shrink-0 text-blue-600" />
-              {userData.instagram}
-            </p>
-          )}
-          {userData.youtube && (
-            <p className="text-[10px] text-purple-600 flex items-center">
-              <FaYoutube className="mr-1 text-[12px] flex-shrink-0 text-purple-600" />
-              {userData.youtube}
-            </p>
-          )}
-        </div>
+      <div className="h-full flex flex-col">
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+            {userData.linkedin && (
+              <p className="text-[10px] text-blue-600 flex items-center">
+                <FaLinkedin className="mr-1 text-[12px] flex-shrink-0 text-blue-600" />
+                {userData.linkedin}
+              </p>
+            )}
+            {userData.twitter && (
+              <p className="text-[10px] text-purple-600 flex items-center">
+                <FaTwitter className="mr-1 text-[12px] flex-shrink-0 text-purple-600" />
+                {userData.twitter}
+              </p>
+            )}
+            {userData.github && (
+              <p className="text-[10px] text-blue-600 flex items-center">
+                <FaGithub className="mr-1 text-[12px] flex-shrink-0 text-blue-600" />
+                {userData.github}
+              </p>
+            )}
+            {userData.facebook && (
+              <p className="text-[10px] text-purple-600 flex items-center">
+                <FaFacebook className="mr-1 text-[12px] flex-shrink-0 text-purple-600" />
+                {userData.facebook}
+              </p>
+            )}
+            {userData.instagram && (
+              <p className="text-[10px] text-blue-600 flex items-center">
+                <FaInstagram className="mr-1 text-[12px] flex-shrink-0 text-blue-600" />
+                {userData.instagram}
+              </p>
+            )}
+            {userData.youtube && (
+              <p className="text-[10px] text-purple-600 flex items-center">
+                <FaYoutube className="mr-1 text-[12px] flex-shrink-0 text-purple-600" />
+                {userData.youtube}
+              </p>
+            )}
+          </div>
 
-        <div className="pt-2 border-t border-gray-200">
-          {userData.birthday && (
-            <p className="text-[10px] text-gray-600 flex items-center mb-2">
-              <Calendar size={12} className="mr-1 flex-shrink-0" />
-              {userData.birthday}
-            </p>
-          )}
-          {userData.notes && (
-            <p className="text-[10px] text-gray-600 flex items-center">
-              <MessageSquare size={12} className="mr-1 flex-shrink-0" />
-              {userData.notes}
-            </p>
-          )}
+          <div className="pt-2 border-t border-gray-200">
+            <div className="flex justify-between items-end">
+              <div className="space-y-2">
+                {userData.birthday && (
+                  <p className="text-[10px] text-gray-600 flex items-center">
+                    <Calendar size={12} className="mr-1 flex-shrink-0" />
+                    {userData.birthday}
+                  </p>
+                )}
+                {userData.notes && (
+                  <p className="text-[10px] text-gray-600 flex items-center">
+                    <MessageSquare size={12} className="mr-1 flex-shrink-0" />
+                    {userData.notes}
+                  </p>
+                )}
+              </div>
+
+              <div className="ml-4">
+                <QRCodeSVG
+                  value={generateVCardString(userData)}
+                  size={64}
+                  level="M"
+                  imageSettings={{
+                    src: "/images/logo.png",
+                    height: 10,
+                    width: 10,
+                    excavate: true
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
