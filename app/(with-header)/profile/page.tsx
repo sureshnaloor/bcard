@@ -30,7 +30,7 @@ interface UserData {
 export default function ProfilePage() {
   const [userData, setUserData] = useState<UserData | null>(null)
   const [loading, setLoading] = useState(true)
-  const { status } = useSession()
+  const { data: session, status } = useSession()
   const router = useRouter()
 
   useEffect(() => {
@@ -65,7 +65,10 @@ export default function ProfilePage() {
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold text-center mb-8">Update Your Profile</h1>
-      <UserDataForm initialData={userData} />
+      <UserDataForm 
+        initialData={userData} 
+        sessionEmail={session?.user?.email || ''}
+      />
     </div>
   )
 } 
