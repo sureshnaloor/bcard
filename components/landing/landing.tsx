@@ -16,6 +16,14 @@ interface UserData {
   mobilePhone?: string;
   address?: string;
   website?: string;
+  fax?: string;
+  notes?: string;
+  linkedin?: string;
+  twitter?: string;
+  facebook?: string;
+  instagram?: string;
+  youtube?: string;
+  github?: string;
   // ... add other fields as needed
 }
 
@@ -36,6 +44,7 @@ export function Dashboard() {
         if (!response.ok) throw new Error("Failed to fetch user data")
         const data = await response.json()
         setUserData(data)
+        console.log(data)
       } catch (error) {
         console.error("Error fetching user data:", error)
       } finally {
@@ -49,7 +58,7 @@ export function Dashboard() {
   useEffect(() => {
     if (userData) {
       const updatedProgress = {
-        qrCode: userData?.firstName && userData?.email ? true : false,
+        qrCode: userData?.firstName && userData?.email && userData?.organization && userData?.title ? true : false,
         digitalCard: userData?.firstName && userData?.organization && userData?.title ? true : false,
         vCard: userData?.firstName && userData?.email && userData?.mobilePhone ? true : false,
         digitalProfile: userData?.firstName && userData?.organization && userData?.title && userData?.address ? true : false,
@@ -73,8 +82,25 @@ export function Dashboard() {
           <QRCodeSection 
             isComplete={progress.qrCode} 
             userData={{
-              name: userData?.firstName || '',
-              email: userData?.email || ''
+              firstName: userData?.firstName || '',
+              middleName: userData?.middleName || '',
+              lastName: userData?.lastName || '',
+              organization: userData?.organization || '',
+              title: userData?.title || '',
+              workEmail: userData?.workEmail || '',
+              mobilePhone: userData?.mobilePhone || '',
+              workPhone: userData?.workPhone || '',
+              homePhone: userData?.homePhone || '',
+              website: userData?.website || '',
+              address: userData?.address || '',
+              fax: userData?.fax || '',
+              notes: userData?.notes || '',
+              linkedin: userData?.linkedin || '',
+              twitter: userData?.twitter || '',
+              facebook: userData?.facebook || '',
+              instagram: userData?.instagram || '',
+              youtube: userData?.youtube || '',
+              github: userData?.github || ''
             }} 
           />
         </CSSTransition>

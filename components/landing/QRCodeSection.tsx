@@ -12,11 +12,59 @@ interface QRCodeSectionProps {
   userData: {
     name: string
     email: string
+    organization: string
+    title: string
+    address: string
+    website: string
+    phone: string
+    fax: string
+    notes: string
+    linkedin: string
+    twitter: string
+    facebook: string
+    instagram: string
+    youtube: string
+    github: string
+    mobilePhone?: string
+    workPhone?: string
+    homePhone?: string
+    workEmail?: string
+    firstName?: string
+    middleName?: string
+    lastName?: string
   }
 }
 
 export function QRCodeSection({ isComplete, userData }: QRCodeSectionProps) {
-  const qrCodeData = `BEGIN:VCARD\nVERSION:3.0\nFN:${userData.name}\nEMAIL:${userData.email}\nEND:VCARD`
+  // Ensure each name component exists and is properly formatted
+  const lastName = userData.lastName?.trim() || ''
+  const firstName = userData.firstName?.trim() || ''
+  const middleName = userData.middleName?.trim() || ''
+  
+  // Construct full name for FN field
+  const fullName = [firstName, middleName, lastName].filter(Boolean).join(' ')
+
+  const qrCodeData = `BEGIN:VCARD
+VERSION:3.0
+N:${lastName};${firstName};${middleName};;;
+FN:${fullName}
+${userData.organization ? `ORG:${userData.organization}\n` : ''}
+${userData.title ? `TITLE:${userData.title}\n` : ''}
+${userData.workEmail ? `EMAIL;type=WORK:${userData.workEmail}\n` : ''}
+${userData.mobilePhone ? `TEL;type=CELL:${userData.mobilePhone}\n` : ''}
+${userData.workPhone ? `TEL;type=WORK:${userData.workPhone}\n` : ''}
+${userData.homePhone ? `TEL;type=HOME:${userData.homePhone}\n` : ''}
+${userData.fax ? `TEL;type=FAX:${userData.fax}\n` : ''}
+${userData.website ? `URL:${userData.website}\n` : ''}
+${userData.address ? `ADR:;;${userData.address}\n` : ''}
+${userData.linkedin ? `X-SOCIALPROFILE;type=linkedin:${userData.linkedin}\n` : ''}
+${userData.twitter ? `X-SOCIALPROFILE;type=twitter:${userData.twitter}\n` : ''}
+${userData.facebook ? `X-SOCIALPROFILE;type=facebook:${userData.facebook}\n` : ''}
+${userData.instagram ? `X-SOCIALPROFILE;type=instagram:${userData.instagram}\n` : ''}
+${userData.youtube ? `X-SOCIALPROFILE;type=youtube:${userData.youtube}\n` : ''}
+${userData.github ? `X-SOCIALPROFILE;type=github:${userData.github}\n` : ''}
+${userData.notes ? `NOTE:${userData.notes}\n` : ''}
+END:VCARD`.replace(/\n+/g, '\n')  // Remove any double newlines
   const qrRef = useRef<SVGSVGElement>(null)
 
   const downloadQRCode = () => {
