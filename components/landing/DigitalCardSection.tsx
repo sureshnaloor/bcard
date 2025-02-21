@@ -4,34 +4,23 @@ import type React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { DigitalCard } from "./DigitalCard"
+import type { VCardData } from "@/types/vcard"
 
 interface DigitalCardSectionProps {
-  isComplete: boolean
-  userData: {
-    name: string
-    company: string
-    title: string
-    address: {
-      street: string
-      city: string
-      country: string
-    };
-    email: string
-    website: string
-    phone: string
-  };
-  setUserData: React.Dispatch<React.SetStateAction<any>>
+  userData: VCardData | null
+  setUserData: (data: VCardData | null) => void
 }
 
-export function DigitalCardSection({ isComplete, userData, setUserData }: DigitalCardSectionProps) {
-  const [isEditing, setIsEditing] = useState(!isComplete)
+export function DigitalCardSection({ userData, setUserData }: DigitalCardSectionProps) {
+  if (!userData) return null
+  const [isEditing, setIsEditing] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setIsEditing(false)
   }
 
-  if (isComplete && !isEditing) {
+  if (userData && !isEditing) {
     const { name, company, title, address, email, website, phone } = userData;
     const digitalCardProps = {
       name,

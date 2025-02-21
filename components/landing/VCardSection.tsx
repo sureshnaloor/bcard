@@ -7,19 +7,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import FileSaver from "file-saver"
+import type { VCardData } from "@/types/vcard"
 
 interface VCardSectionProps {
-  isComplete: boolean
-  userData: {
-    name: string
-    email: string
-    phone: string
-  }
-  setUserData: React.Dispatch<React.SetStateAction<any>>
+  userData: VCardData | null
+  setUserData: (data: VCardData | null) => void
 }
 
-export function VCardSection({ isComplete, userData, setUserData }: VCardSectionProps) {
-  const [isEditing, setIsEditing] = useState(!isComplete)
+export function VCardSection({ userData, setUserData }: VCardSectionProps) {
+  if (!userData) return null
+  const [isEditing, setIsEditing] = useState(!userData)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,7 +34,7 @@ END:VCARD`
     FileSaver.saveAs(blob, "contact.vcf")
   }
 
-  if (isComplete && !isEditing) {
+  if (!isEditing) {
     return (
       <Card>
         <CardHeader>
@@ -67,7 +64,7 @@ END:VCARD`
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{isComplete ? "Edit vCard" : "Create vCard"}</CardTitle>
+        <CardTitle>Create vCard</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">

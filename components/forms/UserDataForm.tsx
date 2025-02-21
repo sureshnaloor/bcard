@@ -16,7 +16,7 @@ interface UserDataFormProps {
 export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const isEditMode = !!initialData && Object.values(initialData).some(value => !!value)
+  // const isEditMode = !!initialData && Object.values(initialData).some(value => !!value)
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -50,6 +50,7 @@ export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Name</h3>
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+          
           <Input
             name="namePrefix"
             placeholder="Prefix"

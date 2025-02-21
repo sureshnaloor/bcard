@@ -6,35 +6,23 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import type { VCardData } from "@/types/vcard"
 
 interface DigitalProfileSectionProps {
-  isComplete: boolean
-  userData: {
-    name: string
-    company: string
-    title: string
-    address: {
-      street: string
-      city: string
-      country: string
-      coordinates: {
-        latitude: number
-        longitude: number
-      }
-    }
-  }
-  setUserData: React.Dispatch<React.SetStateAction<any>>
+  userData: VCardData | null
+  setUserData: (data: VCardData | null) => void
 }
 
-export function DigitalProfileSection({ isComplete, userData, setUserData }: DigitalProfileSectionProps) {
-  const [isEditing, setIsEditing] = useState(!isComplete)
+export function DigitalProfileSection({ userData, setUserData }: DigitalProfileSectionProps) {
+  if (!userData) return null
+  const [isEditing, setIsEditing] = useState(!userData.isComplete)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setIsEditing(false)
   }
 
-  if (isComplete && !isEditing) {
+  if (userData.isComplete && !isEditing) {
     return (
       <Card>
         <CardHeader>
@@ -68,7 +56,7 @@ export function DigitalProfileSection({ isComplete, userData, setUserData }: Dig
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{isComplete ? "Edit Digital Profile" : "Create Digital Profile"}</CardTitle>
+        <CardTitle>{userData.isComplete ? "Edit Digital Profile" : "Create Digital Profile"}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
