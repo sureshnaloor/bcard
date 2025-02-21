@@ -19,6 +19,13 @@ export function DigitalCard({ userData, side }: DigitalCardProps) {
         <div className="flex-grow">
           <div className="flex justify-between items-center mb-3">
             <h1 className="text-[16px] font-bold text-gray-800">{fullName}</h1>
+            {userData.logo && (
+              <img 
+                src={userData.logo} 
+                alt="Company Logo" 
+                className="w-8 h-8 object-contain mx-2"
+              />
+            )}
             <div className="text-right">
               <p className="text-[12px] font-semibold text-blue-600">{userData.title}</p>
               <p className="text-[12px] font-bold text-zinc-900">{userData.organization}</p>

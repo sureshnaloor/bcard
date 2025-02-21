@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "react-hot-toast"
 import type { VCardData } from "@/types/vcard"
 import { Separator } from "@/components/ui/separator"
+
 interface UserDataFormProps {
   initialData?: VCardData | null
   sessionEmail?: string
@@ -16,8 +17,22 @@ interface UserDataFormProps {
 export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [photo, setPhoto] = useState<string>(initialData?.photo || '')
+  const [logo, setLogo] = useState<string>(initialData?.logo || '')
+
   // const isEditMode = !!initialData && Object.values(initialData).some(value => !!value)
 
+  // Add this function to handle file conversion to base64
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  // Modify the onSubmit function
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
@@ -25,11 +40,18 @@ export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
     const formData = new FormData(e.currentTarget)
     const data = Object.fromEntries(formData)
 
+    // Add the base64 images to the data object
+    const finalData = {
+      ...data,
+      photo,
+      logo,
+    }
+
     try {
       const response = await fetch("/api/userdata", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(finalData),
       })
 
       if (!response.ok) throw new Error("Failed to save data")
@@ -43,6 +65,28 @@ export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
       setLoading(false)
     }
   }
+
+  // Add this function to handle file changes
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, type: 'photo' | 'logo') => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast.error(`${type === 'photo' ? 'Photo' : 'Logo'} must be less than 5MB`);
+        return;
+      }
+      try {
+        const base64 = await convertToBase64(file);
+        if (type === 'photo') {
+          setPhoto(base64);
+        } else {
+          setLogo(base64);
+        }
+        toast.success(`${type === 'photo' ? 'Photo' : 'Logo'} uploaded successfully`);
+      } catch (error) {
+        toast.error(`Failed to upload ${type === 'photo' ? 'photo' : 'logo'}`);
+      }
+    }
+  };
 
   return (
     <form onSubmit={onSubmit} className="space-y-8 max-w-2xl mx-auto p-6">
@@ -77,6 +121,43 @@ export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
             required
             className="md:col-span-2"
           />
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Add this section after the Name Section and before Organization Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Profile Images</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-sm text-gray-600">Profile Photo</label>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleFileChange(e, 'photo')}
+              className="cursor-pointer"
+            />
+            {photo && (
+              <div className="mt-2">
+                <img src={photo} alt="Profile" className="w-24 h-24 object-cover rounded-lg" />
+              </div>
+            )}
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm text-gray-600">Company Logo</label>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleFileChange(e, 'logo')}
+              className="cursor-pointer"
+            />
+            {logo && (
+              <div className="mt-2">
+                <img src={logo} alt="Logo" className="w-24 h-24 object-cover rounded-lg" />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

@@ -46,6 +46,6 @@ export interface VCardData {
   notes?: string
   
   // Media (stored as URLs or Base64)
-  photoUrl?: string
-  logoUrl?: string
+  photo?: string
+  logo?: string
 } 
