@@ -38,7 +38,11 @@ export function Dashboard() {
 
   const isEmpty = isEmptyUserData(userData)
 
-  if (loading) return <div>Loading...</div>
+  if (loading) return (
+    <div className="container mx-auto py-8 flex justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+    </div>
+  )
 
   return (
     <div className="container mx-auto p-4 space-y-8">
