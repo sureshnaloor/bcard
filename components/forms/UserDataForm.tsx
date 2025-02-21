@@ -6,39 +6,16 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "react-hot-toast"
-interface UserData {
-  firstName?: string
-  middleName?: string
-  lastName?: string
-  organization?: string
-  title?: string
-  email?: string
-  mobilePhone?: string
-  workPhone?: string
-  homePhone?: string
-  fax?: string
-  website?: string
-  address?: string
-  linkedin?: string
-  twitter?: string
-  facebook?: string
-  instagram?: string
-  youtube?: string
-  github?: string
-  notes?: string
-  workEmail?: string
-}
-
+import type { VCardData } from "@/types/vcard"
+import { Separator } from "@/components/ui/separator"
 interface UserDataFormProps {
-  initialData?: UserData | null
+  initialData?: VCardData | null
   sessionEmail?: string
 }
 
 export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  
-  // Check if initialData exists and has any non-empty values
   const isEditMode = !!initialData && Object.values(initialData).some(value => !!value)
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -68,200 +45,214 @@ export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6 max-w-2xl mx-auto p-6">
+    <form onSubmit={onSubmit} className="space-y-8 max-w-2xl mx-auto p-6">
+      {/* Name Section */}
       <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Name</h3>
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+          <Input
+            name="namePrefix"
+            placeholder="Prefix"
+            defaultValue={initialData?.namePrefix}
+            className="md:col-span-1"
+          />
+          <Input
+            name="firstName"
+            placeholder="First Name"
+            defaultValue={initialData?.firstName}
+            required
+            className="md:col-span-2"
+          />
+          <Input
+            name="middleName"
+            placeholder="Middle Name"
+            defaultValue={initialData?.middleName}
+            className="md:col-span-1"
+          />
+          <Input
+            name="lastName"
+            placeholder="Last Name"
+            defaultValue={initialData?.lastName}
+            required
+            className="md:col-span-2"
+          />
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Organization Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Organization</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            name="organization"
+            placeholder="Organization"
+            defaultValue={initialData?.organization}
+          />
+          <Input
+            name="title"
+            placeholder="Title"
+            defaultValue={initialData?.title}
+          />
+          <Input
+            name="role"
+            placeholder="Role"
+            defaultValue={initialData?.role}
+          />
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Contact Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Contact Information</h3>
+        <div className="space-y-2">
+          <label className="text-sm text-gray-600">Session Email (Login Email)</label>
+          <Input
+            name="sessionEmail"
+            type="email"
+            value={sessionEmail}
+            disabled
+            className="bg-gray-100"
+          />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            name="workEmail"
+            type="email"
+            placeholder="Work Email"
+            defaultValue={initialData?.workEmail}
+          />
+          <Input
+            name="personalEmail"
+            type="email"
+            placeholder="Personal Email"
+            defaultValue={initialData?.personalEmail}
+          />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            {isEditMode && <label className="text-sm text-gray-600">First Name</label>}
-            <Input 
-              name="firstName" 
-              placeholder={!isEditMode ? "First Name" : ""} 
-              defaultValue={initialData?.firstName || ""}
-              required 
-            />
-          </div>
-          <div className="space-y-2">
-            {isEditMode && <label className="text-sm text-gray-600">Middle Name</label>}
-            <Input 
-              name="middleName" 
-              placeholder={!isEditMode ? "Middle Name" : ""} 
-              defaultValue={initialData?.middleName || ""}
-            />
-          </div>
-          <div className="space-y-2">
-            {isEditMode && <label className="text-sm text-gray-600">Last Name</label>}
-            <Input 
-              name="lastName" 
-              placeholder={!isEditMode ? "Last Name" : ""} 
-              defaultValue={initialData?.lastName || ""}
-              required 
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            {isEditMode && <label className="text-sm text-gray-600">Organization</label>}
-            <Input 
-              name="organization" 
-              placeholder={!isEditMode ? "Organization" : ""} 
-              defaultValue={initialData?.organization || ""}
-              required 
-            />
-          </div>
-          <div className="space-y-2">
-            {isEditMode && <label className="text-sm text-gray-600">Title</label>}
-            <Input 
-              name="title" 
-              placeholder={!isEditMode ? "Title" : ""} 
-              defaultValue={initialData?.title || ""}
-              required 
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-sm text-gray-600">Session Email (Login Email)</label>
-            <Input 
-              name="sessionEmail" 
-              type="email" 
-              value={sessionEmail}
-              disabled
-              className="bg-gray-100"
-            />
-          </div>
-          <div className="space-y-2">
-            {isEditMode && <label className="text-sm text-gray-600">Work Email</label>}
-            <Input 
-              name="workEmail" 
-              type="email" 
-              placeholder={!isEditMode ? "Work Email" : ""} 
-              defaultValue={initialData?.workEmail || ""}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            {isEditMode && <label className="text-sm text-gray-600">Website</label>}
-            <Input 
-              name="website" 
-              type="url" 
-              placeholder={!isEditMode ? "Website" : ""} 
-              defaultValue={initialData?.website || ""}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            {isEditMode && <label className="text-sm text-gray-600">Mobile Phone</label>}
-            <Input 
-              name="mobilePhone" 
-              placeholder={!isEditMode ? "Mobile Phone" : ""} 
-              defaultValue={initialData?.mobilePhone || ""}
-            />
-          </div>
-          <div className="space-y-2">
-            {isEditMode && <label className="text-sm text-gray-600">Work Phone</label>}
-            <Input 
-              name="workPhone" 
-              placeholder={!isEditMode ? "Work Phone" : ""} 
-              defaultValue={initialData?.workPhone || ""}
-            />
-          </div>
-          <div className="space-y-2">
-            {isEditMode && <label className="text-sm text-gray-600">Home Phone</label>}
-            <Input 
-              name="homePhone" 
-              placeholder={!isEditMode ? "Home Phone" : ""} 
-              defaultValue={initialData?.homePhone || ""}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          {isEditMode && <label className="text-sm text-gray-600">Fax</label>}
-          <Input 
-            name="fax" 
-            placeholder={!isEditMode ? "Fax" : ""} 
-            defaultValue={initialData?.fax || ""}
+          <Input
+            name="mobilePhone"
+            placeholder="Mobile Phone"
+            defaultValue={initialData?.mobilePhone}
+          />
+          <Input
+            name="workPhone"
+            placeholder="Work Phone"
+            defaultValue={initialData?.workPhone}
+          />
+          <Input
+            name="homePhone"
+            placeholder="Home Phone"
+            defaultValue={initialData?.homePhone}
+          />
+          <Input
+            name="fax"
+            placeholder="Fax"
+            defaultValue={initialData?.fax}
           />
         </div>
-        <div className="space-y-2">
-          {isEditMode && <label className="text-sm text-gray-600">Address</label>}
-          <Textarea 
-            name="address" 
-            placeholder={!isEditMode ? "Address" : ""} 
-            rows={3} 
-            defaultValue={initialData?.address || ""}
+      </div>
+
+      <Separator />
+
+      {/* Work Address Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Work Address</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            name="workStreet"
+            placeholder="Street"
+            defaultValue={initialData?.workStreet}
+            className="md:col-span-2"
+          />
+          <Input
+            name="workCity"
+            placeholder="City"
+            defaultValue={initialData?.workCity}
+          />
+          <Input
+            name="workState"
+            placeholder="State"
+            defaultValue={initialData?.workState}
+          />
+          <Input
+            name="workPostalCode"
+            placeholder="Postal Code"
+            defaultValue={initialData?.workPostalCode}
+          />
+          <Input
+            name="workCountry"
+            placeholder="Country"
+            defaultValue={initialData?.workCountry}
           />
         </div>
+      </div>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Social Media</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              {isEditMode && <label className="text-sm text-gray-600">LinkedIn URL</label>}
-              <Input 
-                name="linkedin" 
-                placeholder={!isEditMode ? "LinkedIn URL" : ""} 
-                defaultValue={initialData?.linkedin || ""}
-              />
-            </div>
-            <div className="space-y-2">
-              {isEditMode && <label className="text-sm text-gray-600">Twitter URL</label>}
-              <Input 
-                name="twitter" 
-                placeholder={!isEditMode ? "Twitter URL" : ""} 
-                defaultValue={initialData?.twitter || ""}
-              />
-            </div>
-            <div className="space-y-2">
-              {isEditMode && <label className="text-sm text-gray-600">Facebook URL</label>}
-              <Input 
-                name="facebook" 
-                placeholder={!isEditMode ? "Facebook URL" : ""} 
-                defaultValue={initialData?.facebook || ""}
-              />
-            </div>
-            <div className="space-y-2">
-              {isEditMode && <label className="text-sm text-gray-600">Instagram URL</label>}
-              <Input 
-                name="instagram" 
-                placeholder={!isEditMode ? "Instagram URL" : ""} 
-                defaultValue={initialData?.instagram || ""}
-              />
-            </div>
-            <div className="space-y-2">
-              {isEditMode && <label className="text-sm text-gray-600">YouTube URL</label>}
-              <Input 
-                name="youtube" 
-                placeholder={!isEditMode ? "YouTube URL" : ""} 
-                defaultValue={initialData?.youtube || ""}
-              />
-            </div>
-            <div className="space-y-2">
-              {isEditMode && <label className="text-sm text-gray-600">GitHub URL</label>}
-              <Input 
-                name="github" 
-                placeholder={!isEditMode ? "GitHub URL" : ""} 
-                defaultValue={initialData?.github || ""}
-              />
-            </div>
-          </div>
-        </div>
+      <Separator />
 
-        <div className="space-y-2">
-          {isEditMode && <label className="text-sm text-gray-600">Notes</label>}
-          <Textarea 
-            name="notes" 
-            placeholder={!isEditMode ? "Notes" : ""} 
-            rows={4} 
-            defaultValue={initialData?.notes || ""}
+      {/* Online Presence Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Online Presence</h3>
+        <Input
+          name="website"
+          type="url"
+          placeholder="Website"
+          defaultValue={initialData?.website}
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            name="linkedin"
+            placeholder="LinkedIn URL"
+            defaultValue={initialData?.linkedin}
+          />
+          <Input
+            name="twitter"
+            placeholder="Twitter URL"
+            defaultValue={initialData?.twitter}
+          />
+          <Input
+            name="facebook"
+            placeholder="Facebook URL"
+            defaultValue={initialData?.facebook}
+          />
+          <Input
+            name="instagram"
+            placeholder="Instagram URL"
+            defaultValue={initialData?.instagram}
+          />
+          <Input
+            name="youtube"
+            placeholder="YouTube URL"
+            defaultValue={initialData?.youtube}
+          />
+          <Input
+            name="github"
+            placeholder="GitHub URL"
+            defaultValue={initialData?.github}
           />
         </div>
+      </div>
+
+      <Separator />
+
+      {/* Additional Information */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Additional Information</h3>
+        <Input
+          name="birthday"
+          type="date"
+          placeholder="Birthday"
+          defaultValue={initialData?.birthday}
+        />
+        <Textarea
+          name="notes"
+          placeholder="Notes"
+          rows={4}
+          defaultValue={initialData?.notes}
+        />
       </div>
 
       <Button type="submit" className="w-full" disabled={loading}>

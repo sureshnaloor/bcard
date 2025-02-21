@@ -82,17 +82,13 @@ export function Dashboard() {
           <QRCodeSection 
             isComplete={progress.qrCode} 
             userData={{
-              firstName: userData?.firstName || '',
-              middleName: userData?.middleName || '',
-              lastName: userData?.lastName || '',
+              name: `${userData?.firstName || ''}`,
+              email: userData?.email || '',
+              phone: userData?.mobilePhone || '',
               organization: userData?.organization || '',
               title: userData?.title || '',
-              workEmail: userData?.workEmail || '',
-              mobilePhone: userData?.mobilePhone || '',
-              workPhone: userData?.workPhone || '',
-              homePhone: userData?.homePhone || '',
-              website: userData?.website || '',
               address: userData?.address || '',
+              website: userData?.website || '',
               fax: userData?.fax || '',
               notes: userData?.notes || '',
               linkedin: userData?.linkedin || '',
