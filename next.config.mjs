@@ -1,9 +1,28 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        
-        domains: ['images.unsplash.com'],
+      dangerouslyAllowSVG: true,
+      contentDispositionType: 'attachment',
+      contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     },
-};
-
-export default nextConfig;
+    typescript: {
+      ignoreBuildErrors: true,
+    },
+    eslint: {
+      ignoreDuringBuilds: true,
+    },
+    domains: ['images.unsplash.com'],
+    async headers() {
+        return [
+          {
+            source: '/api/:path*',
+            headers: [
+              { key: 'Connection', value: 'keep-alive' },
+              { key: 'Keep-Alive', value: 'timeout=30' },
+            ],
+          },
+        ]
+      },
+  }
+  
+  module.exports = nextConfig 

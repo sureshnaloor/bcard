@@ -11,6 +11,17 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  async headers() {
+    return [
+      {
+        source: '/api/:path*',
+        headers: [
+          { key: 'Connection', value: 'keep-alive' },
+          { key: 'Keep-Alive', value: 'timeout=30' },
+        ],
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig 
