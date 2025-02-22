@@ -4,7 +4,8 @@ if (!process.env.MONGODB_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')
 }
 
-const uri = process.env.MONGODB_URI
+// const uri = process.env.MONGODB_URI
+const uri = `${process.env.MONGODB_URI}?retryWrites=true&w=majority&connectTimeoutMS=10000&socketTimeoutMS=10000&serverSelectionTimeoutMS=10000`
 const options = {
   maxPoolSize: 10,
   minPoolSize: 5,
