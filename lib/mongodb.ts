@@ -4,12 +4,11 @@ if (!process.env.MONGODB_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')
 }
 
-// const uri = process.env.MONGODB_URI
-const uri = `${process.env.MONGODB_URI}?retryWrites=true&w=majority&connectTimeoutMS=10000&socketTimeoutMS=10000&serverSelectionTimeoutMS=10000`
+const uri = process.env.MONGODB_URI
+// const uri = `${process.env.MONGODB_URI}?retryWrites=true&w=majority&connectTimeoutMS=10000&socketTimeoutMS=10000&serverSelectionTimeoutMS=10000`
 const options = {
-  maxPoolSize: 10,
-  minPoolSize: 5,
-  maxIdleTimeMS: 60000,
+  retryWrites: true,
+  w: 'majority',
   connectTimeoutMS: 10000,
   serverSelectionTimeoutMS: 5000,
   socketTimeoutMS: 45000,
@@ -24,16 +23,27 @@ if (process.env.NODE_ENV === 'development') {
   let globalWithMongo = global as typeof globalThis & {
     _mongoClientPromise?: Promise<MongoClient>
   }
-
   if (!globalWithMongo._mongoClientPromise) {
-    client = new MongoClient(uri, options)
+    client = new MongoClient(uri, {
+      retryWrites: true,
+      w: 'majority' as const,
+      connectTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    })
     globalWithMongo._mongoClientPromise = client.connect()
   }
   clientPromise = globalWithMongo._mongoClientPromise!
 } else {
   // In production mode, it's best to not use a global variable.
-  client = new MongoClient(uri, options)
+  client = new MongoClient(uri, {
+    retryWrites: true,
+    w: 'majority' as const,
+    connectTimeoutMS: 10000,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+  })
   clientPromise = client.connect()
 }
 
-export default clientPromise 
+export default clientPromise
