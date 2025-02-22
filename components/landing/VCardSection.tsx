@@ -36,6 +36,7 @@ export function VCardSection({ userData }: VCardSectionProps) {
       data.fax ? `TEL;type=FAX:${data.fax}` : '',
       data.website ? `URL:${data.website}` : '',
       data.workStreet ? `ADR;type=WORK:;;${data.workStreet};${data.workCity || ''};${data.workState || ''};${data.workPostalCode || ''};${data.workCountry || ''}` : '',
+      data.homeStreet ? `ADR;type=HOME:;;${data.homeStreet};${data.homeCity || ''};${data.homeState || ''};${data.homeDistrict || ''};${data.homeCountry || ''}` : '',
       data.linkedin ? `X-SOCIALPROFILE;type=linkedin:${data.linkedin}` : '',
       data.twitter ? `X-SOCIALPROFILE;type=twitter:${data.twitter}` : '',
       data.facebook ? `X-SOCIALPROFILE;type=facebook:${data.facebook}` : '',
@@ -131,6 +132,23 @@ export function VCardSection({ userData }: VCardSectionProps) {
                 userData.workPostalCode,
                 userData.workCountry
               ].filter(Boolean).join(', ')}</p>
+              <Separator className="my-2" />
+            </div>
+          )}
+
+          {/* Add Home Address preview */}
+          {(userData.homeStreet || userData.homeCity || userData.homeState || userData.homeCountry) && (
+            <div className="space-y-2">
+              <h3 className="font-medium">Home Address</h3>
+              <p className="text-gray-600">
+                {[
+                  userData.homeStreet,
+                  userData.homeDistrict,
+                  userData.homeCity,
+                  userData.homeState,
+                  userData.homeCountry
+                ].filter(Boolean).join(', ')}
+              </p>
               <Separator className="my-2" />
             </div>
           )}

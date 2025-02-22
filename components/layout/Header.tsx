@@ -231,9 +231,9 @@ export default function Header() {
           {session && (
             <>
               <Link 
-                href="/admin/dashboard" 
+                href="/landing" 
                 className={`flex items-center gap-2 px-3 py-2 text-sm font-medium backdrop-blur-sm rounded-lg shadow-sm border transition-all duration-200 group
-                  ${pathname === '/admin/dashboard' 
+                  ${pathname === '/landing' 
                     ? 'bg-cyan-50/90 dark:bg-cyan-900/90 border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300' 
                     : 'bg-white/90 dark:bg-gray-800/90 border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/90 hover:shadow-md'
                   }`}

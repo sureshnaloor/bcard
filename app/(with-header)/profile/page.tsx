@@ -116,7 +116,7 @@ export default function ProfilePage() {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Update Your Profile</h1>
+      <h1 className="text-xl font-bold text-center mb-8">Update Your Profile</h1>
       <UserDataForm 
         initialData={userData} 
         sessionEmail={session?.user?.email || ''}
