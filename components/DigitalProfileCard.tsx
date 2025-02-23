@@ -4,6 +4,7 @@ import { FaUserPlus, FaLinkedin, FaGlobe, FaGithub, FaTwitter } from "react-icon
 import { VCardData } from "@/types/vcard";
 import React from "react";
 import ThemeSwitcher from './ThemeSwitcher';
+import defaultBgImage from '@/public/backgrounds/businesscard.png';
 
 interface Props {
   profile: VCardData;
@@ -22,14 +23,7 @@ export default function DigitalProfileCard({ profile }: Props) {
   const initials = getInitials(profile.firstName || '', profile.lastName || '');
 
   return (
-    <main 
-      className="relative min-h-screen pb-10"
-      style={{
-        backgroundColor: '#EBE9E1',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
+    <main className="relative min-h-screen pb-10" style={{ backgroundColor: '#EBE9E1' }}>
       <div className="container mx-auto px-4 py-8 max-w-2xl relative z-10">
         {/* Add to Contacts Button and Theme Switcher */}
         <div className="flex gap-4 mb-6">
@@ -50,46 +44,80 @@ export default function DigitalProfileCard({ profile }: Props) {
 
         {/* Profile Card */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 hover:-translate-y-0.5">
-          {/* Logo/Photo */}
-          <div className="flex justify-center mb-6">
-            <div className="w-24 h-24 rounded-full shadow-xl overflow-hidden">
-              {profile.photo ? (
+          {/* Company Logo Section */}
+          <div className="flex justify-center mb-8">
+            <div className="w-1/4 aspect-[3/2] relative rounded-lg overflow-hidden">
+              {profile.logo ? (
                 <Image
-                  src={profile.photo}
-                  alt={`${profile.firstName} ${profile.lastName}`}
-                  width={96}
-                  height={96}
-                  className="object-cover w-full h-full"
+                  src={profile.logo}
+                  alt={`${profile.organization || 'Company'} Logo`}
+                  fill
+                  className="object-contain"
                   priority
                 />
               ) : (
-                <div 
-                  className="w-full h-full flex items-center justify-center bg-blue-600"
-                >
-                  <span className="text-2xl font-bold text-white">
-                    {initials}
-                  </span>
-                </div>
+                <Image
+                  src={defaultBgImage}
+                  alt="Default Background"
+                  fill
+                  className="object-cover"
+                  priority
+                />
               )}
             </div>
           </div>
 
-          {/* Name and Details */}
+          {/* Profile Information Section */}
           <div className="text-center space-y-3">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              {`${profile.firstName} ${profile.lastName}`}
-            </h1>
+            {/* Name and Photo Section */}
+            <div className="flex items-center justify-center gap-4 mb-6">
+              {/* Profile Photo/Initials */}
+              <div className="w-16 h-16 rounded-full shadow-lg overflow-hidden flex-shrink-0">
+                {profile.photo ? (
+                  <Image
+                    src={profile.photo}
+                    alt={`${profile.firstName} ${profile.lastName}`}
+                    width={64}
+                    height={64}
+                    className="object-cover w-full h-full"
+                    priority
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-blue-600">
+                    <span className="text-xl font-bold text-white">{initials}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Name and Title */}
+              <div className="text-left">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                  {`${profile.firstName} ${profile.lastName}`}
+                </h1>
+                {profile.title && (
+                  <p className="text-xl text-gray-700 dark:text-gray-300 font-medium">
+                    {profile.title}
+                  </p>
+                )}
+              </div>
+            </div>
             
-            {profile.title && (
-              <p className="text-xl text-gray-700 dark:text-gray-300 font-medium">
-                {profile.title}
-              </p>
-            )}
-            
+            {/* Organization with Website Link */}
             {profile.organization && (
-              <p className="text-lg text-blue-600 dark:text-blue-400 font-semibold">
-                {profile.organization}
-              </p>
+              <div className="flex items-center justify-center gap-2">
+                <p className="text-lg text-blue-600 dark:text-blue-400 font-semibold">
+                  {profile.organization}
+                </p>
+                {profile.website && (
+                  <Link
+                    href={ensureAbsoluteUrl(profile.website)}
+                    target="_blank"
+                    className="text-gray-500 hover:text-blue-600 transition-colors"
+                  >
+                    <FaGlobe className="w-4 h-4" />
+                  </Link>
+                )}
+              </div>
             )}
             
             {profile.notes && (
