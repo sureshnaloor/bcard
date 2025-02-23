@@ -7,8 +7,9 @@ import { VCardSection } from "./VCardSection"
 // import { DigitalProfileSection } from "./DigitalProfileSection"
 import { CSSTransition, TransitionGroup } from "react-transition-group"
 import { Alert, AlertDescription } from "../ui/alert"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, UserCircle, ChevronRight } from "lucide-react"
 import type { VCardData } from "@/types/vcard"
+import Link from "next/link"
 
 const isEmptyUserData = (userData: VCardData | null): boolean => {
   if (!userData) return true
@@ -48,7 +49,7 @@ export function Dashboard() {
     <div className="container mx-auto p-4 space-y-8">
       <h1 className="text-3xl font-bold text-center mb-8">Your Digital Presence Dashboard</h1>
 
-      {isEmpty && (
+      {isEmpty ? (
         <Alert variant="destructive" className="mb-6">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -59,6 +60,20 @@ export function Dashboard() {
             to add your details and generate your digital business cards and QR code.
           </AlertDescription>
         </Alert>
+      ) : (
+        <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6 flex items-center justify-between">
+          <div className="flex items-center space-x-2 text-blue-700">
+            <UserCircle className="h-5 w-5" />
+            <span>Want to update your profile information?</span>
+          </div>
+          <Link
+            href="/profile"
+            className="text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1 transition-colors"
+          >
+            <span>Edit Profile</span>
+            <ChevronRight className="h-4 w-4" />
+          </Link>
+        </div>
       )}
 
       <TransitionGroup className="space-y-8">

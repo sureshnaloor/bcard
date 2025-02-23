@@ -122,7 +122,7 @@ export function VCardSection({ userData }: VCardSectionProps) {
           )}
 
           {/* Address Information */}
-          {userData.workStreet && (
+          {userData.workCountry && (
             <div className="space-y-2">
               <h3 className="font-medium">Work Address</h3>
               <p>{[

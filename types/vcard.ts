@@ -25,6 +25,7 @@ export interface VCardData {
   workState?: string
   workPostalCode?: string
   workCountry?: string
+  workDistrict?: string
   
   homeStreet?: string
   homeDistrict?: string
