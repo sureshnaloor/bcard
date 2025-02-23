@@ -9,14 +9,49 @@ import { toast } from "react-hot-toast"
 import type { VCardData } from "@/types/vcard"
 import { Separator } from "@/components/ui/separator"
 import { Card } from "@/components/ui/card"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { cn } from "@/lib/utils"
 
 interface UserDataFormProps {
   initialData?: VCardData | null
   sessionEmail?: string
 }
 
+// Define the validation schema
+const formSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  title: z.string().min(1, "Title is required"),
+  organization: z.string().min(1, "Organization is required"),
+  workCity: z.string().min(1, "City is required"),
+  workCountry: z.string().min(1, "Country is required"),
+  mobilePhone: z.string().min(1, "Mobile number is required"),
+  // ... other fields are optional
+})
+
 export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
   const router = useRouter()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isDirty, touchedFields },
+    trigger
+  } = useForm({
+    resolver: zodResolver(formSchema),
+    mode: "onBlur",
+    reValidateMode: "onChange",
+    defaultValues: {
+      firstName: initialData?.firstName || "",
+      lastName: initialData?.lastName || "",
+      title: initialData?.title || "",
+      organization: initialData?.organization || "",
+      workCity: initialData?.workCity || "",
+      workCountry: initialData?.workCountry || "",
+      mobilePhone: initialData?.mobilePhone || "",
+    }
+  })
   const [loading, setLoading] = useState(false)
   const [photo, setPhoto] = useState<string>(initialData?.photo || '')
   const [logo, setLogo] = useState<string>(initialData?.logo || '')
@@ -34,25 +69,13 @@ export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
   };
 
   // Modify the onSubmit function
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setLoading(true)
-
-    const formData = new FormData(e.currentTarget)
-    const data = Object.fromEntries(formData)
-
-    // Add the base64 images to the data object
-    const finalData = {
-      ...data,
-      photo,
-      logo,
-    }
-
     try {
       const response = await fetch("/api/userdata", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(finalData),
+        body: JSON.stringify(data),
       })
 
       if (!response.ok) throw new Error("Failed to save data")
@@ -89,8 +112,13 @@ export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
     }
   };
 
+  // Add this to show validation messages for required fields
+  const handleBlur = async (fieldName: string) => {
+    await trigger(fieldName);
+  };
+
   return (
-    <form onSubmit={onSubmit} className="max-w-4xl mx-auto p-6 space-y-8">
+    <form onSubmit={handleSubmit(onSubmit)} className="max-w-4xl mx-auto p-6 space-y-8">
       {/* Name Section - Blue Theme */}
       <Card className="section-card section-blue">
         <div className="space-y-4">
@@ -99,32 +127,40 @@ export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
             Name
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-            <Input
-              name="namePrefix"
-              placeholder="Prefix"
-              defaultValue={initialData?.namePrefix}
-              className="md:col-span-1 rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500"
-            />
-            <Input
-              name="firstName"
-              placeholder="First Name"
-              defaultValue={initialData?.firstName}
-              required
-              className="md:col-span-2 rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500"
-            />
-            <Input
-              name="middleName"
-              placeholder="Middle Name"
-              defaultValue={initialData?.middleName}
-              className="md:col-span-1 rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500"
-            />
-            <Input
-              name="lastName"
-              placeholder="Last Name"
-              defaultValue={initialData?.lastName}
-              required
-              className="md:col-span-2 rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500"
-            />
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">
+                First Name <span className="text-red-500">*</span>
+              </label>
+              <Input
+                {...register("firstName", {
+                  onBlur: () => handleBlur("firstName")
+                })}
+                className={cn(
+                  "rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500",
+                  errors.firstName && touchedFields.firstName && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                )}
+              />
+              {errors.firstName && touchedFields.firstName && (
+                <p className="mt-1 text-sm text-red-500">{errors.firstName.message}</p>
+              )}
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">
+                Last Name <span className="text-red-500">*</span>
+              </label>
+              <Input
+                {...register("lastName", {
+                  onBlur: () => handleBlur("lastName")
+                })}
+                className={cn(
+                  "rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500",
+                  errors.lastName && touchedFields.lastName && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                )}
+              />
+              {errors.lastName && touchedFields.lastName && (
+                <p className="mt-1 text-sm text-red-500">{errors.lastName.message}</p>
+              )}
+            </div>
           </div>
         </div>
       </Card>
@@ -177,24 +213,40 @@ export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
             Organization
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              name="organization"
-              placeholder="Organization"
-              defaultValue={initialData?.organization}
-              className="rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500"
-            />
-            <Input
-              name="title"
-              placeholder="Title"
-              defaultValue={initialData?.title}
-              className="rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500"
-            />
-            <Input
-              name="role"
-              placeholder="Role"
-              defaultValue={initialData?.role}
-              className="rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500"
-            />
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Organization <span className="text-red-500">*</span>
+              </label>
+              <Input
+                {...register("organization", {
+                  onBlur: () => handleBlur("organization")
+                })}
+                className={cn(
+                  "rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500",
+                  errors.organization && touchedFields.organization && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                )}
+              />
+              {errors.organization && touchedFields.organization && (
+                <p className="mt-1 text-sm text-red-500">{errors.organization.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Title <span className="text-red-500">*</span>
+              </label>
+              <Input
+                {...register("title", {
+                  onBlur: () => handleBlur("title")
+                })}
+                className={cn(
+                  "rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500",
+                  errors.title && touchedFields.title && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                )}
+              />
+              {errors.title && touchedFields.title && (
+                <p className="mt-1 text-sm text-red-500">{errors.title.message}</p>
+              )}
+            </div>
           </div>
         </div>
       </Card>
@@ -233,12 +285,24 @@ export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
               /> */}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input
-                name="mobilePhone"
-                placeholder="Mobile Phone"
-                defaultValue={initialData?.mobilePhone}
-                className="rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500"
-              />
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Mobile Phone <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  {...register("mobilePhone", {
+                    onBlur: () => handleBlur("mobilePhone")
+                  })}
+                  placeholder="Mobile Phone"
+                  className={cn(
+                    "rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500",
+                    errors.mobilePhone && touchedFields.mobilePhone && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                  )}
+                />
+                {errors.mobilePhone && touchedFields.mobilePhone && (
+                  <p className="mt-1 text-sm text-red-500">{errors.mobilePhone.message}</p>
+                )}
+              </div>
               <Input
                 name="workPhone"
                 placeholder="Work Phone"
@@ -276,12 +340,42 @@ export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
               defaultValue={initialData?.workStreet}
               className="md:col-span-2 rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500"
             />
-            <Input
-              name="workCity"
-              placeholder="City"
-              defaultValue={initialData?.workCity}
-              className="rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500"
-            />
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                City <span className="text-red-500">*</span>
+              </label>
+              <Input
+                {...register("workCity", {
+                  onBlur: () => handleBlur("workCity")
+                })}
+                placeholder="City"
+                className={cn(
+                  "rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500",
+                  errors.workCity && touchedFields.workCity && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                )}
+              />
+              {errors.workCity && touchedFields.workCity && (
+                <p className="mt-1 text-sm text-red-500">{errors.workCity.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Country <span className="text-red-500">*</span>
+              </label>
+              <Input
+                {...register("workCountry", {
+                  onBlur: () => handleBlur("workCountry")
+                })}
+                placeholder="Country"
+                className={cn(
+                  "rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500",
+                  errors.workCountry && touchedFields.workCountry && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                )}
+              />
+              {errors.workCountry && touchedFields.workCountry && (
+                <p className="mt-1 text-sm text-red-500">{errors.workCountry.message}</p>
+              )}
+            </div>
             <Input
               name="workState"
               placeholder="State"
@@ -292,12 +386,6 @@ export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
               name="workPostalCode"
               placeholder="Postal Code"
               defaultValue={initialData?.workPostalCode}
-              className="rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500"
-            />
-            <Input
-              name="workCountry"
-              placeholder="Country"
-              defaultValue={initialData?.workCountry}
               className="rounded-lg border-zinc-200 focus:border-blue-500 focus:ring-blue-500"
             />
           </div>
@@ -431,6 +519,12 @@ export function UserDataForm({ initialData, sessionEmail }: UserDataFormProps) {
         type="submit" 
         className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg transition-colors"
         disabled={loading}
+        onClick={async () => {
+          const isValid = await trigger();
+          if (!isValid) {
+            toast.error("Please fill in all required fields");
+          }
+        }}
       >
         {loading ? (
           <div className="flex items-center justify-center gap-2">

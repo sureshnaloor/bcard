@@ -218,4 +218,20 @@ body {
   @apply h-6 w-1 rounded-full;
 }
 
+/* Required field indicator */
+.required-field::after {
+  content: '*';
+  @apply text-red-500 ml-1;
+}
+
+/* Error state for inputs */
+.input-error {
+  @apply border-red-500 focus:border-red-500 focus:ring-red-500;
+}
+
+/* Error message */
+.error-message {
+  @apply mt-1 text-sm text-red-500;
+}
+
 
