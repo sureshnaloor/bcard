@@ -1,5 +1,6 @@
 export interface VCardData {
-  // Name components
+  _id?: string
+
   lastName?: string
   firstName?: string
   middleName?: string

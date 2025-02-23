@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import FileSaver from "file-saver"
 import type { VCardData } from "@/types/vcard"
+import { toast } from "react-hot-toast"
 
 interface VCardSectionProps {
   userData: VCardData | null
@@ -53,16 +54,37 @@ export function VCardSection({ userData }: VCardSectionProps) {
     return vCardData
   }
 
-  const downloadVCard = () => {
-    // Create a copy of userData without logo
-    const vcardUserData = {
-      ...userData,
-      logo: undefined
-    }
+  const downloadVCard = async () => {
+    try {
+      // Create a copy of userData without logo
+      const vcardUserData = {
+        ...userData,
+        logo: undefined
+      }
 
-    const vCardString = generateVCardString(vcardUserData)
-    const blob = new Blob([vCardString], { type: "text/vcard;charset=utf-8" })
-    FileSaver.saveAs(blob, "contact.vcf")
+      const vCardString = generateVCardString(vcardUserData)
+      const blob = new Blob([vCardString], { type: "text/vcard;charset=utf-8" })
+
+      // Store vCard blob in MongoDB
+      const response = await fetch("/api/userdata/vcard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          vCardContent: vCardString,
+          userEmail: userData.workEmail // or any unique identifier
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to store vCard")
+      }
+
+      // Download the vCard
+      FileSaver.saveAs(blob, "contact.vcf")
+    } catch (error) {
+      console.error("Error handling vCard:", error)
+      toast.error("Failed to generate vCard")
+    }
   }
 
   return (

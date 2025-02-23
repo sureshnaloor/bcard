@@ -43,3 +43,42 @@ END:VCARD`;
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const { vCardContent, userEmail } = await request.json()
+
+    const client = await clientPromise
+    const db = client.db("test")
+
+    // Update the user's document with vCard content
+    const result = await db.collection("userdata").updateOne(
+      { workEmail: userEmail },
+      { 
+        $set: { 
+          vCardContent: vCardContent,
+          vCardUpdatedAt: new Date()
+        } 
+      }
+    )
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json(
+      { message: "vCard stored successfully" },
+      { status: 200 }
+    )
+
+  } catch (error) {
+    console.error('Error storing vCard:', error)
+    return NextResponse.json(
+      { error: "Failed to store vCard" },
+      { status: 500 }
+    )
+  }
+}
