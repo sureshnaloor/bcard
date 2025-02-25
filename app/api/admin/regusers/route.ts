@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth"; // Updated import path
-
+export const dynamic = 'force-dynamic'
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
