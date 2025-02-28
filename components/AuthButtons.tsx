@@ -13,8 +13,9 @@ export default function AuthButtons({ showText = true }: AuthButtonsProps) {
   const router = useRouter();
 
   const handleSignOut = async () => {
-    await signOut({ redirect: false });
+    await signOut({ callbackUrl: '/' });
     router.push('/');
+    router.refresh();
   };
 
   if (session) {

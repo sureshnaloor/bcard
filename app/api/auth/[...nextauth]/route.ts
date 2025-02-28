@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { JWT } from "next-auth/jwt";
 import { Session } from "next-auth";
@@ -35,7 +36,8 @@ const handler = NextAuth({
   adapter: MongoDBAdapter(clientPromise),
   pages: {
     signIn: '/auth/signin',  // Path to our custom sign-in page
-    error: '/auth/signin', // Error code passed in query string as ?error=
+    signOut: '/', // Path to our custom sign-out page
+    error: '/auth/error', // Error code passed in query string as ?error=
   },
   session: {
     strategy: "jwt",
@@ -76,16 +78,17 @@ const handler = NextAuth({
         const client = await clientPromise;
         const db = client.db("businessCards");
         
-        // Check if user exists in our limits collection
+        // Log the user object
+        console.log("Signing in user:", user);
+
         const existingUser = await db.collection("userLimits").findOne({ 
           email: user.email 
         });
 
         if (!existingUser) {
-          // Create new user with default limits
           await db.collection("userLimits").insertOne({
             email: user.email,
-            cardLimit: 1, // Default limit
+            cardLimit: 1,
             cardIds: [],
             createdAt: new Date(),
             updatedAt: new Date()
@@ -95,7 +98,6 @@ const handler = NextAuth({
         return true;
       } catch (error) {
         console.error("Error in signIn callback:", error);
-        // Log more details about the error
         if (error instanceof Error) {
           console.error("Error message:", error.message);
           console.error("Error stack:", error.stack);
