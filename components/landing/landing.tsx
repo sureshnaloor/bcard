@@ -19,6 +19,7 @@ const isEmptyUserData = (userData: VCardData | null): boolean => {
 export function Dashboard() {
   const [userData, setUserData] = useState<VCardData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchUserData() {
@@ -29,6 +30,7 @@ export function Dashboard() {
         setUserData(data)
       } catch (error) {
         console.error("Error fetching user data:", error)
+        setError("Unable to load your profile information. Please try again later.")
       } finally {
         setLoading(false)
       }
@@ -49,7 +51,14 @@ export function Dashboard() {
     <div className="container mx-auto p-4 space-y-8">
       <h1 className="text-3xl font-bold text-center mb-8">Your Digital Presence Dashboard</h1>
 
-      {isEmpty ? (
+      {error ? (
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {error}
+          </AlertDescription>
+        </Alert>
+      ) : isEmpty ? (
         <Alert variant="destructive" className="mb-6">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>

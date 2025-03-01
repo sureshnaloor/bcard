@@ -41,6 +41,7 @@ const HomePage = () => {
   const { data: session, status } = useSession();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null); // State for error handling
 
   useEffect(() => {
     if (status !== 'loading') {
@@ -205,7 +206,6 @@ const HomePage = () => {
               hover:bg-gradient-to-br hover:from-blue-50 hover:to-white"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
-              {/* Keep your existing h3 and p content exactly as is, just add relative z-10 */}
               <h3 className="text-xl font-semibold mb-2 relative z-10">AI-Age Proof</h3>
               <p className="text-gray-600 relative z-10 group-hover:text-gray-700">Seamlessly integrate with AI technologies for enhanced functionality</p>
             </div>

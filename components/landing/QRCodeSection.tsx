@@ -74,7 +74,9 @@ export function QRCodeSection({ userData }: QRCodeSectionProps) {
             excavate: true
           }}
         />
-        <Button onClick={downloadQRCode}>Download QR Code</Button>
+        <Button onClick={userData ? downloadQRCode : () => {/* Handle create QR code logic */}}>
+          {Object.keys(userData).length > 0 ? 'Download QR Code' : 'Create QR Code'}
+        </Button>
       </CardContent>
     </Card>
   )

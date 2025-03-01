@@ -200,7 +200,9 @@ export function VCardSection({ userData }: VCardSectionProps) {
           )}
         </div>
 
-        <Button onClick={downloadVCard} className="w-full">Download vCard</Button>
+        <Button onClick={downloadVCard} className="w-full">
+          {Object.keys(userData).length > 0 ? 'Download vCard' : 'Create vCard'}
+        </Button>
       </CardContent>
     </Card>
   )
